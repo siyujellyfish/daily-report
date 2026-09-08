@@ -32,4 +32,6 @@
 - Confirmed the runtime `DATABASE_URL` is valid by persisting the test report to Neon production.
 - Re-sent the exact same payload and confirmed the API returned `duplicate: true` while Neon retained exactly one row.
 - Recorded pre-live secret rotation as a hardening requirement before enabling real ChatGPT Scheduled Tasks.
+- Rotated the setup/test `INGEST_SECRET` in Vercel and Make without recording the secret value in the repository.
+- Confirmed the pre-redeploy runtime still rejected the rotated Make credential with HTTP 401, proving Vercel Production must be redeployed after the environment variable change.
 - Updated architecture and decision records for the ingestion design.
