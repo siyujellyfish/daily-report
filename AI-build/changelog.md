@@ -27,5 +27,9 @@
 - Converted the Make POC scenario into `Daily Report - Publish to Vercel` with JSON serialization and an HTTP POST step.
 - Verified Make serializes populated sources correctly and observed that an empty sources input is emitted as `null`.
 - Updated the ingest schema to normalize `sources: null` or an omitted sources field to an empty array.
-- Confirmed Vercel Deployment Protection currently blocks unauthenticated Make requests before they reach the Next.js runtime; production protection must be disabled or limited to previews.
+- Disabled Vercel `Require Log in` to allow the fully public production site and Make ingestion endpoint.
+- Completed the first successful Make → Vercel → Neon ingestion.
+- Confirmed the runtime `DATABASE_URL` is valid by persisting the test report to Neon production.
+- Re-sent the exact same payload and confirmed the API returned `duplicate: true` while Neon retained exactly one row.
+- Recorded pre-live secret rotation as a hardening requirement before enabling real ChatGPT Scheduled Tasks.
 - Updated architecture and decision records for the ingestion design.

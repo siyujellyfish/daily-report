@@ -11,7 +11,7 @@
 - [x] Initialize AI-build documentation.
 - [x] Create Vercel project linked to `siyujellyfish/daily-report`.
 - [x] Provision Neon through Vercel Native Integration.
-- [ ] Confirm `DATABASE_URL` at runtime with a successful ingestion test.
+- [x] Confirm `DATABASE_URL` at runtime with a successful ingestion test.
 - [x] Complete first successful Vercel preview build.
 - [x] Complete first successful Vercel production build.
 
@@ -25,9 +25,16 @@
 - [x] Apply the initial `reports` schema migration to Neon production branch.
 - [x] Connect Make HTTP module to the production ingestion endpoint.
 - [x] Normalize Make's empty `sources` value (`null`) to an empty array.
-- [ ] Configure `INGEST_SECRET` in Vercel Production.
-- [ ] Restrict Vercel Authentication to previews so the production site/API is publicly reachable.
-- [ ] Complete end-to-end Make → Vercel → Neon test.
+- [x] Configure `INGEST_SECRET` in Vercel Production.
+- [x] Disable Vercel `Require Log in` so the public production endpoint is reachable from Make.
+- [x] Complete end-to-end Make → Vercel → Neon test.
+- [x] Verify exact retries return `duplicate: true` without creating a second row.
+
+## Pre-live hardening
+
+- [ ] Rotate the setup/test `INGEST_SECRET` before enabling the real ChatGPT Scheduled Tasks.
+- [ ] Update the Make HTTP Authorization header to the rotated secret.
+- [ ] Re-run one authenticated ingestion after secret rotation.
 
 ## Phase 2 — Public website
 
