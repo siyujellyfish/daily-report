@@ -11,6 +11,7 @@
 - Initialized `/AI-build` project documentation.
 - Connected the GitHub repository to Vercel.
 - Provisioned the `daily-report` Neon project through the Vercel integration in Singapore.
+- Completed the first successful Vercel Preview deployment.
 
 ### Phase 1 — Ingestion
 
@@ -19,4 +20,6 @@
 - Added `/api/v1/ingest` with Bearer authentication and JSON content validation.
 - Added SHA-256 payload hashing and race-safe idempotent insertion.
 - Added duplicate retry handling and same-day/type conflict protection.
+- Validated the initial reports migration on a temporary Neon branch.
+- Applied the validated `reports` schema migration to the Neon production branch and removed the temporary migration branch.
 - Updated architecture and decision records for the ingestion design.
