@@ -12,7 +12,11 @@ export const reportIngestSchema = z
 		title: z.string().trim().min(1).max(300),
 		generatedAt: z.iso.datetime({ offset: true }),
 		contentMarkdown: z.string().min(1).max(500_000),
-		sources: z.array(sourceSchema).max(100).default([]),
+		sources: z
+			.array(sourceSchema)
+			.max(100)
+			.nullish()
+			.transform((sources) => sources ?? []),
 	})
 	.strict();
 

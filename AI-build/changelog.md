@@ -12,6 +12,8 @@
 - Connected the GitHub repository to Vercel.
 - Provisioned the `daily-report` Neon project through the Vercel integration in Singapore.
 - Completed the first successful Vercel Preview deployment.
+- Squash-merged the initialization and Phase 1 foundation to `main`.
+- Completed the first successful Vercel Production deployment.
 
 ### Phase 1 — Ingestion
 
@@ -22,4 +24,8 @@
 - Added duplicate retry handling and same-day/type conflict protection.
 - Validated the initial reports migration on a temporary Neon branch.
 - Applied the validated `reports` schema migration to the Neon production branch and removed the temporary migration branch.
+- Converted the Make POC scenario into `Daily Report - Publish to Vercel` with JSON serialization and an HTTP POST step.
+- Verified Make serializes populated sources correctly and observed that an empty sources input is emitted as `null`.
+- Updated the ingest schema to normalize `sources: null` or an omitted sources field to an empty array.
+- Confirmed Vercel Deployment Protection currently blocks unauthenticated Make requests before they reach the Next.js runtime; production protection must be disabled or limited to previews.
 - Updated architecture and decision records for the ingestion design.
