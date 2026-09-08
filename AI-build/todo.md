@@ -9,19 +9,22 @@
 - [x] Add Neon + Drizzle connection layer.
 - [x] Add environment variable template.
 - [x] Initialize AI-build documentation.
-- [ ] Create Vercel project linked to `siyujellyfish/daily-report`.
-- [ ] Provision Neon through Vercel Native Integration.
-- [ ] Confirm `DATABASE_URL` is available in Vercel environments.
-- [ ] Run first Vercel preview build.
+- [x] Create Vercel project linked to `siyujellyfish/daily-report`.
+- [x] Provision Neon through Vercel Native Integration.
+- [ ] Confirm `DATABASE_URL` at runtime with a successful preview ingestion test.
+- [ ] Complete first successful Vercel preview build.
 
 ## Phase 1 — Ingestion
 
-- [ ] Define report database schema.
-- [ ] Define Zod payload contract.
-- [ ] Implement `/api/v1/ingest`.
-- [ ] Add bearer-secret authentication.
-- [ ] Add payload hash / idempotency behavior.
+- [x] Define report database schema.
+- [x] Define Zod payload contract.
+- [x] Implement `/api/v1/ingest`.
+- [x] Add bearer-secret authentication.
+- [x] Add payload hash / idempotency behavior.
+- [ ] Apply the initial `reports` schema migration to Neon production branch.
+- [ ] Configure `INGEST_SECRET` in Vercel.
 - [ ] Connect Make HTTP module.
+- [ ] Complete end-to-end Make → Vercel → Neon test.
 
 ## Phase 2 — Public website
 

@@ -1,26 +1,28 @@
-# Technical Decisions
+# Decisions
 
-## 2026-09-08
+## 2026-09-08 — Application architecture
 
-### Application architecture
+- Use Next.js App Router as a single deployable application on Vercel.
+- Keep the public website read-only and receive ChatGPT Scheduled Task output through Make.
+- Do not use the OpenAI API for report generation.
+- Use Neon PostgreSQL provisioned through Vercel Native Integration.
+- Use Drizzle ORM with the Neon HTTP driver for serverless database access.
+- Use Zod for external payload validation.
+- Use Asia/Taipei as the business date boundary for reports.
 
-採用 Next.js 單體架構，公開頁面與 ingest API 均由同一個 Vercel Project 提供，不額外建立獨立 backend。
+## 2026-09-08 — Ingestion contract
 
-### Package baseline
+- Accept only schema version `1` during the initial phase.
+- Supported report types are `daily-news` and `framework-recommendation`.
+- Authenticate Make with `Authorization: Bearer <INGEST_SECRET>`.
+- Normalize the validated payload before calculating a SHA-256 hash.
+- An exact retry returns HTTP 200 with `duplicate: true`.
+- A new report returns HTTP 201.
+- A different payload for an already occupied `(report_type, report_date)` returns HTTP 409 rather than overwriting existing content.
+- Keep report sources in JSONB until source-level relational querying becomes a real requirement.
 
-- Next.js 16.3.4
-- React 19.2.8
-- Tailwind CSS 4.3.3
-- pnpm 12.3.4
-- Drizzle ORM 0.45.2
-- Drizzle Kit 0.31.10
-- Neon serverless driver 1.1.0
-- Zod 4.5.4
+## 2026-09-08 — Database initialization
 
-### Database
-
-使用 Neon PostgreSQL，透過 Vercel Native Integration provision。現有 Neon Organization 由 Vercel 管理，因此不得直接從 Neon API 建立新 project。
-
-### AI delivery
-
-不使用 OpenAI API。ChatGPT Scheduled Tasks 透過 Make App 呼叫 Make Scenario，再由 Make 將內容 POST 至 Vercel ingest endpoint。
+- The Vercel-provisioned Neon project uses PostgreSQL 18 in `aws-ap-southeast-1`.
+- PostgreSQL 18 is accepted because the current Drizzle schema uses standard PostgreSQL types and constraints compatible with the target version.
+- The initial production schema change is validated on a temporary Neon branch before being applied to the production branch.
