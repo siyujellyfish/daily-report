@@ -11,8 +11,9 @@
 - [x] Initialize AI-build documentation.
 - [x] Create Vercel project linked to `siyujellyfish/daily-report`.
 - [x] Provision Neon through Vercel Native Integration.
-- [ ] Confirm `DATABASE_URL` at runtime with a successful preview ingestion test.
+- [ ] Confirm `DATABASE_URL` at runtime with a successful ingestion test.
 - [x] Complete first successful Vercel preview build.
+- [x] Complete first successful Vercel production build.
 
 ## Phase 1 — Ingestion
 
@@ -22,8 +23,10 @@
 - [x] Add bearer-secret authentication.
 - [x] Add payload hash / idempotency behavior.
 - [x] Apply the initial `reports` schema migration to Neon production branch.
-- [ ] Configure `INGEST_SECRET` in Vercel.
-- [ ] Connect Make HTTP module.
+- [x] Connect Make HTTP module to the production ingestion endpoint.
+- [x] Normalize Make's empty `sources` value (`null`) to an empty array.
+- [ ] Configure `INGEST_SECRET` in Vercel Production.
+- [ ] Restrict Vercel Authentication to previews so the production site/API is publicly reachable.
 - [ ] Complete end-to-end Make → Vercel → Neon test.
 
 ## Phase 2 — Public website
