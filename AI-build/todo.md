@@ -32,8 +32,9 @@
 
 ## Pre-live hardening
 
-- [ ] Rotate the setup/test `INGEST_SECRET` before enabling the real ChatGPT Scheduled Tasks.
-- [ ] Update the Make HTTP Authorization header to the rotated secret.
+- [x] Rotate the setup/test `INGEST_SECRET` before enabling the real ChatGPT Scheduled Tasks.
+- [x] Update the Make HTTP Authorization header to the rotated secret.
+- [ ] Redeploy Vercel Production so the rotated environment variable is loaded by the runtime.
 - [ ] Re-run one authenticated ingestion after secret rotation.
 
 ## Phase 2 — Public website
