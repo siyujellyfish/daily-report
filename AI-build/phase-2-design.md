@@ -47,3 +47,7 @@ The user approved the `daily-report-demo.html` design on 2026-09-09 and authoriz
 - Phase 4 owns both real Scheduled Task payloads and production-content validation.
 - Phase 5 owns the final secret rotation and production activation.
 - Search, RSS, tags, accounts, CMS and new ingestion behavior remain outside this phase.
+
+## Implementation verification
+
+The Next.js build, pnpm 12.3.4 frozen install, pure date/slug/Markdown checks, actual server-renderer fixture and Vercel Preview HTTP route checks passed. Native mobile-menu, theme and clipboard interactions still receive browser verification in Phase 3. Current live data is the original P1 framework test report; no fictional content was written to Neon.

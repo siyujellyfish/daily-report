@@ -1124,3 +1124,40 @@ main:focus {
 		font-size:31px
 	}
 }
+
+.feature h4, .feature p, .feature-highlights li, .archive-item h2, .archive-item p, .article-heading h1, .toc a {
+	overflow-wrap: anywhere;
+}
+.button {
+	min-height: 44px;
+	height: auto;
+}
+@media (max-width: 720px) {
+	.theme-control label {
+		display: none;
+	}
+}
+@media (max-width: 380px) {
+	.brand {
+		gap: 8px;
+	}
+	.brand strong {
+		font-size: 15px;
+	}
+	.brand small {
+		display: none;
+	}
+	.brand-icon {
+		width: 32px;
+		height: 32px;
+	}
+	.theme-control .theme-select {
+		max-width: 98px;
+	}
+	.menu-toggle {
+		padding: 6px 8px;
+	}
+	.header {
+		gap: 8px;
+	}
+}

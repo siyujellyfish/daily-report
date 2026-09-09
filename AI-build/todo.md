@@ -143,17 +143,17 @@ This file is the primary implementation plan and progress source for Daily Repor
 - [x] Decide and add Open Graph metadata where useful.
 - [x] Decide whether sitemap/robots generation is required for launch and implement if appropriate.
 
-Implementation is complete locally. Preview/runtime acceptance is in progress; evidence and limits are recorded in `changelog.md`. The skeleton item is resolved by an explicit decision to omit a global loading boundary, documented in `phase-2-design.md`.
+Implementation and Preview/runtime acceptance are complete (PR #7). The current database contains one framework test report and no news rows: live checks verified the real report plus category empty states; populated GFM/source behavior was also checked with a local server-renderer fixture. Real daily content validation remains Phase 4. Evidence and limits are recorded in `changelog.md`. The skeleton item is resolved by an explicit decision to omit a global loading boundary, documented in `phase-2-design.md`.
 
 ### Phase 2 acceptance
 
-- [ ] Homepage renders both report categories from Neon.
-- [ ] Both archive routes render correct filtered report lists.
-- [ ] Detail route renders complete saved Markdown and structured sources.
-- [ ] Invalid report slug returns 404.
+- [x] Homepage renders both report categories from Neon.
+- [x] Both archive routes render correct filtered report lists.
+- [x] Detail route renders complete saved Markdown and structured sources.
+- [x] Invalid report slug returns 404.
 - [x] Website remains read-only from the browser.
 - [x] No raw stored HTML execution is enabled.
-- [ ] Vercel Preview build succeeds.
+- [x] Vercel Preview build succeeds.
 
 ---
 
