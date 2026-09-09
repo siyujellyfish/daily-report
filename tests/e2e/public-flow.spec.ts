@@ -10,21 +10,21 @@ test("homepage links to the newest reports", async ({ page }) => {
 test("daily-news archive paginates newest first", async ({ page }) => {
 	await page.goto("/news");
 	await expect(page.getByText("共 13 篇報告")).toBeVisible();
-	await expect(page.getByRole("link", { name: "Phase 3 Daily News 09" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 3 Daily News 09", exact: true })).toBeVisible();
 	await expect(page.getByRole("navigation", { name: "報告列表分頁" })).toBeVisible();
 
 	await page.getByRole("link", { name: "下一頁" }).click();
 	await expect(page).toHaveURL(/\/news\?page=2$/);
 	await expect(page.getByText("第 2 / 2 頁")).toBeVisible();
-	await expect(page.getByRole("link", { name: "Phase 3 Daily News 28" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 3 Daily News 28", exact: true })).toBeVisible();
 });
 
 test("framework archive is filtered correctly", async ({ page }) => {
 	await page.goto("/frameworks");
 	await expect(page.getByText("共 2 篇報告")).toBeVisible();
-	await expect(page.getByRole("link", { name: "Phase 3 Framework Fixture" })).toBeVisible();
-	await expect(page.getByRole("link", { name: "P1 End-to-End Test" })).toBeVisible();
-	await expect(page.getByRole("link", { name: "Phase 3 Daily News 09" })).toHaveCount(0);
+	await expect(page.getByRole("link", { name: "Phase 3 Framework Fixture", exact: true })).toBeVisible();
+	await expect(page.getByRole("link", { name: "P1 End-to-End Test", exact: true })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 3 Daily News 09", exact: true })).toHaveCount(0);
 });
 
 test("report detail renders Markdown, TOC and structured sources", async ({ page }) => {
