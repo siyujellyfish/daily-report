@@ -159,7 +159,7 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 
 ## Phase 3 — Testing, quality and performance
 
-Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Phase 3 is in progress. Items are checked only after implementation and, where applicable, successful execution; DB integration and Playwright test files already exist but remain unchecked until they run against an explicitly isolated environment.
+Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Core automated verification is complete against Neon `phase3-testing`: the current verified code commit passed TypeScript/build, 15 unit tests, 4 DB integration tests and Playwright critical paths (21 passed / 3 conditional skips / 0 failed), and its Vercel Preview is READY. Accessibility/content-quality/performance review remains in progress; Phase 3 is not yet complete.
 
 ### 3.1 Unit tests with Vitest
 
@@ -172,29 +172,29 @@ Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Phase 
 - [ ] Add pure query-helper tests where practical.
 - [x] Keep DB integration concerns separate from pure logic tests.
 - [x] Cover Markdown summaries, heading anchors and unsafe URLs.
-- [ ] Verify read queries against isolated fixtures without modifying Production.
+- [x] Verify read queries against isolated fixtures without modifying Production. DB integration 4/4 passed against `phase3-testing`.
 
 ### 3.2 End-to-end tests with Playwright
 
 - [x] Recheck current Playwright official docs/version before implementation.
-- [ ] Test homepage loading and latest-report links. Test case implemented; isolated browser execution pending.
-- [ ] Test `/news` archive. Test case implemented; isolated browser execution pending.
-- [ ] Test `/frameworks` archive. Test case implemented; isolated browser execution pending.
-- [ ] Test report-detail rendering. Test case implemented; isolated browser execution pending.
-- [ ] Test report 404 behavior. Test case implemented; isolated browser execution pending.
-- [ ] Test critical navigation flow. Test case implemented; isolated browser execution pending.
-- [ ] Test one representative mobile viewport. Pixel 7 project configured; execution pending.
-- [ ] Test external source links render correctly. Test case implemented; isolated browser execution pending.
-- [ ] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback. Test cases implemented; isolated browser execution pending.
-- [ ] Test empty/error states in an isolated environment.
+- [x] Test homepage loading and latest-report links.
+- [x] Test `/news` archive.
+- [x] Test `/frameworks` archive.
+- [x] Test report-detail rendering.
+- [x] Test report 404 behavior.
+- [x] Test critical navigation flow.
+- [x] Test one representative mobile viewport. Pixel 7 project passed its applicable cases.
+- [x] Test external source links render correctly.
+- [x] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback.
+- [ ] Test empty/error states in an isolated environment. 404/missing-report behavior is covered; explicit empty-dataset/read-error injection remains pending.
 
 ### 3.3 Accessibility and content quality
 
 - [ ] Verify semantic heading hierarchy.
-- [ ] Verify keyboard navigation and visible focus states. Skip-link and Escape/focus test cases implemented; browser execution pending.
+- [x] Verify keyboard navigation and visible focus states. Skip-link focus and mobile Escape/focus restoration passed in Playwright.
 - [ ] Verify link labels are meaningful.
 - [ ] Verify sufficient basic color contrast.
-- [ ] Verify Markdown tables/code blocks remain usable on narrow screens. Test coverage implemented; browser execution pending.
+- [x] Verify Markdown tables/code blocks remain usable on narrow screens. Pixel 7 detail rendering and interaction coverage passed.
 - [ ] Verify empty-state and error-state copy.
 
 ### 3.4 Performance and database checks
@@ -208,16 +208,16 @@ Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Phase 
 ### 3.5 Repeatable verification
 
 - [x] Add documented test commands and CI checks with isolated test configuration.
-- [ ] Record the verified commit, environment, results and remaining limitations at Phase 3 acceptance.
+- [ ] Record the verified commit, environment, results and remaining limitations at Phase 3 acceptance. Interim evidence is maintained in `phase-3-verification.md`.
 
 ### Phase 3 acceptance
 
 - [x] TypeScript and production build pass for the current Phase 3 branch.
-- [x] Vitest suite passes (15 tests in 4 files at the current checkpoint).
-- [ ] Isolated database read integration checks pass.
-- [ ] Playwright critical-path suite passes.
-- [ ] Vercel Preview succeeds without blocking errors.
-- [ ] No critical accessibility or mobile-layout issue remains.
+- [x] Vitest suite passes (15 tests in 4 files).
+- [x] Isolated database read integration checks pass (4 tests).
+- [x] Playwright critical-path suite passes (21 passed / 3 conditional skips / 0 failed).
+- [x] Vercel Preview succeeds without blocking errors for verified code commit `5143e5e`.
+- [ ] No critical accessibility or mobile-layout issue remains. Mobile automated flows pass; remaining manual/static accessibility review is pending.
 - [x] Current Phase 3 implementation adds no public credentials or unnecessary write API surface.
 
 ---
@@ -238,7 +238,7 @@ Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Phase 
 
 ### 4.2 `每日框架工具推薦`
 
-- [ ] Review the current Scheduled Task instructions without weakening its selection/analysis requirements.
+- [ ] Review the current Scheduled Task instructions without weakening its existing selection/analysis requirements.
 - [ ] Preserve historical recommendation deduplication.
 - [ ] Set `reportType = framework-recommendation`.
 - [ ] Set appropriate report title.
