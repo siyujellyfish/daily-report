@@ -2,7 +2,9 @@
 
 ## 狀態與目標
 
-Phase 2 已完成公開網站與 Preview 讀取驗證，透過 PR #7 以 squash 交付 main。Phase 3 尚未開始實作；目標是建立可重複執行的測試，驗證已採用設計的完整閱讀流程，並修復驗證發現的問題。`todo.md` 仍是完成狀態的主要來源。
+Phase 2 已完成公開網站與 Preview 讀取驗證，透過 PR #7 以 squash 交付 main。Phase 3 已於 2026-09-09 開始實作；目標是建立可重複執行的測試，驗證已採用設計的完整閱讀流程，並修復驗證發現的問題。`todo.md` 仍是完成狀態的主要來源。
+
+目前已完成測試工具選型與第一批基礎：Vitest 5.0.0、Playwright 1.63.0 均依官方文件確認與 Node 24 相容；已建立純 presentation mapper、15 個核心單元測試、Playwright 關鍵流程測試檔、正式 Quality workflow，以及 Neon `phase3-testing` 隔離 branch。單元測試、TypeScript 與 production build 已於 GitHub Actions 通過。DB integration 與 Playwright 實際執行仍需安全配置 `TEST_DATABASE_URL`，未配置時不得視為驗收通過。
 
 ## 預計實作順序
 
@@ -15,11 +17,18 @@ Phase 2 已完成公開網站與 Preview 讀取驗證，透過 PR #7 以 squash 
 
 ## 測試資料與環境
 
-- 正式資料目前只有 P1 framework 測試報告，無法單靠正式站涵蓋新聞、多頁列表或完整 GFM 情境。
-- 使用隔離測試資料庫或可拋棄的 Neon 測試分支建立兩類報告、超過一頁的資料、完整 GFM／sources fixtures；seed 與清理只允許明確指定的測試環境。
-- Production 僅做唯讀 smoke checks，不寫入或刪除正式資料。錯誤注入只在測試環境進行。
-- DB 整合與瀏覽器測試需明確配置測試連線；未配置時應清楚標示未執行，不能當作驗收通過。
-- CI 不輸出連線字串或憑證；純單元測試不需要 Production secrets。測試報告記錄環境、commit、通過範圍與限制。
+- Production 仍只作唯讀 smoke checks，不寫入或刪除正式資料。錯誤注入只在測試環境進行。
+- Neon 已建立 `phase3-testing` 隔離 branch，從 Production schema/data 分支後只新增 Phase 3 fixtures；目前包含 13 筆 `daily-news` 與 2 筆 `framework-recommendation`，可覆蓋兩頁 archive、兩分類、GFM、code fence、重複標題與 structured sources。
+- DB integration 使用 `TEST_DATABASE_URL`，並在測試內拒絕 `TEST_DATABASE_URL === DATABASE_URL`，避免誤連 Production。
+- Playwright 可使用 `TEST_DATABASE_URL` 啟動本機 Next.js，或以 `PLAYWRIGHT_BASE_URL` 指向明確 Preview；未提供任一來源時直接拒絕執行。
+- CI 不輸出連線字串或憑證；純單元測試不需要 Production secrets。`Quality` workflow 在未配置 `TEST_DATABASE_URL` 時只跑 frozen install、型別、單元與 build，DB/E2E steps 會 skip，不能當作 Phase 3 完成。
+- 測試報告記錄環境、commit、通過範圍與限制。
+
+## 已建立的測試範圍
+
+- Vitest：Taipei 午夜、閏日與非法日期、slug round-trip / invalid slug、分頁輸入、Markdown summary/reading time、duplicate heading IDs、fenced-code exclusion、source URL safety、ingest sources normalization、public report mapping。
+- DB integration：最新兩分類、13 筆新聞的兩頁分頁與順序、detail heading/source mapping、missing report。
+- Playwright：首頁、兩 archive、分頁、detail、404、來源安全屬性、桌面/手機 viewport、mobile menu、Escape focus restore、mobile TOC、theme persistence、clipboard success/fallback、skip-link 鍵盤焦點。
 
 ## 驗收條件
 
