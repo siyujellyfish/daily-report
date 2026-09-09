@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-09
+
+### Security verification
+
+- Redeployed Vercel Production after rotating `INGEST_SECRET` so the runtime loaded the updated environment variable.
+- Updated the Make HTTP Authorization header and confirmed the authenticated ingestion returned HTTP 200 with `duplicate: true` for the existing P1 test payload.
+- Confirmed Neon still contains exactly one row for that payload, so idempotency remained intact after credential rotation.
+- During diagnostic verification, Make execution detail exposed the Authorization header value to the tool output. Treat that credential as compromised and rotate it once more before enabling production Scheduled Tasks.
+- Future post-rotation verification must use only the high-level Scenario result and database row count; do not inspect module input/header data.
+
 ## 2026-09-08
 
 ### Initialization
