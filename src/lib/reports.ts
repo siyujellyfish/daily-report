@@ -5,7 +5,7 @@ import { cache } from "react";
 
 import { getDb } from "@/db";
 import { reports } from "@/db/schema";
-import { parseReportSlug, REPORT_PAGE_SIZE } from "./report-date";
+import { getReportSlug, parseReportSlug, REPORT_PAGE_SIZE } from "./report-date";
 import { presentReport, type PublicReport } from "./report-presenter";
 import type { ReportType } from "./report-types";
 
@@ -57,5 +57,5 @@ export const getReportBySlug = cache(async (slug: string) => {
 export async function getReportSitemapEntries() {
 	const rows = await getDb().select({ reportType: reports.reportType, reportDate: reports.reportDate })
 		.from(reports).orderBy(desc(reports.reportDate), reports.reportType);
-	return rows.map((row) => ({ slug: `${row.reportDate}-${row.reportType}` }));
+	return rows.map((row) => ({ slug: getReportSlug(row.reportDate, row.reportType) }));
 }
