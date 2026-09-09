@@ -7,15 +7,14 @@
 - Phase 0 — Initialization：完成。
 - Phase 1 — Ingestion：完成並已通過 Make → Vercel → Neon 端到端驗證。
 - Phase 2 — Public website：完成實作與 Preview 讀取驗證；透過 PR #7 以 squash 交付 main。
-- Phase 3 — Testing & quality：下一階段；實作範圍與驗收順序見 `phase-3-plan.md`。
+- Phase 3 — Testing & quality：進行中；Vitest / Playwright 測試基礎、第一批單元測試與隔離 Neon 測試 branch 已建立，DB integration 與瀏覽器驗收仍需安全測試連線後執行。
 - Phase 4 — Scheduled Tasks integration：待網站與資料顯示驗證完成後執行。
 - Phase 5 — Production hardening & launch：最後正式啟用前執行；最終 `INGEST_SECRET` 輪替延後至此階段。
 
 ## Documents
 
-- `phase-3-plan.md`：Phase 3 測試、品質、效能與驗收計畫（尚未實作）。
+- `phase-3-plan.md`：Phase 3 測試、品質、效能與驗收計畫，以及目前執行狀態。
 - `phase-2-design.md`：已核准的網站風格、頁面互動與正式資料呈現規格。
-
 - `architecture.md`：目前與目標系統架構、資料流、runtime boundary、頁面與資料讀取層。
 - `decisions.md`：已確定的技術與產品決策，以及後續實作約束。
 - `todo.md`：Phase 0–5 完整實作清單與驗收條件，作為主要進度來源。
