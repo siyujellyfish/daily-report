@@ -2,6 +2,20 @@
 
 ## 2026-09-09
 
+### Phase 3 — testing and quality started
+
+- Created implementation branch `phase3/testing-quality`; no Phase 3 code was written directly to `main`.
+- Rechecked official Vitest and Playwright documentation before adding dependencies. Adopted Vitest 5.0.0 and Playwright 1.63.0 with the existing Node 24 / pnpm 12.3.4 toolchain.
+- Extracted the public report presentation mapping into a pure `report-presenter` module so mapping and source filtering can be covered without a database.
+- Added persistent Vitest coverage for Taipei midnight/date validation, slug/page parsing, Markdown summary/headings/reading time, safe source URLs, ingest source normalization and public report mapping.
+- First GitHub Actions verification passed TypeScript, all 15 unit tests and the Next.js 16.3.4 production build. The initial temporary lockfile-sync run only failed its final push because the branch advanced concurrently; the next run synchronized the lockfile successfully.
+- Changed the Vitest config to `.mts` after the first run surfaced the future Vite native-config CommonJS warning.
+- Created Neon branch `phase3-testing` from Production for isolated testing. Production data was not modified. Added non-destructive fixtures only to the test branch: 13 `daily-news` rows and 2 `framework-recommendation` rows, including pagination, GFM, duplicate headings, code and structured-source cases.
+- Added guarded DB integration tests. They require `TEST_DATABASE_URL` and reject execution when it matches `DATABASE_URL`.
+- Added Playwright desktop/mobile critical-path tests for homepage, archives, pagination, detail, 404, source attributes, mobile menu, Escape focus restore, TOC, theme persistence, code-copy success/fallback and keyboard skip-link behavior.
+- Added `.env.example` test settings and a permanent `Quality` workflow. Frozen install, typecheck, unit tests and build always run; DB integration and Playwright only run when a secure `TEST_DATABASE_URL` repository secret exists. Skipped DB/E2E steps are not counted as Phase 3 acceptance.
+- Removed the one-time lockfile-sync workflow after the dependency lockfile was synchronized.
+
 ### Phase 2 delivery and Phase 3 handoff
 
 - User authorized documentation updates and squash merge of PR #7 into main.
@@ -55,9 +69,9 @@
 
 - Bootstrapped the repository and created the `init/project-foundation` branch.
 - Added Next.js 16, React 19, TypeScript, Tailwind CSS 4 and shadcn/ui project metadata.
-- Added Neon serverless + Drizzle ORM connection foundation.
+- Added Neon serverless + Drizzle connection foundation.
 - Added Vercel runtime environment variable template.
-- Initialized `/AI-build` project documentation.
+- Initialized `/AI-build` documentation.
 - Connected the GitHub repository to Vercel.
 - Provisioned the `daily-report` Neon project through the Vercel integration in Singapore.
 - Completed the first successful Vercel Preview deployment.
@@ -72,7 +86,7 @@
 - Added SHA-256 payload hashing and race-safe idempotent insertion.
 - Added duplicate retry handling and same-day/type conflict protection.
 - Validated the initial reports migration on a temporary Neon branch.
-- Applied the validated `reports` schema migration to the Neon production branch and removed the temporary migration branch.
+- Applied the validated `reports` schema migration to Neon production branch and removed the temporary migration branch.
 - Converted the Make POC scenario into `Daily Report - Publish to Vercel` with JSON serialization and an HTTP POST step.
 - Verified Make serializes populated sources correctly and observed that an empty sources input is emitted as `null`.
 - Updated the ingest schema to normalize `sources: null` or an omitted sources field to an empty array.
