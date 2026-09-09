@@ -1,0 +1,38 @@
+name: Quality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    env:
+      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.3.4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test:unit
+      - run: pnpm build
+        env:
+          DATABASE_URL: postgresql://invalid:invalid@localhost:5432/invalid
+      - name: Isolated DB integration tests
+        if: env.TEST_DATABASE_URL != ''
+        run: pnpm test:integration
+      - name: Install Playwright Chromium
+        if: env.TEST_DATABASE_URL != ''
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Playwright critical paths
+        if: env.TEST_DATABASE_URL != ''
+        run: pnpm test:e2e
