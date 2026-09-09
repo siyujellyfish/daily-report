@@ -6,12 +6,14 @@
 
 - Phase 0 — Initialization：完成。
 - Phase 1 — Ingestion：完成並已通過 Make → Vercel → Neon 端到端驗證。
-- Phase 2 — Public website：下一個實作階段。
+- Phase 2 — Public website：已完成程式實作與本機建置；PR / Preview 驗收進行中。
 - Phase 3 — Testing & quality：待 Phase 2 基本功能完成後執行。
 - Phase 4 — Scheduled Tasks integration：待網站與資料顯示驗證完成後執行。
 - Phase 5 — Production hardening & launch：最後正式啟用前執行；最終 `INGEST_SECRET` 輪替延後至此階段。
 
 ## Documents
+
+- `phase-2-design.md`：已核准的網站風格、頁面互動與正式資料呈現規格。
 
 - `architecture.md`：目前與目標系統架構、資料流、runtime boundary、頁面與資料讀取層。
 - `decisions.md`：已確定的技術與產品決策，以及後續實作約束。

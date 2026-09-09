@@ -91,3 +91,18 @@ Development is organized into the following lifecycle:
 - All merges into `main` use squash merge.
 - `/AI-build` is updated alongside functional changes so architecture, decisions, TODO state and changelog remain synchronized with the deployed system.
 - Package additions/upgrades require rechecking current official documentation and selecting the latest stable version compatible with the project before implementation.
+
+## 2026-09-09 — Approved Phase 2 implementation
+
+- Adopt the reviewed HTML demo's off-white/charcoal editorial design with blue news and teal framework categories.
+- Use only actual stored reports; do not seed or embed demo reports in Production.
+- Extract summaries, heading highlights and reading-time estimates locally from the saved Markdown AST; no AI API or additional generation step.
+- Include `remark-gfm` for tables, task lists, footnotes and strikethrough. Keep raw HTML disabled.
+- Use `next-themes` for system/light/dark preferences and shadcn Button, Card and Native Select for shared primitives.
+- The shadcn registry endpoint was unavailable from the CLI; equivalent source was retrieved from the official shadcn/ui GitHub repository, retaining MIT attribution in `THIRD_PARTY_NOTICES.md`.
+- Add a committed pnpm lockfile and explicit esbuild lifecycle approval for reproducible installs; preserve the declared pnpm 12.3.4 and Node 24 runtime.
+- Retain TypeScript 5.9 compatibility rather than introducing an unrelated major upgrade.
+- Render report pages on request, deduplicating only within the request. Do not mask unavailable database connections as empty data.
+- Add canonical, textual Open Graph/Twitter metadata, sitemap and robots now; do not generate a social image. Previews are noindex.
+- Preserve missing-report HTTP behavior by omitting a global loading boundary; add skeletons later only when observed latency justifies them.
+- Phase 2 is delivered via a feature PR and Preview. Main/Production promotion requires a subsequent merge action; any such merge must use squash.

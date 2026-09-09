@@ -2,6 +2,18 @@
 
 ## 2026-09-09
 
+### Phase 2 — approved design implementation
+
+- Implemented the approved editorial design, real-data homepage, both paginated archives and slug-addressed report pages.
+- Added centralized server-only query/presentation logic, shared Taipei dates and strict date/slug/page validation.
+- Added Markdown AST summaries, reading time, collision-free headings, desktop/mobile TOC, GFM rendering, code copy and source attribution.
+- Added theme persistence, responsive navigation, empty/error/404 states, canonical metadata, textual OG/Twitter metadata, sitemap and Preview noindex policy.
+- Added a dependency lockfile, explicit esbuild build policy and upstream shadcn source attribution.
+- Local TypeScript check and Next.js 16.3.4 production build passed.
+- One-time verification passed for Taipei midnight and leap-day boundaries, slug round-trips, invalid page inputs, duplicate headings, fenced code, summary extraction, GFM tables and unsafe HTML/URL handling.
+- Read-only Neon inspection found one existing `P1 End-to-End Test` framework report with no sources; no demo rows were inserted, and no production data was modified.
+- Preview build and runtime acceptance are pending at this checkpoint. Phase 3 browser and persistent test suites remain pending.
+
 ### Planning and documentation synchronization
 
 - Expanded `AI-build/todo.md` into the complete Phase 0–5 implementation plan with detailed work items and acceptance criteria.

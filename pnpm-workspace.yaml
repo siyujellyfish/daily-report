@@ -1,0 +1,2 @@
+# Required native binary verification for the existing build toolchain.
+allowBuilds: { esbuild: true }

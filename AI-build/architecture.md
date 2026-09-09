@@ -80,7 +80,7 @@ Other ingestion constraints:
 - Source URLs must remain structured data rather than ChatGPT UI citation serialization.
 - Business date boundaries use `Asia/Taipei`.
 
-## Phase 2 target — public read architecture
+## Phase 2 — implemented public read architecture
 
 Pages:
 
@@ -191,3 +191,15 @@ Before enabling recurring production delivery:
 - confirm Production deployment is READY and the public domain is reachable;
 - confirm both real report types can be ingested and rendered;
 - complete `/AI-build` records and final launch checklist.
+
+## Phase 2 implementation details (2026-09-09)
+
+- Central query layer: `src/lib/reports.ts` (`server-only`), with explicit public fields and request-scoped React cache.
+- Presentation helpers: `report-date.ts`, `report-types.ts`, `report-markdown.ts`; ingestion reuses the centralized Taipei date helper.
+- Markdown parser and renderer share one AST heading transform; no browser-side Markdown processor or public read API.
+- Client code is limited to navigation/theme and code-copy feedback. Report bodies and database reads remain server-rendered.
+- `next-themes` sets the `data-theme` attribute before hydration; only the HTML theme mismatch is suppressed.
+- UI uses the approved HTML demo's editorial tokens with shadcn Button, Card and Native Select primitives.
+- Metadata utilities live in `src/lib/site.ts`; robots and sitemap use the same canonical origin and Preview policy.
+- Existing ingestion contract, production database schema and Make Scenario are unchanged.
+- Detailed design: `phase-2-design.md`. Validation evidence is recorded in `changelog.md`.

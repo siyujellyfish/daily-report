@@ -89,59 +89,61 @@ This file is the primary implementation plan and progress source for Daily Repor
 
 ### 2.1 Data/read architecture
 
-- [ ] Create a dedicated server-side report query/repository module.
-- [ ] Implement `getLatestReports()` for homepage data.
-- [ ] Implement `getReportsByType()` for archive pages.
-- [ ] Implement archive pagination with deterministic ordering by report date / generated time.
-- [ ] Implement `getReportBySlug()` for detail routes.
-- [ ] Centralize database-record → presentation-model mapping.
-- [ ] Centralize Asia/Taipei date formatting and business-date handling.
-- [ ] Implement deterministic slug generator/parser using `report_date + report_type`.
-- [ ] Ensure missing/invalid slug lookups resolve safely to Next.js 404 behavior.
-- [ ] Review existing indexes against actual archive/detail query shapes.
+- [x] Create a dedicated server-side report query/repository module.
+- [x] Implement `getLatestReports()` for homepage data.
+- [x] Implement `getReportsByType()` for archive pages.
+- [x] Implement archive pagination with deterministic ordering by report date / generated time.
+- [x] Implement `getReportBySlug()` for detail routes.
+- [x] Centralize database-record → presentation-model mapping.
+- [x] Centralize Asia/Taipei date formatting and business-date handling.
+- [x] Implement deterministic slug generator/parser using `report_date + report_type`.
+- [x] Ensure missing/invalid slug lookups resolve safely to Next.js 404 behavior.
+- [x] Review existing indexes against actual archive/detail query shapes.
 
 ### 2.2 Markdown and sources
 
-- [ ] Add `react-markdown` using the latest compatible stable version after checking official docs.
-- [ ] Add `remark-gfm` if required for tables/task lists/strikethrough.
-- [ ] Do not add `rehype-raw`.
-- [ ] Build a reusable report Markdown renderer.
-- [ ] Style headings, paragraphs, lists, code, blockquotes, tables and links.
-- [ ] Render structured `sources` as a dedicated source-attribution section.
-- [ ] Handle empty source arrays gracefully.
-- [ ] Ensure external links use safe attributes where appropriate.
+- [x] Add `react-markdown` using the latest compatible stable version after checking official docs.
+- [x] Add `remark-gfm` if required for tables/task lists/strikethrough.
+- [x] Do not add `rehype-raw`.
+- [x] Build a reusable report Markdown renderer.
+- [x] Style headings, paragraphs, lists, code, blockquotes, tables and links.
+- [x] Render structured `sources` as a dedicated source-attribution section.
+- [x] Handle empty source arrays gracefully.
+- [x] Ensure external links use safe attributes where appropriate.
 
 ### 2.3 Public pages
 
-- [ ] Build `/` homepage.
-- [ ] Show latest `daily-news` report summary/card on homepage.
-- [ ] Show latest `framework-recommendation` report summary/card on homepage.
-- [ ] Add clear links to each archive and full report.
-- [ ] Build `/news` archive for `daily-news`.
-- [ ] Build `/frameworks` archive for `framework-recommendation`.
-- [ ] Build `/reports/[slug]` full report page.
-- [ ] Add empty state when a report type has no published data.
-- [ ] Add loading/skeleton behavior only where it materially improves UX.
-- [ ] Add consistent header/navigation/footer structure.
-- [ ] Add mobile navigation if required by final layout.
+- [x] Build `/` homepage.
+- [x] Show latest `daily-news` report summary/card on homepage.
+- [x] Show latest `framework-recommendation` report summary/card on homepage.
+- [x] Add clear links to each archive and full report.
+- [x] Build `/news` archive for `daily-news`.
+- [x] Build `/frameworks` archive for `framework-recommendation`.
+- [x] Build `/reports/[slug]` full report page.
+- [x] Add empty state when a report type has no published data.
+- [x] Add loading/skeleton behavior only where it materially improves UX.
+- [x] Add consistent header/navigation/footer structure.
+- [x] Add mobile navigation if required by final layout.
 
 ### 2.4 Visual and responsive implementation
 
-- [ ] Establish site typography, spacing and content-width system.
-- [ ] Use Tailwind CSS and a minimal shadcn/ui component set; avoid unnecessary component dependencies.
-- [ ] Ensure long Markdown/code/URLs do not break mobile layout.
-- [ ] Verify archive cards/lists at desktop, tablet and mobile widths.
-- [ ] Maintain readable long-form report line length.
-- [ ] Add basic hover/focus/active states.
+- [x] Establish site typography, spacing and content-width system.
+- [x] Use Tailwind CSS and a minimal shadcn/ui component set; avoid unnecessary component dependencies.
+- [x] Ensure long Markdown/code/URLs do not break mobile layout.
+- [x] Verify archive cards/lists at desktop, tablet and mobile widths.
+- [x] Maintain readable long-form report line length.
+- [x] Add basic hover/focus/active states.
 
 ### 2.5 Metadata and discoverability
 
-- [ ] Add site-level Next.js metadata.
-- [ ] Add per-report title/description metadata.
-- [ ] Add archive metadata for `/news` and `/frameworks`.
-- [ ] Add canonical URLs when Production domain is finalized.
-- [ ] Decide and add Open Graph metadata where useful.
-- [ ] Decide whether sitemap/robots generation is required for launch and implement if appropriate.
+- [x] Add site-level Next.js metadata.
+- [x] Add per-report title/description metadata.
+- [x] Add archive metadata for `/news` and `/frameworks`.
+- [x] Add canonical URLs when Production domain is finalized.
+- [x] Decide and add Open Graph metadata where useful.
+- [x] Decide whether sitemap/robots generation is required for launch and implement if appropriate.
+
+Implementation is complete locally. Preview/runtime acceptance is in progress; evidence and limits are recorded in `changelog.md`. The skeleton item is resolved by an explicit decision to omit a global loading boundary, documented in `phase-2-design.md`.
 
 ### Phase 2 acceptance
 
@@ -149,8 +151,8 @@ This file is the primary implementation plan and progress source for Daily Repor
 - [ ] Both archive routes render correct filtered report lists.
 - [ ] Detail route renders complete saved Markdown and structured sources.
 - [ ] Invalid report slug returns 404.
-- [ ] Website remains read-only from the browser.
-- [ ] No raw stored HTML execution is enabled.
+- [x] Website remains read-only from the browser.
+- [x] No raw stored HTML execution is enabled.
 - [ ] Vercel Preview build succeeds.
 
 ---
