@@ -89,73 +89,77 @@ This file is the primary implementation plan and progress source for Daily Repor
 
 ### 2.1 Data/read architecture
 
-- [ ] Create a dedicated server-side report query/repository module.
-- [ ] Implement `getLatestReports()` for homepage data.
-- [ ] Implement `getReportsByType()` for archive pages.
-- [ ] Implement archive pagination with deterministic ordering by report date / generated time.
-- [ ] Implement `getReportBySlug()` for detail routes.
-- [ ] Centralize database-record → presentation-model mapping.
-- [ ] Centralize Asia/Taipei date formatting and business-date handling.
-- [ ] Implement deterministic slug generator/parser using `report_date + report_type`.
-- [ ] Ensure missing/invalid slug lookups resolve safely to Next.js 404 behavior.
-- [ ] Review existing indexes against actual archive/detail query shapes.
+- [x] Create a dedicated server-side report query/repository module.
+- [x] Implement `getLatestReports()` for homepage data.
+- [x] Implement `getReportsByType()` for archive pages.
+- [x] Implement archive pagination with deterministic ordering by report date / generated time.
+- [x] Implement `getReportBySlug()` for detail routes.
+- [x] Centralize database-record → presentation-model mapping.
+- [x] Centralize Asia/Taipei date formatting and business-date handling.
+- [x] Implement deterministic slug generator/parser using `report_date + report_type`.
+- [x] Ensure missing/invalid slug lookups resolve safely to Next.js 404 behavior.
+- [x] Review existing indexes against actual archive/detail query shapes.
 
 ### 2.2 Markdown and sources
 
-- [ ] Add `react-markdown` using the latest compatible stable version after checking official docs.
-- [ ] Add `remark-gfm` if required for tables/task lists/strikethrough.
-- [ ] Do not add `rehype-raw`.
-- [ ] Build a reusable report Markdown renderer.
-- [ ] Style headings, paragraphs, lists, code, blockquotes, tables and links.
-- [ ] Render structured `sources` as a dedicated source-attribution section.
-- [ ] Handle empty source arrays gracefully.
-- [ ] Ensure external links use safe attributes where appropriate.
+- [x] Add `react-markdown` using the latest compatible stable version after checking official docs.
+- [x] Add `remark-gfm` if required for tables/task lists/strikethrough.
+- [x] Do not add `rehype-raw`.
+- [x] Build a reusable report Markdown renderer.
+- [x] Style headings, paragraphs, lists, code, blockquotes, tables and links.
+- [x] Render structured `sources` as a dedicated source-attribution section.
+- [x] Handle empty source arrays gracefully.
+- [x] Ensure external links use safe attributes where appropriate.
 
 ### 2.3 Public pages
 
-- [ ] Build `/` homepage.
-- [ ] Show latest `daily-news` report summary/card on homepage.
-- [ ] Show latest `framework-recommendation` report summary/card on homepage.
-- [ ] Add clear links to each archive and full report.
-- [ ] Build `/news` archive for `daily-news`.
-- [ ] Build `/frameworks` archive for `framework-recommendation`.
-- [ ] Build `/reports/[slug]` full report page.
-- [ ] Add empty state when a report type has no published data.
-- [ ] Add loading/skeleton behavior only where it materially improves UX.
-- [ ] Add consistent header/navigation/footer structure.
-- [ ] Add mobile navigation if required by final layout.
+- [x] Build `/` homepage.
+- [x] Show latest `daily-news` report summary/card on homepage.
+- [x] Show latest `framework-recommendation` report summary/card on homepage.
+- [x] Add clear links to each archive and full report.
+- [x] Build `/news` archive for `daily-news`.
+- [x] Build `/frameworks` archive for `framework-recommendation`.
+- [x] Build `/reports/[slug]` full report page.
+- [x] Add empty state when a report type has no published data.
+- [x] Add loading/skeleton behavior only where it materially improves UX.
+- [x] Add consistent header/navigation/footer structure.
+- [x] Add mobile navigation if required by final layout.
 
 ### 2.4 Visual and responsive implementation
 
-- [ ] Establish site typography, spacing and content-width system.
-- [ ] Use Tailwind CSS and a minimal shadcn/ui component set; avoid unnecessary component dependencies.
-- [ ] Ensure long Markdown/code/URLs do not break mobile layout.
-- [ ] Verify archive cards/lists at desktop, tablet and mobile widths.
-- [ ] Maintain readable long-form report line length.
-- [ ] Add basic hover/focus/active states.
+- [x] Establish site typography, spacing and content-width system.
+- [x] Use Tailwind CSS and a minimal shadcn/ui component set; avoid unnecessary component dependencies.
+- [x] Ensure long Markdown/code/URLs do not break mobile layout.
+- [x] Verify archive cards/lists at desktop, tablet and mobile widths.
+- [x] Maintain readable long-form report line length.
+- [x] Add basic hover/focus/active states.
 
 ### 2.5 Metadata and discoverability
 
-- [ ] Add site-level Next.js metadata.
-- [ ] Add per-report title/description metadata.
-- [ ] Add archive metadata for `/news` and `/frameworks`.
-- [ ] Add canonical URLs when Production domain is finalized.
-- [ ] Decide and add Open Graph metadata where useful.
-- [ ] Decide whether sitemap/robots generation is required for launch and implement if appropriate.
+- [x] Add site-level Next.js metadata.
+- [x] Add per-report title/description metadata.
+- [x] Add archive metadata for `/news` and `/frameworks`.
+- [x] Add canonical URLs when Production domain is finalized.
+- [x] Decide and add Open Graph metadata where useful.
+- [x] Decide whether sitemap/robots generation is required for launch and implement if appropriate.
+
+Implementation and Preview/runtime acceptance are complete (PR #7). The current database contains one framework test report and no news rows: live checks verified the real report plus category empty states; populated GFM/source behavior was also checked with a local server-renderer fixture. Real daily content validation remains Phase 4. Evidence and limits are recorded in `changelog.md`. The skeleton item is resolved by an explicit decision to omit a global loading boundary, documented in `phase-2-design.md`.
 
 ### Phase 2 acceptance
 
-- [ ] Homepage renders both report categories from Neon.
-- [ ] Both archive routes render correct filtered report lists.
-- [ ] Detail route renders complete saved Markdown and structured sources.
-- [ ] Invalid report slug returns 404.
-- [ ] Website remains read-only from the browser.
-- [ ] No raw stored HTML execution is enabled.
-- [ ] Vercel Preview build succeeds.
+- [x] Homepage renders both report categories from Neon.
+- [x] Both archive routes render correct filtered report lists.
+- [x] Detail route renders complete saved Markdown and structured sources.
+- [x] Invalid report slug returns 404.
+- [x] Website remains read-only from the browser.
+- [x] No raw stored HTML execution is enabled.
+- [x] Vercel Preview build succeeds.
 
 ---
 
 ## Phase 3 — Testing, quality and performance
+
+Implementation sequence and isolated test-data policy: `phase-3-plan.md`. All Phase 3 work below remains pending.
 
 ### 3.1 Unit tests with Vitest
 
@@ -167,6 +171,8 @@ This file is the primary implementation plan and progress source for Daily Repor
 - [ ] Add source normalization tests.
 - [ ] Add pure query-helper tests where practical.
 - [ ] Keep DB integration concerns separate from pure logic tests.
+- [ ] Cover Markdown summaries, heading anchors and unsafe URLs.
+- [ ] Verify read queries against isolated fixtures without modifying Production.
 
 ### 3.2 End-to-end tests with Playwright
 
@@ -179,6 +185,8 @@ This file is the primary implementation plan and progress source for Daily Repor
 - [ ] Test critical navigation flow.
 - [ ] Test one representative mobile viewport.
 - [ ] Test external source links render correctly.
+- [ ] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback.
+- [ ] Test empty/error states in an isolated environment.
 
 ### 3.3 Accessibility and content quality
 
@@ -197,9 +205,16 @@ This file is the primary implementation plan and progress source for Daily Repor
 - [ ] Check generated page/deployment size for avoidable client-side JavaScript.
 - [ ] Confirm public pages do not expose server environment variables.
 
+### 3.5 Repeatable verification
+
+- [ ] Add documented test commands and CI checks with isolated test configuration.
+- [ ] Record the verified commit, environment, results and remaining limitations.
+
 ### Phase 3 acceptance
 
+- [ ] TypeScript and production build pass.
 - [ ] Vitest suite passes.
+- [ ] Isolated database read integration checks pass.
 - [ ] Playwright critical-path suite passes.
 - [ ] Vercel Preview succeeds without blocking errors.
 - [ ] No critical accessibility or mobile-layout issue remains.

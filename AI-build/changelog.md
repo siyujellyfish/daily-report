@@ -2,6 +2,32 @@
 
 ## 2026-09-09
 
+### Phase 2 delivery and Phase 3 handoff
+
+- User authorized documentation updates and squash merge of PR #7 into main.
+- Final implementation commit `82b5bef` completed Vercel Preview deployment with READY status; homepage HTTP check passed with the existing report.
+- Updated the phase status and added `phase-3-plan.md` covering persistent tests, isolated fixtures, browser interactions, accessibility, performance and repeatable verification.
+- Expanded Phase 3 TODOs to match the plan; these checks remain pending. Main deployment status is verified after the merge, not inferred from Preview.
+
+### Phase 2 — approved design implementation
+
+- Implemented the approved editorial design, real-data homepage, both paginated archives and slug-addressed report pages.
+- Added centralized server-only query/presentation logic, shared Taipei dates and strict date/slug/page validation.
+- Added Markdown AST summaries, reading time, collision-free headings, desktop/mobile TOC, GFM rendering, code copy and source attribution.
+- Added theme persistence, responsive navigation, empty/error/404 states, canonical metadata, textual OG/Twitter metadata, sitemap and Preview noindex policy.
+- Added a dependency lockfile, explicit esbuild build policy and upstream shadcn source attribution.
+- Local TypeScript check and Next.js 16.3.4 production build passed.
+- One-time verification passed for Taipei midnight and leap-day boundaries, slug round-trips, invalid page inputs, duplicate headings, fenced code, summary extraction, GFM tables and unsafe HTML/URL handling.
+- Read-only Neon inspection found one existing `P1 End-to-End Test` framework report with no sources; no demo rows were inserted, and no production data was modified.
+- pnpm 12.3.4 frozen-lockfile installation and production build passed, matching the repository package-manager declaration.
+- Vercel Preview for implementation commit `b22e119` completed successfully. HTTP checks returned 200 for `/`, `/news`, `/frameworks` and the stored framework detail; news correctly displays its empty state and the detail preserves the stored Markdown with an empty-source message.
+- HTTP checks returned 404 for an invalid calendar date, an absent valid report slug, a non-numeric page and an out-of-range archive page.
+- Preview robots disallows all crawlers, page metadata is noindex, and sitemap responds successfully without exposing a preview index.
+- The actual report renderer also passed a local server-rendered fixture covering code-copy controls, GFM tables, stable heading anchors, external-link attributes, skipped HTML and image-link behavior.
+- Added long-title/URL wrapping, minimum action height and a narrow-phone navigation adjustment after static responsive review.
+- PR: https://github.com/siyujellyfish/daily-report/pull/7. The final docs/style follow-up is built by the same Preview pipeline; final deployment status is checked before handoff.
+- Phase 3 browser/mobile/accessibility interaction tests and persistent Vitest/Playwright suites remain pending. No browser interaction test is claimed in Phase 2.
+
 ### Planning and documentation synchronization
 
 - Expanded `AI-build/todo.md` into the complete Phase 0–5 implementation plan with detailed work items and acceptance criteria.
