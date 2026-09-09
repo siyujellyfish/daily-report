@@ -2,6 +2,13 @@
 
 ## 2026-09-09
 
+### Phase 2 delivery and Phase 3 handoff
+
+- User authorized documentation updates and squash merge of PR #7 into main.
+- Final implementation commit `82b5bef` completed Vercel Preview deployment with READY status; homepage HTTP check passed with the existing report.
+- Updated the phase status and added `phase-3-plan.md` covering persistent tests, isolated fixtures, browser interactions, accessibility, performance and repeatable verification.
+- Expanded Phase 3 TODOs to match the plan; these checks remain pending. Main deployment status is verified after the merge, not inferred from Preview.
+
 ### Phase 2 — approved design implementation
 
 - Implemented the approved editorial design, real-data homepage, both paginated archives and slug-addressed report pages.

@@ -159,6 +159,8 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 
 ## Phase 3 — Testing, quality and performance
 
+Implementation sequence and isolated test-data policy: `phase-3-plan.md`. All Phase 3 work below remains pending.
+
 ### 3.1 Unit tests with Vitest
 
 - [ ] Recheck current Vitest official docs/version before implementation.
@@ -169,6 +171,8 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 - [ ] Add source normalization tests.
 - [ ] Add pure query-helper tests where practical.
 - [ ] Keep DB integration concerns separate from pure logic tests.
+- [ ] Cover Markdown summaries, heading anchors and unsafe URLs.
+- [ ] Verify read queries against isolated fixtures without modifying Production.
 
 ### 3.2 End-to-end tests with Playwright
 
@@ -181,6 +185,8 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 - [ ] Test critical navigation flow.
 - [ ] Test one representative mobile viewport.
 - [ ] Test external source links render correctly.
+- [ ] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback.
+- [ ] Test empty/error states in an isolated environment.
 
 ### 3.3 Accessibility and content quality
 
@@ -199,9 +205,16 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 - [ ] Check generated page/deployment size for avoidable client-side JavaScript.
 - [ ] Confirm public pages do not expose server environment variables.
 
+### 3.5 Repeatable verification
+
+- [ ] Add documented test commands and CI checks with isolated test configuration.
+- [ ] Record the verified commit, environment, results and remaining limitations.
+
 ### Phase 3 acceptance
 
+- [ ] TypeScript and production build pass.
 - [ ] Vitest suite passes.
+- [ ] Isolated database read integration checks pass.
 - [ ] Playwright critical-path suite passes.
 - [ ] Vercel Preview succeeds without blocking errors.
 - [ ] No critical accessibility or mobile-layout issue remains.
