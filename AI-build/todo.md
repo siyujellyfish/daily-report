@@ -32,10 +32,14 @@
 
 ## Pre-live hardening
 
-- [x] Rotate the setup/test `INGEST_SECRET` before enabling the real ChatGPT Scheduled Tasks.
-- [x] Update the Make HTTP Authorization header to the rotated secret.
-- [ ] Redeploy Vercel Production so the rotated environment variable is loaded by the runtime.
-- [ ] Re-run one authenticated ingestion after secret rotation.
+- [x] Rotate the original setup/test `INGEST_SECRET` in Vercel and Make.
+- [x] Redeploy Vercel Production so the rotated environment variable is loaded by the runtime.
+- [x] Verify the rotated credential with an authenticated duplicate ingestion (`HTTP 200`, `duplicate: true`).
+- [x] Confirm Neon still contains exactly one row for the duplicate test payload.
+- [ ] Rotate `INGEST_SECRET` once more because the diagnostic execution detail exposed the Authorization header value during verification.
+- [ ] Update both Vercel Production and the Make HTTP Authorization header with that final secret.
+- [ ] Redeploy Vercel Production after the final rotation.
+- [ ] Re-run only the high-level Make Scenario test after the final rotation; do not inspect module input/header data.
 
 ## Phase 2 — Public website
 
