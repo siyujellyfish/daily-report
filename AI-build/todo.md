@@ -159,66 +159,66 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 
 ## Phase 3 — Testing, quality and performance
 
-Implementation sequence and isolated test-data policy: `phase-3-plan.md`. All Phase 3 work below remains pending.
+Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Phase 3 is in progress. Items are checked only after implementation and, where applicable, successful execution; DB integration and Playwright test files already exist but remain unchecked until they run against an explicitly isolated environment.
 
 ### 3.1 Unit tests with Vitest
 
-- [ ] Recheck current Vitest official docs/version before implementation.
-- [ ] Add slug generation tests.
-- [ ] Add slug parsing/invalid-input tests.
-- [ ] Add Asia/Taipei date-boundary tests.
-- [ ] Add report mapper/normalization tests.
-- [ ] Add source normalization tests.
+- [x] Recheck current Vitest official docs/version before implementation.
+- [x] Add slug generation tests.
+- [x] Add slug parsing/invalid-input tests.
+- [x] Add Asia/Taipei date-boundary tests.
+- [x] Add report mapper/normalization tests.
+- [x] Add source normalization tests.
 - [ ] Add pure query-helper tests where practical.
-- [ ] Keep DB integration concerns separate from pure logic tests.
-- [ ] Cover Markdown summaries, heading anchors and unsafe URLs.
+- [x] Keep DB integration concerns separate from pure logic tests.
+- [x] Cover Markdown summaries, heading anchors and unsafe URLs.
 - [ ] Verify read queries against isolated fixtures without modifying Production.
 
 ### 3.2 End-to-end tests with Playwright
 
-- [ ] Recheck current Playwright official docs/version before implementation.
-- [ ] Test homepage loading and latest-report links.
-- [ ] Test `/news` archive.
-- [ ] Test `/frameworks` archive.
-- [ ] Test report-detail rendering.
-- [ ] Test report 404 behavior.
-- [ ] Test critical navigation flow.
-- [ ] Test one representative mobile viewport.
-- [ ] Test external source links render correctly.
-- [ ] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback.
+- [x] Recheck current Playwright official docs/version before implementation.
+- [ ] Test homepage loading and latest-report links. Test case implemented; isolated browser execution pending.
+- [ ] Test `/news` archive. Test case implemented; isolated browser execution pending.
+- [ ] Test `/frameworks` archive. Test case implemented; isolated browser execution pending.
+- [ ] Test report-detail rendering. Test case implemented; isolated browser execution pending.
+- [ ] Test report 404 behavior. Test case implemented; isolated browser execution pending.
+- [ ] Test critical navigation flow. Test case implemented; isolated browser execution pending.
+- [ ] Test one representative mobile viewport. Pixel 7 project configured; execution pending.
+- [ ] Test external source links render correctly. Test case implemented; isolated browser execution pending.
+- [ ] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback. Test cases implemented; isolated browser execution pending.
 - [ ] Test empty/error states in an isolated environment.
 
 ### 3.3 Accessibility and content quality
 
 - [ ] Verify semantic heading hierarchy.
-- [ ] Verify keyboard navigation and visible focus states.
+- [ ] Verify keyboard navigation and visible focus states. Skip-link and Escape/focus test cases implemented; browser execution pending.
 - [ ] Verify link labels are meaningful.
 - [ ] Verify sufficient basic color contrast.
-- [ ] Verify Markdown tables/code blocks remain usable on narrow screens.
+- [ ] Verify Markdown tables/code blocks remain usable on narrow screens. Test coverage implemented; browser execution pending.
 - [ ] Verify empty-state and error-state copy.
 
 ### 3.4 Performance and database checks
 
 - [ ] Confirm Server Component queries do not create unnecessary client requests.
 - [ ] Inspect actual query plans/index usage only if observed behavior warrants it.
-- [ ] Avoid adding Redis/cache infrastructure without a demonstrated need.
+- [x] Avoid adding Redis/cache infrastructure without a demonstrated need.
 - [ ] Check generated page/deployment size for avoidable client-side JavaScript.
-- [ ] Confirm public pages do not expose server environment variables.
+- [x] Confirm Phase 3 test design does not add a new public write API or expose test credentials in code/configuration.
 
 ### 3.5 Repeatable verification
 
-- [ ] Add documented test commands and CI checks with isolated test configuration.
-- [ ] Record the verified commit, environment, results and remaining limitations.
+- [x] Add documented test commands and CI checks with isolated test configuration.
+- [ ] Record the verified commit, environment, results and remaining limitations at Phase 3 acceptance.
 
 ### Phase 3 acceptance
 
-- [ ] TypeScript and production build pass.
-- [ ] Vitest suite passes.
+- [x] TypeScript and production build pass for the current Phase 3 branch.
+- [x] Vitest suite passes (15 tests in 4 files at the current checkpoint).
 - [ ] Isolated database read integration checks pass.
 - [ ] Playwright critical-path suite passes.
 - [ ] Vercel Preview succeeds without blocking errors.
 - [ ] No critical accessibility or mobile-layout issue remains.
-- [ ] Public read path does not expose credentials or unnecessary API surfaces.
+- [x] Current Phase 3 implementation adds no public credentials or unnecessary write API surface.
 
 ---
 
