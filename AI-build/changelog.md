@@ -2,6 +2,19 @@
 
 ## 2026-09-09
 
+### Planning and documentation synchronization
+
+- Expanded `AI-build/todo.md` into the complete Phase 0–5 implementation plan with detailed work items and acceptance criteria.
+- Defined Phase 2 as the public website and server-side read/query layer, including homepage, archives, report detail, Markdown rendering, source attribution, responsive UI and metadata.
+- Defined Phase 3 as Vitest/Playwright coverage, accessibility, quality and performance verification.
+- Defined Phase 4 as integration of the real `每日資訊新聞` and `每日框架工具推薦` ChatGPT Scheduled Tasks through the existing Make Scenario.
+- Defined Phase 5 as final credential rotation, production hardening, unattended Scheduled Task activation and launch closure.
+- Deferred the final `INGEST_SECRET` rotation until Phase 5 immediately before recurring production use, while retaining the requirement that the currently exposed development credential must not become the final production credential.
+- Expanded `architecture.md` with the target public-page architecture, centralized query layer, Markdown rendering boundary, testing boundary and production payload flow.
+- Expanded `decisions.md` with the agreed phase model, Server Component/read-layer strategy, Markdown safety policy, test strategy, Scheduled Task mapping and final secret-rotation procedure.
+- Expanded `README.md` into the `/AI-build` index, current-status summary and working rules.
+- Kept post-launch features such as search, RSS, Redis/cache, CMS and source-level analytics outside the launch-critical path until justified by real requirements.
+
 ### Security verification
 
 - Redeployed Vercel Production after rotating `INGEST_SECRET` so the runtime loaded the updated environment variable.
