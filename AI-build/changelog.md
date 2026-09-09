@@ -2,6 +2,19 @@
 
 ## 2026-09-09
 
+### Phase 3 — secure DB and browser verification
+
+- User configured GitHub Actions Repository Secret `TEST_DATABASE_URL` for the isolated Neon `phase3-testing` branch; no secret value was copied into chat, Git or documentation.
+- Triggered the full `Quality` workflow with DB/E2E steps enabled. Frozen install, TypeScript, 15 Vitest unit tests and the Next.js production build continued to pass.
+- The first DB integration run connected successfully and passed 3/4 checks. The remaining detail-rendering check exposed that the two 2026-09-09 test fixtures stored Markdown newlines as literal `\n` sequences.
+- After explicit user authorization, modified only the Neon `phase3-testing` fixture rows to replace literal `\n` with real newlines. Verified the literal sequences were removed; Production data was not modified.
+- Re-ran DB integration after the fixture correction: all 4 tests passed, covering latest reports, deterministic two-page news pagination, detail heading/source mapping and missing-report behavior.
+- The first real Playwright run produced 17 passed / 3 conditional skips / 4 failed. All four failures were the same test-selector ambiguity: archive title selectors also matched the separate `閱讀：標題` arrow link through fuzzy accessible-name matching.
+- Tightened only the Playwright archive selectors with `exact: true`; product UI/runtime behavior was unchanged. Commit: `5143e5e2458a2450b663bd2fd8a0d3d123b4e171`.
+- GitHub Actions Quality run `34327164875` then completed successfully: 15 unit tests, 4 DB integration tests, production build and Playwright critical paths all passed. Playwright final result: 21 passed / 3 viewport-conditional skips / 0 failed.
+- The matching Vercel Preview deployment `dpl_4JzY27ewXd9yirsnaDFnsrh8mosu` for commit `5143e5e` reached READY. PR #8 remains Draft and unmerged while accessibility/content-quality/performance review continues.
+- CI surfaced non-blocking follow-up warnings for Next.js smooth-scroll metadata, React script rendering during browser tests, and the Node runtime target of `pnpm/action-setup@v4`; these are not treated as Phase 3 failures and require separate review before any implementation change.
+
 ### Phase 3 — testing and quality started
 
 - Created implementation branch `phase3/testing-quality`; no Phase 3 code was written directly to `main`.
