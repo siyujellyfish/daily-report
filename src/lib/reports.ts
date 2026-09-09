@@ -5,8 +5,8 @@ import { cache } from "react";
 
 import { getDb } from "@/db";
 import { reports } from "@/db/schema";
-import { getReportSlug, parseReportSlug, REPORT_PAGE_SIZE } from "./report-date";
-import { analyzeReportMarkdown, safeSourceUrl } from "./report-markdown";
+import { parseReportSlug, REPORT_PAGE_SIZE } from "./report-date";
+import { presentReport, type PublicReport } from "./report-presenter";
 import type { ReportType } from "./report-types";
 
 // Explicit public projection: never send hashes, ingest metadata, or secrets to pages.
@@ -19,29 +19,7 @@ const publicColumns = {
 	generatedAt: reports.generatedAt,
 };
 
-type ReportRecord = {
-	reportType: ReportType;
-	reportDate: string;
-	title: string;
-	contentMarkdown: string;
-	sources: { title: string; url: string }[];
-	generatedAt: Date;
-};
-
-function presentReport(record: ReportRecord) {
-	return {
-		...record,
-		generatedAt: record.generatedAt.toISOString(),
-		slug: getReportSlug(record.reportDate, record.reportType),
-		...analyzeReportMarkdown(record.contentMarkdown, record.title),
-		sources: record.sources.flatMap((source) => {
-			const url = safeSourceUrl(source.url);
-			return url ? [{ title: source.title, url, hostname: new URL(url).hostname }] : [];
-		}),
-	};
-}
-
-export type PublicReport = ReturnType<typeof presentReport>;
+export type { PublicReport };
 
 export const getLatestReports = cache(async () => {
 	const rows = await getDb().selectDistinctOn([reports.reportType], publicColumns)
@@ -79,5 +57,5 @@ export const getReportBySlug = cache(async (slug: string) => {
 export async function getReportSitemapEntries() {
 	const rows = await getDb().select({ reportType: reports.reportType, reportDate: reports.reportDate })
 		.from(reports).orderBy(desc(reports.reportDate), reports.reportType);
-	return rows.map((row) => ({ slug: getReportSlug(row.reportDate, row.reportType) }));
+	return rows.map((row) => ({ slug: `${row.reportDate}-${row.reportType}` }));
 }
