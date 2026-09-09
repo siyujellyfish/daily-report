@@ -4,7 +4,7 @@
 
 Phase 2 已完成公開網站與 Preview 讀取驗證，透過 PR #7 以 squash 交付 main。Phase 3 已於 2026-09-09 開始實作；目標是建立可重複執行的測試，驗證已採用設計的完整閱讀流程，並修復驗證發現的問題。`todo.md` 仍是完成狀態的主要來源。
 
-目前已完成測試工具選型與第一批基礎：Vitest 5.0.0、Playwright 1.63.0 均依官方文件確認與 Node 24 相容；已建立純 presentation mapper、15 個核心單元測試、Playwright 關鍵流程測試檔、正式 Quality workflow，以及 Neon `phase3-testing` 隔離 branch。單元測試、TypeScript 與 production build 已於 GitHub Actions 通過。DB integration 與 Playwright 實際執行仍需安全配置 `TEST_DATABASE_URL`，未配置時不得視為驗收通過。
+目前測試基礎與核心自動化驗證已完成：Vitest 5.0.0、Playwright 1.63.0 均依官方文件確認與 Node 24 相容；GitHub Repository Secret `TEST_DATABASE_URL` 已安全指向 Neon `phase3-testing` 隔離 branch。對 commit `5143e5e2458a2450b663bd2fd8a0d3d123b4e171` 的 Quality run `34327164875` 已通過 frozen install、TypeScript、15 個 unit tests、production build、4 個 DB integration tests 與 Playwright critical paths；Playwright 結果為 21 passed、3 個依 viewport 條件正常 skipped、0 failed。相同 commit 的 Vercel Preview `dpl_4JzY27ewXd9yirsnaDFnsrh8mosu` 為 READY。剩餘工作集中在 accessibility / content quality / performance review 與最終驗收整理。
 
 ## 預計實作順序
 
@@ -19,16 +19,18 @@ Phase 2 已完成公開網站與 Preview 讀取驗證，透過 PR #7 以 squash 
 
 - Production 仍只作唯讀 smoke checks，不寫入或刪除正式資料。錯誤注入只在測試環境進行。
 - Neon 已建立 `phase3-testing` 隔離 branch，從 Production schema/data 分支後只新增 Phase 3 fixtures；目前包含 13 筆 `daily-news` 與 2 筆 `framework-recommendation`，可覆蓋兩頁 archive、兩分類、GFM、code fence、重複標題與 structured sources。
+- 首次真實 DB integration 執行發現 2026-09-09 兩筆 fixture 的 Markdown 換行被存為字面 `\n`。經使用者授權後，只在 `phase3-testing` 精確修正為真正換行；Production 未修改。修正後 DB integration 4/4 通過。
 - DB integration 使用 `TEST_DATABASE_URL`，並在測試內拒絕 `TEST_DATABASE_URL === DATABASE_URL`，避免誤連 Production。
 - Playwright 可使用 `TEST_DATABASE_URL` 啟動本機 Next.js，或以 `PLAYWRIGHT_BASE_URL` 指向明確 Preview；未提供任一來源時直接拒絕執行。
+- 首次 Playwright 真實執行為 17 passed / 3 skipped / 4 failed；4 個 failure 全部源自 archive title selector 同時模糊命中標題連結與 `閱讀：標題` arrow link。將測試 selector 改為 `exact: true` 後，不改產品行為，最終為 21 passed / 3 skipped / 0 failed。
 - CI 不輸出連線字串或憑證；純單元測試不需要 Production secrets。`Quality` workflow 在未配置 `TEST_DATABASE_URL` 時只跑 frozen install、型別、單元與 build，DB/E2E steps 會 skip，不能當作 Phase 3 完成。
 - 測試報告記錄環境、commit、通過範圍與限制。
 
-## 已建立的測試範圍
+## 已建立並執行的測試範圍
 
 - Vitest：Taipei 午夜、閏日與非法日期、slug round-trip / invalid slug、分頁輸入、Markdown summary/reading time、duplicate heading IDs、fenced-code exclusion、source URL safety、ingest sources normalization、public report mapping。
-- DB integration：最新兩分類、13 筆新聞的兩頁分頁與順序、detail heading/source mapping、missing report。
-- Playwright：首頁、兩 archive、分頁、detail、404、來源安全屬性、桌面/手機 viewport、mobile menu、Escape focus restore、mobile TOC、theme persistence、clipboard success/fallback、skip-link 鍵盤焦點。
+- DB integration：最新兩分類、13 筆新聞的兩頁分頁與順序、detail heading/source mapping、missing report；4/4 通過。
+- Playwright：首頁、兩 archive、分頁、detail、404、來源安全屬性、桌面/手機 viewport、mobile menu、Escape focus restore、mobile TOC、theme persistence、clipboard success/fallback、skip-link 鍵盤焦點；最終 21 passed、3 conditional skips、0 failed。
 
 ## 驗收條件
 
