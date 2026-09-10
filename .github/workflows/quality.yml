@@ -38,3 +38,6 @@ jobs:
       - name: Playwright read-error state
         if: env.TEST_DATABASE_URL != ''
         run: pnpm test:e2e:error
+      - name: Production client JavaScript budget
+        if: env.TEST_DATABASE_URL != ''
+        run: pnpm test:e2e:performance
