@@ -159,7 +159,7 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 
 ## Phase 3 — Testing, quality and performance
 
-Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Core automated verification is complete against Neon `phase3-testing`: the current verified code commit passed TypeScript/build, 15 unit tests, 4 DB integration tests and Playwright critical paths (21 passed / 3 conditional skips / 0 failed), and its Vercel Preview is READY. Accessibility/content-quality/performance review remains in progress; Phase 3 is not yet complete.
+Phase 3 implementation and acceptance are complete. Verified implementation checkpoint: `00bd49ee022e03ad88a117267058466455fcad7a`; Quality run `34422203392` passed frozen install, TypeScript, 17 unit tests, production build, 4 isolated DB integration tests, Playwright main suite (29 passed / 5 conditional skips / 0 failed), isolated read-error test (1/1), and production client-JS budget (1/1). Matching Vercel Preview `dpl_3yqr4rGMSkLtEXazdVso6JaAvEew` is READY. Production data was not modified by Phase 3 tests.
 
 ### 3.1 Unit tests with Vitest
 
@@ -169,10 +169,11 @@ Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Core a
 - [x] Add Asia/Taipei date-boundary tests.
 - [x] Add report mapper/normalization tests.
 - [x] Add source normalization tests.
-- [ ] Add pure query-helper tests where practical.
+- [x] Resolve pure query-helper coverage where practical. Date/slug/page helpers are unit-tested; DB query construction is intentionally covered by isolated integration tests rather than extracting artificial pure helpers.
 - [x] Keep DB integration concerns separate from pure logic tests.
 - [x] Cover Markdown summaries, heading anchors and unsafe URLs.
 - [x] Verify read queries against isolated fixtures without modifying Production. DB integration 4/4 passed against `phase3-testing`.
+- [x] Cover homepage and archive empty-state rendering without deleting or mutating Neon fixtures.
 
 ### 3.2 End-to-end tests with Playwright
 
@@ -186,39 +187,43 @@ Implementation sequence and isolated test-data policy: `phase-3-plan.md`. Core a
 - [x] Test one representative mobile viewport. Pixel 7 project passed its applicable cases.
 - [x] Test external source links render correctly.
 - [x] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback.
-- [ ] Test empty/error states in an isolated environment. 404/missing-report behavior is covered; explicit empty-dataset/read-error injection remains pending.
+- [x] Test empty/error states in isolated environments. Empty-state render tests pass; DB-unavailable HTTP 500/retryable error UI passes 1/1.
 
 ### 3.3 Accessibility and content quality
 
-- [ ] Verify semantic heading hierarchy.
+- [x] Verify semantic heading hierarchy. Automated public-route checks confirm one H1 and no skipped visible heading levels.
 - [x] Verify keyboard navigation and visible focus states. Skip-link focus and mobile Escape/focus restoration passed in Playwright.
-- [ ] Verify link labels are meaningful.
-- [ ] Verify sufficient basic color contrast.
-- [x] Verify Markdown tables/code blocks remain usable on narrow screens. Pixel 7 detail rendering and interaction coverage passed.
-- [ ] Verify empty-state and error-state copy.
+- [x] Verify link labels are meaningful. Distinct destinations do not reuse ambiguous accessible labels; homepage and duplicate TOC links were disambiguated without visual text changes.
+- [x] Verify sufficient basic color contrast. Core light/dark text-token pairs meet WCAG AA 4.5:1 normal-text threshold in automated checks.
+- [x] Verify Markdown tables/code blocks remain usable on narrow screens. Pixel 7 has no document-level horizontal overflow; table/code overflow stays in local scroll containers.
+- [x] Verify empty-state and error-state copy. Empty render tests and isolated DB read-error UI both pass.
 
 ### 3.4 Performance and database checks
 
-- [ ] Confirm Server Component queries do not create unnecessary client requests.
-- [ ] Inspect actual query plans/index usage only if observed behavior warrants it.
+- [x] Confirm Server Component queries do not create unnecessary client requests. Public reading flow generates no browser-side `/api/*` read requests.
+- [x] Inspect actual query plans/index usage only if observed behavior warrants it. No query latency or functional bottleneck was observed in isolated integration/browser verification, so no speculative query-plan change was introduced.
 - [x] Avoid adding Redis/cache infrastructure without a demonstrated need.
-- [ ] Check generated page/deployment size for avoidable client-side JavaScript.
+- [x] Check generated page/deployment size for avoidable client-side JavaScript. Production `next start` cold-load totals are about 505–506 KB uncompressed and remain below the 1 MiB CI guard.
 - [x] Confirm Phase 3 test design does not add a new public write API or expose test credentials in code/configuration.
 
 ### 3.5 Repeatable verification
 
 - [x] Add documented test commands and CI checks with isolated test configuration.
-- [ ] Record the verified commit, environment, results and remaining limitations at Phase 3 acceptance. Interim evidence is maintained in `phase-3-verification.md`.
+- [x] Record the verified commit, environment, results and limitations at Phase 3 acceptance in `phase-3-verification.md`.
+- [x] Replace the deprecated-warning-prone CI setup path with official `pnpm/setup@v2` + Node 24 and retain frozen lockfile verification.
 
 ### Phase 3 acceptance
 
-- [x] TypeScript and production build pass for the current Phase 3 branch.
-- [x] Vitest suite passes (15 tests in 4 files).
+- [x] TypeScript and production build pass for the verified Phase 3 implementation.
+- [x] Vitest suite passes (17 tests in 5 files).
 - [x] Isolated database read integration checks pass (4 tests).
-- [x] Playwright critical-path suite passes (21 passed / 3 conditional skips / 0 failed).
-- [x] Vercel Preview succeeds without blocking errors for verified code commit `5143e5e`.
-- [ ] No critical accessibility or mobile-layout issue remains. Mobile automated flows pass; remaining manual/static accessibility review is pending.
+- [x] Playwright critical-path/accessibility suite passes (29 passed / 5 conditional skips / 0 failed).
+- [x] Isolated DB read-error state passes (1 test).
+- [x] Production client JavaScript budget passes (1 test; approximately 505–506 KB cold-load JS, limit 1 MiB).
+- [x] Vercel Preview succeeds without blocking errors for verified implementation commit `00bd49ee`.
+- [x] No critical accessibility or mobile-layout issue remains.
 - [x] Current Phase 3 implementation adds no public credentials or unnecessary write API surface.
+- [x] Remaining React script-rendering message is limited to `next dev` browser runs, does not reproduce in the production `next start` budget run, and is recorded as a non-blocking development-mode warning rather than prompting an unverified product change.
 
 ---
 
