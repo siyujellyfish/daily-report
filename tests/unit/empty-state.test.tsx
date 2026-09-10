@@ -1,17 +1,18 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, test, vi } from "vitest";
 
-const getReportsByType = vi.fn();
-
 vi.mock("@/lib/reports", () => ({
-	getReportsByType,
+	getReportsByType: vi.fn(),
 }));
 
 import { ReportArchive } from "@/components/report-archive";
 import { ReportCard } from "@/components/report-card";
+import { getReportsByType } from "@/lib/reports";
+
+const mockedGetReportsByType = vi.mocked(getReportsByType);
 
 beforeEach(() => {
-	getReportsByType.mockReset();
+	mockedGetReportsByType.mockReset();
 });
 
 test("homepage card renders a clear empty state without a report", () => {
@@ -23,7 +24,7 @@ test("homepage card renders a clear empty state without a report", () => {
 });
 
 test("archive renders a clear empty state for an isolated empty query result", async () => {
-	getReportsByType.mockResolvedValue({
+	mockedGetReportsByType.mockResolvedValue({
 		reports: [],
 		total: 0,
 		page: 1,
@@ -31,7 +32,7 @@ test("archive renders a clear empty state for an isolated empty query result", a
 	});
 	const view = await ReportArchive({ type: "daily-news", page: 1 });
 	const html = renderToStaticMarkup(view);
-	expect(getReportsByType).toHaveBeenCalledWith("daily-news", 1);
+	expect(mockedGetReportsByType).toHaveBeenCalledWith("daily-news", 1);
 	expect(html).toContain("共 0 篇報告");
 	expect(html).toContain("尚無已發布報告");
 	expect(html).toContain("報告發布後，將依日期顯示在這裡。");
