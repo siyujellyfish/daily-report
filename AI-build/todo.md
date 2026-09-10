@@ -229,7 +229,7 @@ Phase 3 implementation and acceptance are complete. Verified implementation chec
 
 ## Phase 4 — Real Scheduled Tasks integration
 
-Detailed execution contract and safety boundary: `phase-4-plan.md`. Planning is complete; no Phase 4 Production content run has been executed yet.
+Detailed execution contract: `phase-4-plan.md`. Actual Production evidence: `phase-4-verification.md`. Phase 4 implementation and acceptance are complete.
 
 ### 4.0 Planning and safety boundary
 
@@ -240,59 +240,59 @@ Detailed execution contract and safety boundary: `phase-4-plan.md`. Planning is 
 - [x] Freeze the Make input contract as `reportType`, `title`, `contentMarkdown`, `generatedAt`, `sources[]`; do not use the old POC `sourcesJson` contract.
 - [x] Define title conventions, clean Markdown/citation boundary, structured-source rules and Asia/Taipei timestamp requirements.
 - [x] Preserve Phase 5 security boundary by choosing one-shot shadow Scheduled Tasks for Phase 4 validation instead of permanently adding publishing to the currently enabled recurring Tasks.
-- [ ] Before each shadow execution, confirm the target Production `(report_type, report_date)` is unoccupied.
+- [x] Before shadow execution, confirm the target Production `(report_type, report_date)` is unoccupied. Both 2026-09-10 targets were empty before execution.
 
 ### 4.1 `開發技術每日追蹤` → `daily-news`
 
-- [ ] Copy the current real research prompt into a one-shot shadow Scheduled Task without weakening the existing scope or source-quality rules.
-- [ ] Keep historical/daily duplicate-avoidance behavior.
-- [ ] Add `reportType = daily-news` delivery mapping.
-- [ ] Use title `開發技術每日追蹤｜YYYY-MM-DD`.
-- [ ] Send full clean Markdown as `contentMarkdown`, without ChatGPT UI citation serialization.
-- [ ] Send `generatedAt` as actual execution time in ISO 8601 with explicit `+08:00`.
-- [ ] Send structured `sources[]` with explicit title and URL, deduplicated by URL and biased toward primary/official sources.
-- [ ] If there are no relevant results, still publish deterministic no-result Markdown with `sources = []` rather than silently skipping the run.
-- [ ] Schedule the shadow as a one-time automation; no run-time manual approval.
+- [x] Copy the current real research prompt into a one-shot shadow Scheduled Task without weakening the existing scope or source-quality rules.
+- [x] Keep historical/daily duplicate-avoidance behavior.
+- [x] Add `reportType = daily-news` delivery mapping.
+- [x] Use title `開發技術每日追蹤｜YYYY-MM-DD`.
+- [x] Send full clean Markdown as `contentMarkdown`, without ChatGPT UI citation serialization.
+- [x] Send `generatedAt` as actual execution time in ISO 8601 with explicit `+08:00` at generation time; Neon stores the equivalent timestamptz instant in UTC.
+- [x] Send structured `sources[]` with explicit title and URL, deduplicated by URL and biased toward primary/official sources.
+- [x] If there are no relevant results, still publish deterministic no-result Markdown with `sources = []` rather than silently skipping the run. This path was exercised on 2026-09-10.
+- [x] Schedule the shadow as a one-time automation; no run-time manual approval. The task completed and automatically became disabled.
 
 ### 4.2 `每日突破性工具推薦` → `framework-recommendation`
 
-- [ ] Copy the current real recommendation prompt into a one-shot shadow Scheduled Task without weakening selection/analysis requirements.
-- [ ] Preserve historical recommendation deduplication.
-- [ ] Add `reportType = framework-recommendation` delivery mapping.
-- [ ] Use title `每日突破性工具推薦｜<工具名稱>`.
-- [ ] Send full clean Markdown as `contentMarkdown`, without ChatGPT UI citation serialization.
-- [ ] Send `generatedAt` as actual execution time in ISO 8601 with explicit `+08:00`.
-- [ ] Send structured `sources[]` with explicit title and URL, deduplicated by URL and biased toward primary/official sources.
-- [ ] Preserve the fallback rule for days without a compelling newly released tool: select a recent fast-growing representative tool and explain why rather than publishing an empty report.
-- [ ] Schedule the shadow as a one-time automation; no run-time manual approval.
+- [x] Copy the current real recommendation prompt into a one-shot shadow Scheduled Task without weakening selection/analysis requirements.
+- [x] Preserve historical recommendation deduplication.
+- [x] Add `reportType = framework-recommendation` delivery mapping.
+- [x] Use title `每日突破性工具推薦｜<工具名稱>`.
+- [x] Send full clean Markdown as `contentMarkdown`, without ChatGPT UI citation serialization.
+- [x] Send `generatedAt` as actual execution time in ISO 8601 with explicit `+08:00` at generation time; Neon stores the equivalent timestamptz instant in UTC.
+- [x] Send structured `sources[]` with explicit title and URL, deduplicated by URL and biased toward primary/official sources. The 2026-09-10 TypeSpec report persisted 7 official/primary sources.
+- [x] Preserve the fallback rule for days without a compelling newly released tool: select a recent fast-growing representative tool and explain why rather than publishing an empty report.
+- [x] Schedule the shadow as a one-time automation; no run-time manual approval. The task completed and automatically became disabled.
 
 ### 4.3 End-to-end Production content validation
 
-- [ ] Let the `daily-news` shadow Scheduled Task run automatically against `Daily Report - Publish to Vercel`.
-- [ ] Inspect only the high-level Make execution outcome; do not inspect HTTP Authorization input/header.
-- [ ] Confirm the corresponding Neon Production row is created exactly once.
-- [ ] Confirm it appears on `/`, `/news`, and its detail route.
-- [ ] Let the `framework-recommendation` shadow Scheduled Task run automatically against the same Make Scenario.
-- [ ] Inspect only the high-level Make execution outcome; do not inspect HTTP Authorization input/header.
-- [ ] Confirm the corresponding Neon Production row is created exactly once.
-- [ ] Confirm it appears on `/`, `/frameworks`, and its detail route.
-- [ ] Verify Markdown formatting survives ChatGPT → Make → Vercel → Neon → website.
-- [ ] Verify structured source attribution survives the full data path and links remain correct/safe.
-- [ ] Verify `generatedAt` and derived report dates use Asia/Taipei correctly.
-- [ ] Verify persisted Markdown contains no ChatGPT UI citation tokens.
-- [ ] If an exact retry is needed, confirm API idempotency returns duplicate success without increasing row count.
-- [ ] Do not overwrite/delete a Production report to resolve a same-day/type collision; move validation to a non-colliding business date instead.
+- [x] Let the `daily-news` shadow Scheduled Task run automatically against `Daily Report - Publish to Vercel`.
+- [x] Inspect only the high-level Make execution outcome; do not inspect HTTP Authorization input/header.
+- [x] Confirm the corresponding Neon Production row is created exactly once.
+- [x] Confirm it appears on `/`, `/news`, and its detail route.
+- [x] Let the `framework-recommendation` shadow Scheduled Task run automatically against the same Make Scenario.
+- [x] Inspect only the high-level Make execution outcome; do not inspect HTTP Authorization input/header.
+- [x] Confirm the corresponding Neon Production row is created exactly once.
+- [x] Confirm it appears on `/`, `/frameworks`, and its detail route.
+- [x] Verify Markdown formatting survives ChatGPT → Make → Vercel → Neon → website.
+- [x] Verify structured source attribution survives the full data path and links remain correct/safe.
+- [x] Verify `generatedAt` and derived report dates use Asia/Taipei correctly.
+- [x] Verify persisted Markdown contains no ChatGPT UI citation tokens.
+- [x] Exact retry was not needed during Phase 4; existing Phase 1 exact-retry idempotency remains the verified control and no unnecessary Production retry was introduced.
+- [x] Do not overwrite/delete a Production report to resolve a same-day/type collision; no Production UPDATE/DELETE was performed.
 
 ### Phase 4 acceptance
 
-- [ ] Both one-shot shadow Scheduled Tasks publish successfully using the real generation rules.
-- [ ] Both report types pass through the same `Daily Report - Publish to Vercel` Scenario.
-- [ ] Both are persisted exactly once and visible on the correct public routes.
-- [ ] Markdown, structured sources, title, generatedAt and Asia/Taipei business date remain correct end to end.
-- [ ] Scheduled Task → Make execution requires no run-time manual approval.
-- [ ] Scheduled Task generation/research remains independent of the OpenAI API.
-- [ ] Existing recurring Tasks remain behaviorally unchanged during Phase 4; recurring Production publishing is not enabled before Phase 5 final credential rotation.
-- [ ] Record execution IDs/results/deviations in `/AI-build` before Phase 4 closure.
+- [x] Both one-shot shadow Scheduled Tasks publish successfully using the real generation rules.
+- [x] Both report types pass through the same `Daily Report - Publish to Vercel` Scenario.
+- [x] Both are persisted exactly once and visible on the correct public routes.
+- [x] Markdown, structured sources, title, generatedAt and Asia/Taipei business date remain correct end to end.
+- [x] Scheduled Task → Make execution requires no run-time manual approval; both Make executions report `startedBy = auto`.
+- [x] Scheduled Task generation/research remains independent of the OpenAI API.
+- [x] Existing recurring Tasks remain behaviorally unchanged during Phase 4; recurring Production publishing is not enabled before Phase 5 final credential rotation.
+- [x] Record execution IDs/results/deviations in `/AI-build` before Phase 4 closure. See `phase-4-verification.md`.
 
 ---
 
