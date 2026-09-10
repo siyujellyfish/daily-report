@@ -18,8 +18,8 @@ beforeEach(() => {
 test("homepage card renders a clear empty state without a report", () => {
 	const html = renderToStaticMarkup(<ReportCard type="daily-news" />);
 	expect(html).toContain("尚無已發布報告");
-	expect(html).toContain("第一篇資訊新聞發布後，會顯示在這裡。");
-	expect(html).toContain("瀏覽資訊新聞歷史報告");
+	expect(html).toContain("第一篇每日資訊新聞發布後，會顯示在這裡。");
+	expect(html).toContain("瀏覽每日資訊新聞歷史報告");
 	expect(html).not.toContain("閱讀全文");
 });
 
