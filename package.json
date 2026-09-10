@@ -11,6 +11,14 @@
 		"build": "next build",
 		"start": "next start",
 		"typecheck": "tsc --noEmit",
+		"test": "pnpm test:unit",
+		"test:unit": "vitest run",
+		"test:unit:watch": "vitest",
+		"test:integration": "vitest run --config vitest.integration.config.mts",
+		"test:e2e": "playwright test",
+		"test:e2e:error": "playwright test --config playwright.error.config.ts",
+		"test:e2e:performance": "playwright test --config playwright.performance.config.ts",
+		"test:e2e:install": "playwright install chromium",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate"
 	},
@@ -35,6 +43,7 @@
 		"zod": "4.5.4"
 	},
 	"devDependencies": {
+		"@playwright/test": "1.63.0",
 		"@tailwindcss/postcss": "4.3.3",
 		"@types/mdast": "4.0.4",
 		"@types/node": "^24.0.0",
@@ -42,6 +51,7 @@
 		"@types/react-dom": "^19.2.0",
 		"drizzle-kit": "0.31.10",
 		"tailwindcss": "4.3.3",
-		"typescript": "^5.9.0"
+		"typescript": "^5.9.0",
+		"vitest": "5.0.0"
 	}
 }

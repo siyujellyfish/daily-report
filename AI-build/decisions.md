@@ -106,3 +106,20 @@ Development is organized into the following lifecycle:
 - Add canonical, textual Open Graph/Twitter metadata, sitemap and robots now; do not generate a social image. Previews are noindex.
 - Preserve missing-report HTTP behavior by omitting a global loading boundary; add skeletons later only when observed latency justifies them.
 - Phase 2 is delivered via a feature PR and Preview. Main/Production promotion requires a subsequent merge action; any such merge must use squash.
+
+## 2026-09-10 — Phase 3 quality and verification closure
+
+- Use an isolated Neon `phase3-testing` branch for DB fixtures and integration/browser verification. Phase 3 tests must never delete, truncate or write test fixtures into Production.
+- Keep `TEST_DATABASE_URL` only as a GitHub Repository Secret or local environment value; tests refuse execution when it equals `DATABASE_URL`.
+- Keep pure logic/unit coverage and real DB integration coverage separate. Do not extract artificial pure query helpers solely to increase unit-test counts when the behavior is more accurately verified against isolated Neon.
+- Use Playwright desktop and Pixel 7 projects for public reading flows and responsive behavior.
+- Treat empty-state verification as deterministic component rendering so it does not require destructive fixture manipulation.
+- Verify unavailable-database behavior with a dedicated Playwright server that omits `DATABASE_URL`; preserve HTTP 500 and expose a retryable user-facing error state instead of treating DB failure as empty data.
+- Add automated checks for one visible H1, non-skipped heading levels, meaningful accessible link labels, core light/dark WCAG AA text-token contrast, keyboard/focus behavior and local mobile overflow containment.
+- Keep report reads server-side. Public browser navigation must not introduce a browser `/api/*` read layer without a real client requirement.
+- Add a production `next start` client-JavaScript guard at 1 MiB uncompressed per tested cold route. Current routes are approximately 505–506 KB, so no additional bundle tooling or architectural rewrite is warranted.
+- Do not run EXPLAIN/query-plan work or introduce Redis/cache without observed latency/query evidence. Phase 3 produced no such evidence.
+- Use official `pnpm/setup@v2` with pnpm 12.3.4 and Node 24 in Quality CI; retain frozen-lockfile verification.
+- Fix concrete framework/accessibility warnings when evidence identifies an application issue, such as Next.js smooth-scroll metadata and ambiguous accessible labels.
+- A React script-rendering message that appears only under `next dev`, does not reproduce in the production `next start` verification, and causes no failed behavior is recorded as non-blocking rather than prompting speculative dependency/product changes.
+- Phase 3 acceptance requires the final implementation checkpoint to pass TypeScript, unit, isolated DB integration, browser, read-error, production build and client-JS budget checks, with a READY Vercel Preview. PR #8 is delivered to `main` only by squash merge after the final documentation head is reverified.

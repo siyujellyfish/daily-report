@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-	return <html lang="zh-Hant" suppressHydrationWarning><body>
+	return <html lang="zh-Hant" data-scroll-behavior="smooth" suppressHydrationWarning><body>
 		<ThemeProvider>
 			<a href="#main-content" className="skip">跳至主要內容</a>
 			<SiteHeader />

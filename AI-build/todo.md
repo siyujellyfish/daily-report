@@ -159,66 +159,71 @@ Implementation and Preview/runtime acceptance are complete (PR #7). The current 
 
 ## Phase 3 — Testing, quality and performance
 
-Implementation sequence and isolated test-data policy: `phase-3-plan.md`. All Phase 3 work below remains pending.
+Phase 3 implementation and acceptance are complete. Verified implementation checkpoint: `00bd49ee022e03ad88a117267058466455fcad7a`; Quality run `34422203392` passed frozen install, TypeScript, 17 unit tests, production build, 4 isolated DB integration tests, Playwright main suite (29 passed / 5 conditional skips / 0 failed), isolated read-error test (1/1), and production client-JS budget (1/1). Matching Vercel Preview `dpl_3yqr4rGMSkLtEXazdVso6JaAvEew` is READY. Production data was not modified by Phase 3 tests.
 
 ### 3.1 Unit tests with Vitest
 
-- [ ] Recheck current Vitest official docs/version before implementation.
-- [ ] Add slug generation tests.
-- [ ] Add slug parsing/invalid-input tests.
-- [ ] Add Asia/Taipei date-boundary tests.
-- [ ] Add report mapper/normalization tests.
-- [ ] Add source normalization tests.
-- [ ] Add pure query-helper tests where practical.
-- [ ] Keep DB integration concerns separate from pure logic tests.
-- [ ] Cover Markdown summaries, heading anchors and unsafe URLs.
-- [ ] Verify read queries against isolated fixtures without modifying Production.
+- [x] Recheck current Vitest official docs/version before implementation.
+- [x] Add slug generation tests.
+- [x] Add slug parsing/invalid-input tests.
+- [x] Add Asia/Taipei date-boundary tests.
+- [x] Add report mapper/normalization tests.
+- [x] Add source normalization tests.
+- [x] Resolve pure query-helper coverage where practical. Date/slug/page helpers are unit-tested; DB query construction is intentionally covered by isolated integration tests rather than extracting artificial pure helpers.
+- [x] Keep DB integration concerns separate from pure logic tests.
+- [x] Cover Markdown summaries, heading anchors and unsafe URLs.
+- [x] Verify read queries against isolated fixtures without modifying Production. DB integration 4/4 passed against `phase3-testing`.
+- [x] Cover homepage and archive empty-state rendering without deleting or mutating Neon fixtures.
 
 ### 3.2 End-to-end tests with Playwright
 
-- [ ] Recheck current Playwright official docs/version before implementation.
-- [ ] Test homepage loading and latest-report links.
-- [ ] Test `/news` archive.
-- [ ] Test `/frameworks` archive.
-- [ ] Test report-detail rendering.
-- [ ] Test report 404 behavior.
-- [ ] Test critical navigation flow.
-- [ ] Test one representative mobile viewport.
-- [ ] Test external source links render correctly.
-- [ ] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback.
-- [ ] Test empty/error states in an isolated environment.
+- [x] Recheck current Playwright official docs/version before implementation.
+- [x] Test homepage loading and latest-report links.
+- [x] Test `/news` archive.
+- [x] Test `/frameworks` archive.
+- [x] Test report-detail rendering.
+- [x] Test report 404 behavior.
+- [x] Test critical navigation flow.
+- [x] Test one representative mobile viewport. Pixel 7 project passed its applicable cases.
+- [x] Test external source links render correctly.
+- [x] Test pagination, mobile menu, TOC, theme persistence and code-copy feedback.
+- [x] Test empty/error states in isolated environments. Empty-state render tests pass; DB-unavailable HTTP 500/retryable error UI passes 1/1.
 
 ### 3.3 Accessibility and content quality
 
-- [ ] Verify semantic heading hierarchy.
-- [ ] Verify keyboard navigation and visible focus states.
-- [ ] Verify link labels are meaningful.
-- [ ] Verify sufficient basic color contrast.
-- [ ] Verify Markdown tables/code blocks remain usable on narrow screens.
-- [ ] Verify empty-state and error-state copy.
+- [x] Verify semantic heading hierarchy. Automated public-route checks confirm one H1 and no skipped visible heading levels.
+- [x] Verify keyboard navigation and visible focus states. Skip-link focus and mobile Escape/focus restoration passed in Playwright.
+- [x] Verify link labels are meaningful. Distinct destinations do not reuse ambiguous accessible labels; homepage and duplicate TOC links were disambiguated without visual text changes.
+- [x] Verify sufficient basic color contrast. Core light/dark text-token pairs meet WCAG AA 4.5:1 normal-text threshold in automated checks.
+- [x] Verify Markdown tables/code blocks remain usable on narrow screens. Pixel 7 has no document-level horizontal overflow; table/code overflow stays in local scroll containers.
+- [x] Verify empty-state and error-state copy. Empty render tests and isolated DB read-error UI both pass.
 
 ### 3.4 Performance and database checks
 
-- [ ] Confirm Server Component queries do not create unnecessary client requests.
-- [ ] Inspect actual query plans/index usage only if observed behavior warrants it.
-- [ ] Avoid adding Redis/cache infrastructure without a demonstrated need.
-- [ ] Check generated page/deployment size for avoidable client-side JavaScript.
-- [ ] Confirm public pages do not expose server environment variables.
+- [x] Confirm Server Component queries do not create unnecessary client requests. Public reading flow generates no browser-side `/api/*` read requests.
+- [x] Inspect actual query plans/index usage only if observed behavior warrants it. No query latency or functional bottleneck was observed in isolated integration/browser verification, so no speculative query-plan change was introduced.
+- [x] Avoid adding Redis/cache infrastructure without a demonstrated need.
+- [x] Check generated page/deployment size for avoidable client-side JavaScript. Production `next start` cold-load totals are about 505–506 KB uncompressed and remain below the 1 MiB CI guard.
+- [x] Confirm Phase 3 test design does not add a new public write API or expose test credentials in code/configuration.
 
 ### 3.5 Repeatable verification
 
-- [ ] Add documented test commands and CI checks with isolated test configuration.
-- [ ] Record the verified commit, environment, results and remaining limitations.
+- [x] Add documented test commands and CI checks with isolated test configuration.
+- [x] Record the verified commit, environment, results and limitations at Phase 3 acceptance in `phase-3-verification.md`.
+- [x] Replace the deprecated-warning-prone CI setup path with official `pnpm/setup@v2` + Node 24 and retain frozen lockfile verification.
 
 ### Phase 3 acceptance
 
-- [ ] TypeScript and production build pass.
-- [ ] Vitest suite passes.
-- [ ] Isolated database read integration checks pass.
-- [ ] Playwright critical-path suite passes.
-- [ ] Vercel Preview succeeds without blocking errors.
-- [ ] No critical accessibility or mobile-layout issue remains.
-- [ ] Public read path does not expose credentials or unnecessary API surfaces.
+- [x] TypeScript and production build pass for the verified Phase 3 implementation.
+- [x] Vitest suite passes (17 tests in 5 files).
+- [x] Isolated database read integration checks pass (4 tests).
+- [x] Playwright critical-path/accessibility suite passes (29 passed / 5 conditional skips / 0 failed).
+- [x] Isolated DB read-error state passes (1 test).
+- [x] Production client JavaScript budget passes (1 test; approximately 505–506 KB cold-load JS, limit 1 MiB).
+- [x] Vercel Preview succeeds without blocking errors for verified implementation commit `00bd49ee`.
+- [x] No critical accessibility or mobile-layout issue remains.
+- [x] Current Phase 3 implementation adds no public credentials or unnecessary write API surface.
+- [x] Remaining React script-rendering message is limited to `next dev` browser runs, does not reproduce in the production `next start` budget run, and is recorded as a non-blocking development-mode warning rather than prompting an unverified product change.
 
 ---
 
@@ -238,7 +243,7 @@ Implementation sequence and isolated test-data policy: `phase-3-plan.md`. All Ph
 
 ### 4.2 `每日框架工具推薦`
 
-- [ ] Review the current Scheduled Task instructions without weakening its selection/analysis requirements.
+- [ ] Review the current Scheduled Task instructions without weakening its existing selection/analysis requirements.
 - [ ] Preserve historical recommendation deduplication.
 - [ ] Set `reportType = framework-recommendation`.
 - [ ] Set appropriate report title.
