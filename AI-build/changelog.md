@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-09-10
+
+### Phase 3 — acceptance completed
+
+- Completed the remaining accessibility/content-quality review with Playwright checks for one visible H1, non-skipped heading levels, meaningful accessible link labels, core light/dark WCAG AA normal-text contrast, keyboard/focus behavior and mobile overflow containment.
+- Fixed the Next.js smooth-scroll metadata warning by declaring `data-scroll-behavior="smooth"` on the root HTML element.
+- Added context-specific accessible labels to homepage actions and duplicate table-of-contents entries while preserving their visible text.
+- Replaced `pnpm/action-setup@v4` with official `pnpm/setup@v2`, retaining pnpm 12.3.4, Node 24, cache and frozen-lockfile verification.
+- Added isolated empty-state unit coverage without deleting or mutating Neon fixtures. Vitest now passes 17/17 tests across 5 files.
+- Added a dedicated DB-unavailable Playwright server and test. It intentionally omits `DATABASE_URL`, verifies HTTP 500, the retryable application error state, retry behavior and home navigation; final result 1/1 passed.
+- Added production-mode client JavaScript measurement using the existing `next build` output and `next start`, without adding a bundle-analyzer dependency. Cold-load totals are 505,082 bytes for `/`, 505,082 bytes for `/news`, and 506,241 bytes for the tested report detail, all below the 1 MiB guard.
+- Confirmed public reading navigation performs no browser-side `/api/*` reads; Server Component/server-side DB reads remain the architecture boundary.
+- No observed query latency or browser behavior justified EXPLAIN/query-plan tuning, Redis or additional cache infrastructure.
+- Main Playwright suite completed at 29 passed / 5 viewport-conditional skips / 0 failed across Chromium desktop and Pixel 7 projects.
+- Final implementation checkpoint `00bd49ee022e03ad88a117267058466455fcad7a` passed Quality run `34422203392`: frozen install, TypeScript, 17 unit tests, production build, 4/4 isolated DB integration tests, main Playwright suite, read-error suite and production client-JS budget.
+- Matching Vercel Preview `dpl_3yqr4rGMSkLtEXazdVso6JaAvEew` reached READY.
+- The React script-rendering message observed in `next dev` browser runs does not reproduce in the production `next start` performance run and has no failed behavioral test; it is retained as a non-blocking development-mode warning rather than prompting speculative product changes.
+- Updated `/AI-build` README, Phase 3 plan, verification, architecture, decisions and TODO to mark Phase 3 acceptance complete. PR #8 remains subject to one final documentation-head CI/Preview check before required squash merge to `main`.
+
 ## 2026-09-09
 
 ### Phase 3 — secure DB and browser verification
