@@ -94,7 +94,8 @@ test("light and dark text tokens meet WCAG AA normal-text contrast", async ({ pa
 	}
 });
 
-test("public reading flow performs no browser-side API reads", async ({ page }) => {
+test("public reading flow performs no browser-side API reads", async ({ page }, testInfo) => {
+	test.skip(testInfo.project.name.includes("mobile"), "The server/client data boundary is viewport-independent; mobile navigation is covered separately.");
 	const apiRequests: string[] = [];
 	page.on("request", (request) => {
 		const url = new URL(request.url());
