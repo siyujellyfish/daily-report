@@ -18,8 +18,8 @@ export function ReportCard({ type, report }: { type: ReportType; report?: Public
 			</> : <div className="card-empty"><h4>尚無已發布報告</h4><p>第一篇{category.title}發布後，會顯示在這裡。</p></div>}
 		</CardContent>
 		<CardFooter className="feature-footer">
-			{report && <Button asChild className="button"><Link href={`/reports/${report.slug}`} prefetch={false}>閱讀全文 <span aria-hidden="true">↗</span></Link></Button>}
-			<Link className="text-link" href={category.href} prefetch={false}>瀏覽歷史報告</Link>
+			{report && <Button asChild className="button"><Link href={`/reports/${report.slug}`} prefetch={false} aria-label={`閱讀全文：${report.title}`}>閱讀全文 <span aria-hidden="true">↗</span></Link></Button>}
+			<Link className="text-link" href={category.href} prefetch={false} aria-label={`瀏覽${category.title}歷史報告`}>瀏覽歷史報告</Link>
 		</CardFooter>
 	</Card>;
 }
