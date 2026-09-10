@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 test("homepage links to the newest reports", async ({ page }) => {
 	await page.goto("/");
 	await expect(page.getByRole("heading", { level: 1, name: "掌握新知，保持好奇。" })).toBeVisible();
-	await expect(page.getByRole("link", { name: "Phase 3 Daily News 09" })).toBeVisible();
-	await expect(page.getByRole("link", { name: "Phase 3 Framework Fixture" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 3 Daily News 09", exact: true })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 3 Framework Fixture", exact: true })).toBeVisible();
 });
 
 test("daily-news archive paginates newest first", async ({ page }) => {
