@@ -101,7 +101,7 @@ test("public reading flow performs no browser-side API reads", async ({ page }) 
 		if (url.pathname.startsWith("/api/")) apiRequests.push(`${request.method()} ${url.pathname}`);
 	});
 	await page.goto("/");
-	await page.getByRole("link", { name: "資訊新聞" }).click();
+	await page.getByRole("link", { name: "資訊新聞", exact: true }).click();
 	await page.getByRole("link", { name: "Phase 3 Daily News 09", exact: true }).click();
 	await expect(page.getByRole("heading", { level: 1, name: "Phase 3 Daily News 09" })).toBeVisible();
 	expect(apiRequests).toEqual([]);
