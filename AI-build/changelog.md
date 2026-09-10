@@ -2,6 +2,21 @@
 
 ## 2026-09-10
 
+### Phase 4 — planning completed
+
+- Re-read the Phase 3 handoff, architecture, decisions, TODO and current live automation state before planning Phase 4.
+- Confirmed the actual enabled recurring Scheduled Tasks are `開發技術每日追蹤` and `每日突破性工具推薦`, mapped respectively to `daily-news` and `framework-recommendation`.
+- Confirmed the active Make production transport is `Daily Report - Publish to Vercel`, an on-demand Scenario with inputs `reportType`, `title`, `contentMarkdown`, `generatedAt` and structured `sources[]` (`title` + `url`). The old POC `sourcesJson` convention is not part of the production contract.
+- Added `phase-4-plan.md` defining the real-content payload contract, title conventions, source handling, no-result behavior, validation matrix and Phase 5 handoff.
+- Identified a security-boundary conflict: directly adding Make delivery to the two currently enabled recurring Tasks during Phase 4 would start recurring Production writes before the Phase 5 final `INGEST_SECRET` rotation.
+- Resolved the conflict with a one-shot shadow validation strategy. Phase 4 will clone the true research/selection rules into two one-time Scheduled Tasks that publish automatically once; the existing recurring Tasks keep their current behavior until Phase 5.
+- Defined `daily-news` no-result publishing as deterministic Markdown with `sources = []`, while preserving the framework task's existing representative-tool fallback behavior.
+- Defined content safety: persisted `contentMarkdown` must not contain ChatGPT UI citation tokens; public attribution uses structured source objects, deduplicated by URL and biased toward official/primary sources.
+- Defined execution safety: read-only Production collision check before each shadow run; never delete/update Production rows for test space; only exact retries may exercise idempotency; do not inspect Make HTTP Authorization input/header during credential-bearing validation.
+- Updated README, architecture and decisions for the actual automation names, Make interface, Phase 4 shadow boundary and Phase 5 permanent rollout sequence.
+- Closed stale Phase 3 verification handoff text with the actual PR #8 squash merge, post-merge Quality success and READY Production deployment.
+- Phase 4 planning changes are documentation only; no package, application runtime, Make Scenario, Production database row, recurring Scheduled Task prompt/schedule or credential was modified.
+
 ### Phase 3 — acceptance completed
 
 - Completed the remaining accessibility/content-quality review with Playwright checks for one visible H1, non-skipped heading levels, meaningful accessible link labels, core light/dark WCAG AA normal-text contrast, keyboard/focus behavior and mobile overflow containment.
@@ -17,7 +32,9 @@
 - Final implementation checkpoint `00bd49ee022e03ad88a117267058466455fcad7a` passed Quality run `34422203392`: frozen install, TypeScript, 17 unit tests, production build, 4/4 isolated DB integration tests, main Playwright suite, read-error suite and production client-JS budget.
 - Matching Vercel Preview `dpl_3yqr4rGMSkLtEXazdVso6JaAvEew` reached READY.
 - The React script-rendering message observed in `next dev` browser runs does not reproduce in the production `next start` performance run and has no failed behavioral test; it is retained as a non-blocking development-mode warning rather than prompting speculative product changes.
-- Updated `/AI-build` README, Phase 3 plan, verification, architecture, decisions and TODO to mark Phase 3 acceptance complete. PR #8 remains subject to one final documentation-head CI/Preview check before required squash merge to `main`.
+- Updated `/AI-build` README, Phase 3 plan, verification, architecture, decisions and TODO to mark Phase 3 acceptance complete.
+- Final documentation head `68eb9b2e` passed the full Quality workflow and matching Vercel Preview; PR #8 was then squash-merged to `main` as `ebe5cb5f387daeeb175a003ea6190b4a86b90181`.
+- Post-merge `main` Quality completed successfully and the matching Vercel Production deployment reached READY.
 
 ## 2026-09-09
 
@@ -31,8 +48,8 @@
 - The first real Playwright run produced 17 passed / 3 conditional skips / 4 failed. All four failures were the same test-selector ambiguity: archive title selectors also matched the separate `閱讀：標題` arrow link through fuzzy accessible-name matching.
 - Tightened only the Playwright archive selectors with `exact: true`; product UI/runtime behavior was unchanged. Commit: `5143e5e2458a2450b663bd2fd8a0d3d123b4e171`.
 - GitHub Actions Quality run `34327164875` then completed successfully: 15 unit tests, 4 DB integration tests, production build and Playwright critical paths all passed. Playwright final result: 21 passed / 3 viewport-conditional skips / 0 failed.
-- The matching Vercel Preview deployment `dpl_4JzY27ewXd9yirsnaDFnsrh8mosu` for commit `5143e5e` reached READY. PR #8 remains Draft and unmerged while accessibility/content-quality/performance review continues.
-- CI surfaced non-blocking follow-up warnings for Next.js smooth-scroll metadata, React script rendering during browser tests, and the Node runtime target of `pnpm/action-setup@v4`; these are not treated as Phase 3 failures and require separate review before any implementation change.
+- The matching Vercel Preview deployment `dpl_4JzY27ewXd9yirsnaDFnsrh8mosu` for commit `5143e5e` reached READY. PR #8 remained Draft and unmerged while accessibility/content-quality/performance review continued.
+- CI surfaced non-blocking follow-up warnings for Next.js smooth-scroll metadata, React script rendering during browser tests, and the Node runtime target of `pnpm/action-setup@v4`; these were reviewed before final Phase 3 closure.
 
 ### Phase 3 — testing and quality started
 
@@ -53,7 +70,7 @@
 - User authorized documentation updates and squash merge of PR #7 into main.
 - Final implementation commit `82b5bef` completed Vercel Preview deployment with READY status; homepage HTTP check passed with the existing report.
 - Updated the phase status and added `phase-3-plan.md` covering persistent tests, isolated fixtures, browser interactions, accessibility, performance and repeatable verification.
-- Expanded Phase 3 TODOs to match the plan; these checks remain pending. Main deployment status is verified after the merge, not inferred from Preview.
+- Expanded Phase 3 TODOs to match the plan; these checks remained pending at handoff. Main deployment status is verified after the merge, not inferred from Preview.
 
 ### Phase 2 — approved design implementation
 
@@ -72,14 +89,14 @@
 - The actual report renderer also passed a local server-rendered fixture covering code-copy controls, GFM tables, stable heading anchors, external-link attributes, skipped HTML and image-link behavior.
 - Added long-title/URL wrapping, minimum action height and a narrow-phone navigation adjustment after static responsive review.
 - PR: https://github.com/siyujellyfish/daily-report/pull/7. The final docs/style follow-up is built by the same Preview pipeline; final deployment status is checked before handoff.
-- Phase 3 browser/mobile/accessibility interaction tests and persistent Vitest/Playwright suites remain pending. No browser interaction test is claimed in Phase 2.
+- Phase 3 browser/mobile/accessibility interaction tests and persistent Vitest/Playwright suites remained pending at Phase 2 handoff.
 
 ### Planning and documentation synchronization
 
 - Expanded `AI-build/todo.md` into the complete Phase 0–5 implementation plan with detailed work items and acceptance criteria.
 - Defined Phase 2 as the public website and server-side read/query layer, including homepage, archives, report detail, Markdown rendering, source attribution, responsive UI and metadata.
 - Defined Phase 3 as Vitest/Playwright coverage, accessibility, quality and performance verification.
-- Defined Phase 4 as integration of the real `每日資訊新聞` and `每日框架工具推薦` ChatGPT Scheduled Tasks through the existing Make Scenario.
+- Defined Phase 4 as integration of the real `每日資訊新聞` and `每日框架工具推薦` report types through the existing Make Scenario.
 - Defined Phase 5 as final credential rotation, production hardening, unattended Scheduled Task activation and launch closure.
 - Deferred the final `INGEST_SECRET` rotation until Phase 5 immediately before recurring production use, while retaining the requirement that the currently exposed development credential must not become the final production credential.
 - Expanded `architecture.md` with the target public-page architecture, centralized query layer, Markdown rendering boundary, testing boundary and production payload flow.
