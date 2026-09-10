@@ -9,12 +9,12 @@
 - Phase 2 — Public website：完成實作與 Preview 讀取驗證；透過 PR #7 以 squash 交付 main。
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證；兩個既有 recurring Tasks 保持原狀。
-- Phase 5 — Production hardening & launch：進行中。Production/Make/Neon/recurring Task preflight 已完成；目前停在 final `INGEST_SECRET` 安全輪替的人工作業 gate。輪替與 Vercel redeploy 驗證完成後，才會把 Phase 4 verified delivery contract 套到兩個正式 recurring Tasks，並等待第一輪原排程 unattended Production execution 完成 launch acceptance。
+- Phase 5 — Production hardening & launch：進行中。Final credential rotation 已嘗試並完成新的 Vercel Production redeploy，但第一次 high-level Make exact-retry 驗證回傳 `Unauthorized`；目前先重新同步 Vercel raw secret 與 Make `Bearer <secret>`，驗證成功前不修改正式 recurring Tasks。
 
 ## Documents
 
-- `phase-5-plan.md`：Phase 5 final credential rotation、安全操作邊界、正式 recurring delivery、首輪 unattended execution 與 launch closure 計畫。
-- `phase-5-verification.md`：Phase 5 preflight、credential rotation gate 與後續 acceptance 的實際驗證紀錄。
+- `phase-5-plan.md`：Phase 5 final credential rotation、Production hardening、recurring publishing activation、第一輪 unattended execution 與 launch closure 計畫。
+- `phase-5-verification.md`：Phase 5 Production preflight、credential validation、recurring execution 與 launch acceptance 實際紀錄。
 - `phase-4-plan.md`：Phase 4 真實 Scheduled Task 整合、one-shot shadow validation、payload contract、驗證矩陣與 Phase 5 handoff。
 - `phase-4-verification.md`：Phase 4 兩個 shadow task、Make execution、Neon Production、公開網站與安全邊界的實際驗證紀錄。
 - `phase-3-plan.md`：Phase 3 測試、品質、效能與驗收計畫，以及完成狀態。
@@ -32,4 +32,4 @@
 - 所有進入 `main` 的變更一律透過 PR 並使用 squash merge。
 - 套件新增或升級前需重新確認官方文件與目前相容的 stable 版本。
 - 不使用 OpenAI API；報告產生維持由 ChatGPT Scheduled Tasks 執行。
-- Secret 不可提交到 Git；正式 recurring production publishing 前需完成 Phase 5 的最終憑證輪替。
+- Secret 不可提交到 Git；正式 recurring production publishing 前需完成 Phase 5 的 final credential high-level validation。
