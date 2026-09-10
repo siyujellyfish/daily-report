@@ -123,3 +123,23 @@ Development is organized into the following lifecycle:
 - Fix concrete framework/accessibility warnings when evidence identifies an application issue, such as Next.js smooth-scroll metadata and ambiguous accessible labels.
 - A React script-rendering message that appears only under `next dev`, does not reproduce in the production `next start` verification, and causes no failed behavior is recorded as non-blocking rather than prompting speculative dependency/product changes.
 - Phase 3 acceptance requires the final implementation checkpoint to pass TypeScript, unit, isolated DB integration, browser, read-error, production build and client-JS budget checks, with a READY Vercel Preview. PR #8 is delivered to `main` only by squash merge after the final documentation head is reverified.
+
+## 2026-09-10 — Phase 4 Scheduled Task integration planning
+
+- Reconcile project labels with the actual active automation names: `開發技術每日追蹤` maps to `daily-news`; `每日突破性工具推薦` maps to `framework-recommendation`.
+- Use only `Daily Report - Publish to Vercel` for Phase 4. The disabled historical `Scheduled Task POC Test` and old `Daily Report - ChatGPT POC` are not production contract references.
+- Freeze the Make on-demand interface as `reportType`, `title`, `contentMarkdown`, `generatedAt`, and structured `sources[]`; do not use the old POC `sourcesJson` convention.
+- Keep `contentMarkdown` free of ChatGPT UI citation serialization. Source attribution for persistence/rendering must be transported as structured `{ title, url }` items.
+- Use `generatedAt` from the real task execution time with explicit `+08:00`; `report_date` remains derived by the ingest service using Asia/Taipei.
+- Title conventions are `開發技術每日追蹤｜YYYY-MM-DD` for `daily-news` and `每日突破性工具推薦｜<工具名稱>` for framework recommendations.
+- Preserve the existing generation rules rather than moving research, deduplication, fallback selection, translation, summarization or editorial logic into Make.
+- Preserve daily-news no-result semantics, but still publish a deterministic Markdown no-result report with `sources = []` so a scheduled run is observable end to end rather than silently skipped.
+- Preserve framework recommendation fallback behavior: if no compelling newly released tool exists, select a recent fast-growing representative tool and explain why rather than emitting an empty report.
+- Do not permanently add Make publishing to the two currently enabled recurring Tasks during Phase 4. Doing so would begin recurring production writes before the Phase 5 final credential rotation.
+- Validate Phase 4 through two one-shot shadow Scheduled Tasks that copy the real prompts and add only the tested delivery suffix. Each must run from its schedule without run-time manual approval.
+- Before each shadow run, read-only check Neon Production for an occupied `(report_type, report_date)`. Never delete/update a Production report to create test space; move validation to a non-colliding business date instead.
+- During credential-bearing Make validation, inspect only high-level scenario execution outcome. Do not inspect the HTTP module Authorization input/header.
+- An exact duplicate retry may be used to confirm idempotency; a different payload for an occupied type/date must remain a 409 and must not be worked around with manual DB edits.
+- Phase 4 completes only after both real report types persist correctly and render on the homepage/archive/detail paths with Markdown, structured sources and Asia/Taipei date intact.
+- Phase 5, after final `INGEST_SECRET` rotation and Vercel redeploy, will apply the Phase 4 verified delivery suffix to the two actual recurring Tasks while retaining their existing schedules and research rules.
+- Detailed procedure and acceptance are maintained in `phase-4-plan.md`.
