@@ -17,7 +17,7 @@ test("mobile menu opens, navigates and closes", async ({ page }, testInfo) => {
 	await expect(menu).toHaveAttribute("aria-expanded", "false");
 	await menu.click();
 	await expect(menu).toHaveAttribute("aria-expanded", "true");
-	await page.getByRole("link", { name: "資訊新聞" }).click();
+	await page.getByRole("link", { name: "資訊新聞", exact: true }).click();
 	await expect(page).toHaveURL(/\/news$/);
 });
 
