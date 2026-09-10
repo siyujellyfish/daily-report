@@ -17,6 +17,7 @@
 		"test:integration": "vitest run --config vitest.integration.config.mts",
 		"test:e2e": "playwright test",
 		"test:e2e:error": "playwright test --config playwright.error.config.ts",
+		"test:e2e:performance": "playwright test --config playwright.performance.config.ts",
 		"test:e2e:install": "playwright install chromium",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate"
