@@ -106,16 +106,19 @@ YYYY-MM-DD-daily-news
 YYYY-MM-DD-framework-recommendation
 ```
 
-The public read path should use React Server Components and direct server-side database queries. Do not introduce a browser-side REST API solely for pages that can query Neon on the server.
+The public read path uses React Server Components and direct server-side database queries. No browser-side REST API is used for public report reads.
 
 ## Query layer
 
-Database access for pages should be centralized outside page components. Planned query functions include:
+Database access for pages is centralized in `src/lib/reports.ts` with an explicit public projection and presentation mapping outside page components.
+
+Implemented query functions:
 
 ```text
 getLatestReports()
-getReportsByType(reportType, pagination)
+getReportsByType(reportType, page)
 getReportBySlug(slug)
+getReportSitemapEntries()
 ```
 
 Responsibilities of the query layer:
@@ -124,34 +127,55 @@ Responsibilities of the query layer:
 - consistently map database records into presentation-friendly report objects;
 - keep Asia/Taipei date and slug conversion in one place;
 - support pagination without duplicating SQL/Drizzle logic across routes;
-- make later unit testing possible without coupling rendering directly to database syntax.
+- expose only public report fields to rendering code.
 
 ## Markdown rendering
 
 - Persist source content as Markdown, never rendered HTML.
-- Render with `react-markdown`.
-- Use `remark-gfm` if GitHub Flavored Markdown support is required.
+- Render with `react-markdown` + `remark-gfm`.
 - Do not enable `rehype-raw` or arbitrary raw HTML rendering.
 - Render source links in a dedicated attribution section based on structured `sources` data.
+- Heading IDs are deterministic and collision-free; duplicate visible headings receive distinct anchors and accessible TOC labels.
+- Wide Markdown tables and code blocks scroll locally rather than forcing document-level mobile overflow.
 
-## Phase 3 target — quality boundary
+## Phase 3 — implemented quality boundary
 
-Vitest should cover pure application logic such as:
+Testing layers are intentionally separated:
 
-- slug generation/parsing;
-- Asia/Taipei report-date handling;
-- payload/report mapping;
-- source normalization;
-- query helper behavior where practical.
+```text
+Vitest unit
+  pure date / slug / Markdown / schema / presentation logic
+  isolated component empty-state rendering
 
-Playwright should cover critical public flows:
+Vitest integration
+  Neon phase3-testing read queries only
+  TEST_DATABASE_URL safety guard
 
-- home page;
-- news archive;
-- framework archive;
-- report detail;
-- missing report / 404;
-- mobile/basic responsive behavior where material.
+Playwright main
+  desktop + Pixel 7 public flows
+  navigation / archives / detail / 404
+  accessibility / theme / TOC / clipboard / overflow
+
+Playwright read-error
+  independent Next.js server without DATABASE_URL
+  HTTP 500 + retryable application error UI
+
+Playwright performance
+  production next start
+  cold-load client JavaScript budget
+```
+
+CI behavior:
+
+- `pnpm/setup@v2` supplies pnpm 12.3.4 and Node 24.
+- Frozen lockfile, TypeScript, unit tests and `next build` always run.
+- DB integration and browser suites require repository secret `TEST_DATABASE_URL`.
+- Production build uses an intentionally invalid localhost database URL and does not access Production.
+- DB integration rejects `TEST_DATABASE_URL === DATABASE_URL`.
+- Public browser reading flow is verified to perform no `/api/*` read requests.
+- Client JavaScript budget is 1 MiB uncompressed per tested cold route; current measured totals are approximately 505–506 KB.
+
+Observed behavior did not justify a Redis/cache layer or query-plan tuning in Phase 3. Those remain evidence-driven future optimizations rather than architecture defaults.
 
 ## Phase 4 target — production content delivery
 
