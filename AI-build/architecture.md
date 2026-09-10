@@ -4,8 +4,10 @@
 
 ```text
 ChatGPT Scheduled Tasks
-    ├─ 每日資訊新聞
-    └─ 每日框架工具推薦
+    ├─ 開發技術每日追蹤
+    │    └─ reportType: daily-news
+    └─ 每日突破性工具推薦
+         └─ reportType: framework-recommendation
             ↓
           Make App
             ↓
@@ -177,19 +179,31 @@ CI behavior:
 
 Observed behavior did not justify a Redis/cache layer or query-plan tuning in Phase 3. Those remain evidence-driven future optimizations rather than architecture defaults.
 
-## Phase 4 target — production content delivery
+## Phase 4 — planned real-content integration boundary
 
-Both Scheduled Tasks will invoke the same Make Scenario using different `reportType` values:
+The actual recurring Task names and report mappings are:
 
 ```text
-每日資訊新聞
+開發技術每日追蹤
 → daily-news
 
-每日框架工具推薦
+每日突破性工具推薦
 → framework-recommendation
 ```
 
-Production payload:
+The production Make Scenario is `Daily Report - Publish to Vercel`. It is on-demand and accepts:
+
+```text
+reportType: text, required
+ title: text, required
+ contentMarkdown: multiline text, required
+ generatedAt: text, required
+ sources: optional array
+   ├─ title: text, required
+   └─ url: URL, required
+```
+
+Production payload emitted by Make remains schema version `1`:
 
 ```json
 {
@@ -204,6 +218,21 @@ Production payload:
 }
 ```
 
+Phase 4 uses one-shot shadow Scheduled Tasks rather than permanently adding Make delivery to the two enabled recurring Tasks. The shadows copy the real research/selection rules and add only the delivery contract. This permits real Production content validation without starting long-term publishing before Phase 5 final credential rotation.
+
+Phase 4 safety/validation boundary:
+
+- current recurring Tasks remain behaviorally unchanged during Phase 4;
+- each shadow Task runs once from its own schedule and must not require run-time manual approval;
+- before each run, read-only check Production for an occupied `(report_type, report_date)`; never delete/update an existing Production row to make room for a test;
+- `contentMarkdown` must not contain ChatGPT UI citation tokens;
+- source attribution is transported as the Make `sources[]` input, not as `sourcesJson` from the old POC;
+- inspect only high-level Make run outcome; never open HTTP module Authorization header/input during credential-bearing validation;
+- validate Neon persistence and public rendering after each report type;
+- exact retry is allowed only for idempotency verification; a different same-day/type payload must remain a 409 conflict.
+
+Detailed execution and acceptance: `phase-4-plan.md`.
+
 ## Phase 5 target — launch hardening
 
 Before enabling recurring production delivery:
@@ -212,8 +241,9 @@ Before enabling recurring production delivery:
 - redeploy Vercel Production after environment-variable rotation;
 - verify only through the high-level Make Scenario result and database state;
 - do not inspect Make module input/header data during final credential verification;
+- apply the Phase 4 verified delivery suffix to the two actual recurring Tasks while preserving their research rules and schedules;
 - confirm Production deployment is READY and the public domain is reachable;
-- confirm both real report types can be ingested and rendered;
+- observe the first unattended recurring executions for both report types;
 - complete `/AI-build` records and final launch checklist.
 
 ## Phase 2 implementation details (2026-09-09)
