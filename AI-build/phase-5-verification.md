@@ -4,7 +4,7 @@
 
 Phase 5 的 Production runtime acceptance 已於 2026-09-11 完成。Final `INGEST_SECRET` 已安全輪替並經 high-level Make outcome 驗證；兩個正式 recurring Scheduled Tasks 已保留原研究規則與 daily schedule，並完成第一輪 original-schedule unattended Production publish。Make、Neon exactly-once 與公開網站均通過。
 
-目前只剩 release closure：更新 `/AI-build`、將 PR #11 由 Draft 轉為 ready、以 squash merge 進入 `main`，並確認 merge 後新的 Vercel Production deployment 為 READY。
+`/AI-build` release bookkeeping 已完成。目前只剩將 PR #11 由 Draft 轉為 ready、以 squash merge 進入 `main`，並確認 merge 後新的 Vercel Production deployment 為 READY。
 
 ## Preflight verification — 2026-09-10
 
@@ -164,5 +164,5 @@ Phase 4 verified delivery suffix 已正式加入兩個既有 recurring Tasks；�
 - [x] First unattended recurring executions publish exactly once for both report types。
 - [x] Public website renders the new recurring reports correctly。
 - [x] Persisted Markdown contains no ChatGPT UI citation serialization。
-- [ ] Final `/AI-build` release bookkeeping completed。
+- [x] Final `/AI-build` release bookkeeping completed on the Phase 5 branch。
 - [ ] PR #11 squash merged to `main` and post-merge Production deployment verified READY。
