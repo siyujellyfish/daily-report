@@ -1,6 +1,28 @@
 # Changelog
 
+## 2026-09-11
+
+### Phase 5 — unattended production acceptance
+
+- Confirmed both real recurring Scheduled Tasks retained their original daily schedules and enabled state after the Phase 5 delivery-suffix activation.
+- `開發技術每日追蹤` ran automatically at approximately 08:23 Asia/Taipei and published `daily-news` through `Daily Report - Publish to Vercel`.
+- `每日突破性工具推薦` ran automatically at approximately 08:38 Asia/Taipei and published `framework-recommendation` through the same Make Scenario.
+- High-level Make executions `c0456ae55eef471e914369ec15afa709` and `082cb3a2d41f4112a597980dde29bca3` both completed successfully with `startedBy = auto`; credential-bearing module input/header data was not inspected.
+- Read-only Neon verification confirmed exactly one 2026-09-11 row for each report type. `daily-news` contains 3 structured sources and `framework-recommendation` contains 6; both persisted Markdown payloads contain no ChatGPT UI citation serialization.
+- Verified `daily.azubot.xyz`, `/news`, `/frameworks`, `/reports/2026-09-11-daily-news`, and `/reports/2026-09-11-framework-recommendation` all return HTTP 200 and render the new reports correctly.
+- No Production UPDATE/DELETE, temporary high-frequency Scheduled Task, or credential/module inspection was used for acceptance.
+- Phase 5 runtime acceptance is complete. PR #11 proceeds to squash-only release closure and post-merge Vercel Production verification.
+
 ## 2026-09-10
+
+### Phase 5 — production hardening and recurring activation
+
+- Completed final `INGEST_SECRET` rotation through the Vercel and Make UIs without placing the value in ChatGPT, Git, PR/Issue text or `/AI-build`.
+- Redeployed Vercel Production after rotation; deployment `dpl_2hsprAQ5637aig9UjtXovxuq1PgL` reached READY.
+- The first post-rotation high-level Make exact retry returned `Unauthorized` while the credentials were still mismatched; Neon remained unchanged. This supplied a final invalid-Bearer rejection check without reading the Authorization header/input.
+- After re-synchronizing the Make Authorization value, exact-retry execution `b69d04ee710b474b9302e702a6dba85c` succeeded. Neon still contained exactly one copy of the existing payload and its `received_at` remained unchanged.
+- Applied the Phase 4 verified Production delivery contract to the two actual recurring Scheduled Tasks by changing only their prompts. Original research/selection rules, daily schedules, `flexible_schedule` mode and enabled state were preserved.
+- Kept the recurring tasks on their original schedules rather than introducing a temporary high-frequency launch test.
 
 ### Phase 4 — planning completed
 
