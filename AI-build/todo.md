@@ -204,7 +204,7 @@ Phase 3 implementation and acceptance are complete. Verified implementation chec
 - [x] Inspect actual query plans/index usage only if observed behavior warrants it. No query latency or functional bottleneck was observed in isolated integration/browser verification, so no speculative query-plan change was introduced.
 - [x] Avoid adding Redis/cache infrastructure without a demonstrated need.
 - [x] Check generated page/deployment size for avoidable client-side JavaScript. Production `next start` cold-load totals are about 505–506 KB uncompressed and remain below the 1 MiB CI guard.
-- [x] Confirm Phase 3 test design does not add a new public write API or expose test credentials in code/configuration.
+- [x] Confirm Phase 3 test design does not add a new public credentials or unnecessary write API surface.
 
 ### 3.5 Repeatable verification
 
@@ -359,3 +359,4 @@ These are not launch blockers and should not be implemented preemptively:
 - [ ] Admin/CMS tooling.
 - [ ] Redis or application caching based on measured traffic.
 - [ ] Monitoring/alerting beyond Vercel/Neon/Make built-in observability.
+- [ ] Additional report types/schema versions.
