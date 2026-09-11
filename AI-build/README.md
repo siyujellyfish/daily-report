@@ -9,7 +9,7 @@
 - Phase 2 — Public website：完成實作與 Preview 讀取驗證；透過 PR #7 以 squash 交付 main。
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證。
-- Phase 5 — Production hardening & launch：runtime acceptance 已完成。Final `INGEST_SECRET` 已安全同步，rotation-era Production redeploy 為 READY，兩個正式 recurring Tasks 已套用 verified delivery contract 且保持原 daily schedule。2026-09-11 第一輪 original-schedule unattended execution 已由 Make auto publish 成功，Neon `daily-news` / `framework-recommendation` 各 exactly once，公開首頁、archives 與兩個 detail routes 均 HTTP 200。現處於 release closure：PR #11 完成 `/AI-build` 同步後以 squash merge 進入 `main`，再執行 post-merge Production READY 驗證。
+- Phase 5 — Production hardening & launch：完成。Final `INGEST_SECRET` 已安全同步；兩個正式 recurring Tasks 保留原 daily schedule 並使用 verified delivery contract。2026-09-11 第一輪 original-schedule unattended execution 已成功，Neon 兩種類型各 exactly once，公開頁面驗證通過。PR #11 已以 squash merge 合併至 `main`（`b0efb79d33c4056687fa52a6fd120668cf4f176c`），對應 Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` 已達 `READY`。
 
 ## Documents
 
