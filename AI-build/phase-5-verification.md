@@ -2,11 +2,9 @@
 
 ## Current status
 
-Phase 5 尚未達成最終 launch acceptance，但 final credential gate 與 recurring publishing activation 已完成。
+Phase 5 的 Production runtime acceptance 已於 2026-09-11 完成。Final `INGEST_SECRET` 已安全輪替並經 high-level Make outcome 驗證；兩個正式 recurring Scheduled Tasks 已保留原研究規則與 daily schedule，並完成第一輪 original-schedule unattended Production publish。Make、Neon exactly-once 與公開網站均通過。
 
-2026-09-10 使用者在 Vercel Production 與 Make UI 重新同步 `INGEST_SECRET` 後，第二次 high-level Make exact-retry validation 成功；Neon 確認同一 payload 仍只有一筆資料。隨後已將 Phase 4 驗證過的 Production delivery contract 套用到兩個正式 recurring Scheduled Tasks，保留原研究規則、daily schedule 與 enabled 狀態。
-
-由於 2026-09-10 兩個正式 recurring Tasks 的原排程均在 Phase 5 publishing activation 前已執行完畢，第一輪可作 launch acceptance 的 unattended recurring execution 必須來自下一次原定 daily schedule。Phase 5 PR 在此之前保持 Draft，不提前 squash merge。
+目前只剩 release closure：更新 `/AI-build`、將 PR #11 由 Draft 轉為 ready、以 squash merge 進入 `main`，並確認 merge 後新的 Vercel Production deployment 為 READY。
 
 ## Preflight verification — 2026-09-10
 
@@ -14,155 +12,157 @@ Phase 5 尚未達成最終 launch acceptance，但 final credential gate 與 rec
 
 - Project：`daily-report`。
 - Project ID：`prj_KMaRvluXMunuiRsB5TNPWHj3pFr3`。
-- Baseline Production deployment：`dpl_P4G3qp9aHRdEk5nVTn3jDP4qgn8c`。
+- Phase 5 preflight baseline：`dpl_P4G3qp9aHRdEk5nVTn3jDP4qgn8c`。
 - State：`READY`。
 - Target：`production`。
 - Git ref：`main`。
 - Git commit：`0f25c8502a952e2fe5571af963d6d7bf2fd10f17`，Phase 4 PR #10 squash merge。
-- Production domains/aliases include `daily.azubot.xyz` and Vercel production aliases.
 
 ### Make production transport
 
-- Space：private space。
 - Scenario：`Daily Report - Publish to Vercel`。
 - Scenario ID：`7294339`。
 - State：active。
 - Trigger：on-demand。
-- Incomplete executions：0。
+- Frozen interface：`reportType`、`title`、`contentMarkdown`、`generatedAt`、`sources[] { title, url }`。
 - Flow：Start Subscenario → Build report JSON → HTTP MakeRequest → ReturnData。
-- Interface 與 Phase 4 frozen contract 一致：`reportType`、`title`、`contentMarkdown`、`generatedAt`、`sources[] { title, url }`。
 
-只讀 scenario structure/interface 與 high-level execution outcome，未讀 HTTP module configuration，因此未開啟或暴露 Authorization header/input。
+整個 Phase 5 只讀 high-level Scenario / execution outcome；未讀 HTTP module Authorization header/input。
 
 ### Neon Production
 
-- Project：`daily-report`。
 - Project ID：`shiny-fire-00063440`。
-- Default Production branch：`main` / `br-empty-shape-b3x5225o`。
-- Branch state：ready。
-- `reports` table schema 與 `src/db/schema.ts` 一致。
-- Production indexes：`reports_pkey`、`reports_payload_hash_unique`、`reports_type_date_unique`、`reports_date_idx`、`reports_type_date_idx`。
-- 未對 Production 執行 UPDATE、DELETE、fixture 或 migration。
+- Production branch：`main` / `br-empty-shape-b3x5225o`。
+- Branch ready。
+- `reports` schema 與 `src/db/schema.ts` 一致。
+- Unique controls：`reports_payload_hash_unique`、`reports_type_date_unique`。
+- Query indexes：`reports_date_idx`、`reports_type_date_idx`。
+
+未對 Production 執行 UPDATE、DELETE、fixture 或 migration。
 
 ## Final credential rotation — 2026-09-10
 
-使用者在 Vercel Production 與 Make UI 完成 final `INGEST_SECRET` rotation，且 secret 未貼入 ChatGPT、Git、PR 或 `/AI-build`。
+### Rotation procedure
 
-### Post-rotation Vercel deployment
+Final `INGEST_SECRET` 由使用者直接在 Vercel / Make UI 內同步，secret value 從未貼入 ChatGPT、Git、Issue/PR 或 `/AI-build`，也未使用 credential-bearing module inspection 讀取 Authorization input/header。
 
-- Production redeploy：`dpl_2hsprAQ5637aig9UjtXovxuq1PgL`。
-- State：`READY`。
+Rotation 後 Vercel Production redeploy：
+
+- Deployment：`dpl_2hsprAQ5637aig9UjtXovxuq1PgL`。
 - Target：`production`。
-- Source：redeploy。
-- Production aliases包含 `daily.azubot.xyz`。
+- State：`READY`。
 
-此 deployment 是 final Vercel credential rotation 後建立的 Production runtime。
+第一次 high-level exact retry 因 Make 與 Vercel secret 尚未一致而由 HTTP module 回 `Unauthorized`。此結果證明沒有有效 Bearer credential 時 ingest 不接受寫入；Neon row count 維持 1。重新同步 Make Authorization 後再次使用同一 Phase 4 payload retry：
 
-### First credential validation attempt
+- Make execution：`b69d04ee710b474b9302e702a6dba85c`。
+- Status：success。
+- `receivedType = daily-news`。
+- `receivedTitle = 開發技術每日追蹤｜2026-09-10`。
+- Neon exact retry 後 row count 仍為 1，既有 `received_at` 未被修改。
 
-第一次以 2026-09-10 已存在的 `daily-news` report 做 exact retry：
+因此 final credential、Bearer enforcement 與 idempotency gate 均通過，且未藉由 Production UPDATE/DELETE 做驗證。
 
-- Make execution：`3750e04c2c384b34bf389c28a83a8c57`
-- result：`error`
-- failing module：`http:MakeRequest`
-- message：`Unauthorized`
+## Recurring Production activation — 2026-09-10
 
-Neon read-only check 證實 row count 維持 1，沒有新增、更新或刪除 Production report。此次結果被判定為 Vercel/Make credential 尚未同步，而不是 persistence failure。
-
-### Credential re-sync and successful validation
-
-使用者重新確認：
-
-- Vercel Production `INGEST_SECRET` 儲存 raw secret 本體，不含 `Bearer ` prefix。
-- Make HTTP `Authorization` header 使用 `Bearer <同一組 secret>`。
-- Make Scenario 重新儲存。
-
-第二次使用完全相同的 persisted canonical payload 做 exact retry：
-
-- Make execution：`b69d04ee710b474b9302e702a6dba85c`
-- result：`success`
-- output success：`true`
-- message：`Daily Report published to Vercel successfully.`
-- receivedType：`daily-news`
-- receivedTitle：`開發技術每日追蹤｜2026-09-10`
-
-驗證過程只讀 `scenario_run` high-level outcome，未檢視 module input/header。
-
-Exact retry 後 Neon 再次以 read-only SQL 驗證 payload hash `97952b030fb720752454fece7a07cadbe9c5dd8036074eb937de40faf53ae7c1`：
-
-- row count：`1`
-- first received_at：`2026-09-10T01:32:01.761Z`
-- last received_at：`2026-09-10T01:32:01.761Z`
-
-row count 與 `received_at` 均未改變，final credential high-level validation 與 idempotency gate 因此通過。
-
-## Production public read validation
-
-Credential re-sync 後重新讀取 `https://daily.azubot.xyz/`：
-
-- HTTP 200。
-- Next.js Production page 正常回應。
-- 2026-09-10 `daily-news` 與 `framework-recommendation` 仍可從首頁讀取。
-- 本次 credential validation 沒有破壞公開 read path。
-
-## Recurring Production delivery activation — 2026-09-10
-
-Final credential gate 通過後，兩個正式 Scheduled Tasks 已加入 Phase 4 verified delivery suffix。
+Phase 4 verified delivery suffix 已正式加入兩個既有 recurring Tasks；只更新 prompt，未修改 schedule、timing mode 或 enabled state。
 
 ### `開發技術每日追蹤`
 
 - Task ID：`6a62e583aac081918e23602484618f54`。
-- enabled：維持 `true`。
-- schedule：維持原 daily recurring schedule，不改成臨時驗收排程。
-- 原研究範圍、官方/primary source 優先、歷史去重、中文技術細節要求全部保留。
-- Production mapping：`reportType = daily-news`。
-- title：`開發技術每日追蹤｜<Asia/Taipei YYYY-MM-DD>`。
-- clean Markdown 與 structured `sources[]` 維持 Phase 4 contract。
-- `generatedAt` 使用實際送出時間，ISO 8601 + `+08:00`。
-- no-result 時仍呼叫 Make，發布 deterministic no-result Markdown，`sources = []`。
-- Make Scenario：`Daily Report - Publish to Vercel`。
+- `reportType = daily-news`。
+- Schedule 保持 `DTSTART:20260725T080000` + `RRULE:FREQ=DAILY`。
+- Timing mode：`flexible_schedule`。
+- Enabled：true。
+- 保留原研究範圍、來源品質、歷史去重與 no-result 規則。
 
 ### `每日突破性工具推薦`
 
 - Task ID：`6a7333e544788191ab2a5626784905c5`。
-- enabled：維持 `true`。
-- schedule：維持原 daily recurring schedule，不改成臨時驗收排程。
-- 原選題、歷史去重、分析結構與 representative-tool fallback 全部保留。
-- Production mapping：`reportType = framework-recommendation`。
-- title：`每日突破性工具推薦｜<最終推薦工具名稱>`。
-- clean Markdown 與 structured `sources[]` 維持 Phase 4 contract。
-- `generatedAt` 使用實際送出時間，ISO 8601 + `+08:00`。
-- 無 compelling 新工具時保留原 fallback，不發布空白報告。
-- Make Scenario：`Daily Report - Publish to Vercel`。
+- `reportType = framework-recommendation`。
+- Schedule 保持 `DTSTART:20260806T080000` + `RRULE:FREQ=DAILY`。
+- Timing mode：`flexible_schedule`。
+- Enabled：true。
+- 保留原選題、去重、分析結構與 fallback 規則。
 
-兩個 Task 都只修改 prompt 的 delivery suffix；schedule、timing mode、enabled 狀態均未修改。
+## First unattended recurring acceptance — 2026-09-11
 
-## Pending first unattended recurring execution
+### Scheduled Tasks
 
-2026-09-10 的兩個正式 recurring Task 在 Phase 5 activation 前已完成當日原排程，因此不以手動 run、shadow run 或臨時高頻 schedule 取代 launch acceptance。
+兩個正式 Tasks 均由原本 daily schedule 自行執行，未使用 manual run 或臨時高頻排程：
 
-下一輪原定 daily execution 後，每個 report type 需驗證：
+- `開發技術每日追蹤`：last run `2026-09-11T00:23:58Z`，約 Asia/Taipei 08:23。
+- `每日突破性工具推薦`：last run `2026-09-11T00:38:38Z`，約 Asia/Taipei 08:38。
 
-1. Scheduled Task 由原 schedule 自動啟動。
-2. Make high-level execution 成功。
-3. Neon 對應 `(report_type, report_date)` exactly once。
-4. `generatedAt`、title、Markdown、sources 與 Asia/Taipei business date 正確。
-5. 首頁、archive、detail route 正確顯示。
-6. persisted Markdown 不含 ChatGPT UI citation token。
-7. 驗證過程不執行 Production UPDATE/DELETE。
+兩者執行後仍 enabled，原 schedule 不變。
+
+### Make high-level outcomes
+
+2026-09-11 原排程窗口只有兩筆對應 Production publish execution，兩者皆 `startedBy = auto` 且 success：
+
+1. `c0456ae55eef471e914369ec15afa709`
+   - `receivedType = daily-news`
+   - `receivedTitle = 開發技術每日追蹤｜2026-09-11`
+2. `082cb3a2d41f4112a597980dde29bca3`
+   - `receivedType = framework-recommendation`
+   - `receivedTitle = 每日突破性工具推薦｜Mastra`
+
+未檢視 execution module input/header。
+
+### Neon exactly-once verification
+
+以 read-only SQL 查詢 `report_date = 2026-09-11`：
+
+#### `daily-news`
+
+- Row count：`1`。
+- Title：`開發技術每日追蹤｜2026-09-11`。
+- `generated_at`：`2026-09-11T00:23:09Z` = Asia/Taipei `08:23:09`。
+- `received_at`：`2026-09-11T00:23:46.805Z`。
+- Structured sources：3。
+- ChatGPT cite/UI token：false。
+
+#### `framework-recommendation`
+
+- Row count：`1`。
+- Title：`每日突破性工具推薦｜Mastra`。
+- `generated_at`：`2026-09-11T00:37:31Z` = Asia/Taipei `08:37:31`。
+- `received_at`：`2026-09-11T00:38:19.688Z`。
+- Structured sources：6。
+- ChatGPT cite/UI token：false。
+
+兩種類型均 exactly once；business date、generatedAt、Markdown serialization 與 structured sources 正確。
+
+### Public website verification
+
+以下 Production routes 均 HTTP 200 且顯示 2026-09-11 新資料：
+
+- `/`：latest edition 為 `2026.09.11`，同時顯示 daily-news 與 Mastra 報告。
+- `/news`：最新項目為 `開發技術每日追蹤｜2026-09-11`。
+- `/frameworks`：最新項目為 `每日突破性工具推薦｜Mastra`。
+- `/reports/2026-09-11-daily-news`：完整 Markdown、TOC 與 3 個 structured source links 正常。
+- `/reports/2026-09-11-framework-recommendation`：完整 Markdown、TOC 與 6 個 structured source links 正常。
+
+## Security notes
+
+- Final secret value 未進入 ChatGPT、Git、PR、Issue 或 `/AI-build`。
+- Make credential-bearing HTTP module configuration 未被讀取。
+- Bearer rejection 由 rotation 時錯誤 credential 的 `Unauthorized` outcome 驗證。
+- Production database validation 全程 read-only；未使用 UPDATE/DELETE 清理或修正資料。
+- 第一輪 unattended acceptance 沒有修改正式 recurring schedules。
 
 ## Acceptance status
 
 - [x] Phase 5 preflight：Vercel baseline READY。
 - [x] Phase 5 preflight：Make Scenario active/on-demand/contract unchanged。
 - [x] Phase 5 preflight：Neon Production branch ready，schema/indexes 與 application 一致。
-- [x] Final `INGEST_SECRET` rotation completed without exposing the secret in ChatGPT/Git/docs。
-- [x] Vercel Production redeploy after credential rotation is READY。
-- [x] Final credential verified through high-level Make success without reading Authorization input/header。
-- [x] Exact retry remains idempotent in Neon with row count exactly 1。
-- [x] Public Production homepage remains HTTP 200 after credential validation。
-- [x] Recurring delivery suffix applied to both real Tasks while preserving their research rules and schedules。
-- [ ] First unattended recurring executions publish exactly once for both report types。
-- [ ] Public website renders the first new recurring reports correctly。
-- [ ] Final `/AI-build` closure completed。
-- [ ] PR #11 squash merged to `main` and post-merge Production verified READY。
+- [x] Phase 5 preflight：兩個 recurring Tasks enabled 且維持原 prompt/schedule。
+- [x] Final `INGEST_SECRET` rotation completed safely in Vercel + Make。
+- [x] Rotation-era Vercel Production deployment is READY。
+- [x] New credential verified through high-level Make outcome without reading Authorization input/header。
+- [x] Invalid Bearer authentication is rejected without creating a Production row。
+- [x] Recurring delivery suffix applied to both real Tasks without schedule changes。
+- [x] First unattended recurring executions publish exactly once for both report types。
+- [x] Public website renders the new recurring reports correctly。
+- [x] Persisted Markdown contains no ChatGPT UI citation serialization。
+- [ ] Final `/AI-build` release bookkeeping completed。
+- [ ] PR #11 squash merged to `main` and post-merge Production deployment verified READY。
