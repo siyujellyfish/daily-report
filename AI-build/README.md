@@ -9,7 +9,7 @@
 - Phase 2 — Public website：完成實作與 Preview 讀取驗證；透過 PR #7 以 squash 交付 main。
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證。
-- Phase 5 — Production hardening & launch：進行中。Final `INGEST_SECRET` 已安全完成 Vercel/Make 同步，rotation 後 Production redeploy 為 READY，high-level Make exact retry 已成功且 Neon row count 維持 1。Phase 4 verified delivery contract 已正式套用到 `開發技術每日追蹤` 與 `每日突破性工具推薦`，原研究規則、daily schedule 與 enabled 狀態均保留。目前只等待下一輪原排程 unattended execution 完成最終 launch acceptance；PR #11 維持 Draft，通過後才 squash merge 到 `main`。
+- Phase 5 — Production hardening & launch：runtime acceptance 已完成。Final `INGEST_SECRET` 已安全同步，rotation-era Production redeploy 為 READY，兩個正式 recurring Tasks 已套用 verified delivery contract 且保持原 daily schedule。2026-09-11 第一輪 original-schedule unattended execution 已由 Make auto publish 成功，Neon `daily-news` / `framework-recommendation` 各 exactly once，公開首頁、archives 與兩個 detail routes 均 HTTP 200。現處於 release closure：PR #11 完成 `/AI-build` 同步後以 squash merge 進入 `main`，再執行 post-merge Production READY 驗證。
 
 ## Documents
 
@@ -33,4 +33,4 @@
 - 套件新增或升級前需重新確認官方文件與目前相容的 stable 版本。
 - 不使用 OpenAI API；報告產生維持由 ChatGPT Scheduled Tasks 執行。
 - Secret 不可提交到 Git；credential-bearing Make 驗證只讀 high-level outcome，不讀取 Authorization header/input。
-- Phase 5 完成前不以手動或臨時高頻排程取代第一輪 unattended recurring acceptance。
+- Production 驗證不得以 UPDATE/DELETE 清除或改寫報告，也不得為驗收臨時修改正式 recurring schedule。
