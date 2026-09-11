@@ -179,7 +179,7 @@ CI behavior:
 
 Observed behavior did not justify a Redis/cache layer or query-plan tuning in Phase 3. Those remain evidence-driven future optimizations rather than architecture defaults.
 
-## Phase 4 — planned real-content integration boundary
+## Phase 4 — real-content validation boundary
 
 The actual recurring Task names and report mappings are:
 
@@ -218,33 +218,84 @@ Production payload emitted by Make remains schema version `1`:
 }
 ```
 
-Phase 4 uses one-shot shadow Scheduled Tasks rather than permanently adding Make delivery to the two enabled recurring Tasks. The shadows copy the real research/selection rules and add only the delivery contract. This permits real Production content validation without starting long-term publishing before Phase 5 final credential rotation.
+Phase 4 used one-shot shadow Scheduled Tasks rather than permanently adding Make delivery to the two enabled recurring Tasks. The shadows copied the real research/selection rules and added only the delivery contract. This validated real Production content before Phase 5 final credential rotation.
 
 Phase 4 safety/validation boundary:
 
-- current recurring Tasks remain behaviorally unchanged during Phase 4;
-- each shadow Task runs once from its own schedule and must not require run-time manual approval;
-- before each run, read-only check Production for an occupied `(report_type, report_date)`; never delete/update an existing Production row to make room for a test;
-- `contentMarkdown` must not contain ChatGPT UI citation tokens;
-- source attribution is transported as the Make `sources[]` input, not as `sourcesJson` from the old POC;
-- inspect only high-level Make run outcome; never open HTTP module Authorization header/input during credential-bearing validation;
-- validate Neon persistence and public rendering after each report type;
-- exact retry is allowed only for idempotency verification; a different same-day/type payload must remain a 409 conflict.
+- current recurring Tasks remained behaviorally unchanged during Phase 4;
+- each shadow Task ran once from its own schedule and required no run-time manual approval;
+- before each run, Production was checked read-only for an occupied `(report_type, report_date)`; no existing Production row was deleted or updated to make room for a test;
+- `contentMarkdown` did not contain ChatGPT UI citation tokens;
+- source attribution used the Make `sources[]` input, not the old POC `sourcesJson` contract;
+- Make validation inspected only high-level run outcome, never HTTP module Authorization header/input;
+- Neon persistence and public rendering were validated after each report type.
 
-Detailed execution and acceptance: `phase-4-plan.md`.
+Detailed execution and acceptance: `phase-4-plan.md` and `phase-4-verification.md`.
 
-## Phase 5 target — launch hardening
+## Phase 5 — live recurring production architecture
 
-Before enabling recurring production delivery:
+Phase 5 moved the validated Phase 4 contract from one-shot shadows to the two real recurring Scheduled Tasks after the final credential rotation. The live flow is now:
 
-- rotate `INGEST_SECRET` one final time in both Vercel and Make;
-- redeploy Vercel Production after environment-variable rotation;
-- verify only through the high-level Make Scenario result and database state;
-- do not inspect Make module input/header data during final credential verification;
-- apply the Phase 4 verified delivery suffix to the two actual recurring Tasks while preserving their research rules and schedules;
-- confirm Production deployment is READY and the public domain is reachable;
-- observe the first unattended recurring executions for both report types;
-- complete `/AI-build` records and final launch checklist.
+```text
+Original daily ChatGPT schedule
+        ↓
+Research / generation prompt
+        ↓
+Clean Markdown + structured sources
+        ↓
+Daily Report - Publish to Vercel
+        ↓
+Bearer-authenticated /api/v1/ingest
+        ↓
+Neon exactly-once persistence
+        ↓
+Server-rendered public website
+```
+
+### Live recurring task contract
+
+`開發技術每日追蹤`:
+
+- maps to `daily-news`;
+- keeps its original daily schedule and research/source-quality rules;
+- title is `開發技術每日追蹤｜YYYY-MM-DD` using the Asia/Taipei business date;
+- deterministic no-result days are still published with `sources = []`.
+
+`每日突破性工具推薦`:
+
+- maps to `framework-recommendation`;
+- keeps its original daily schedule, historical recommendation deduplication and fallback rule;
+- title is `每日突破性工具推薦｜<最終推薦工具名稱>`;
+- fallback selects a recent fast-growing representative tool instead of publishing an empty report.
+
+Both tasks:
+
+- send complete clean Markdown as `contentMarkdown`;
+- send actual completion time as ISO 8601 with explicit `+08:00`;
+- send deduplicated structured `{ title, url }[]` sources biased toward official/primary sources;
+- use the same Make Scenario and schema-v1 ingest contract;
+- remain independent of the OpenAI API.
+
+### Production safety boundary
+
+- Final `INGEST_SECRET` exists only in Vercel and Make runtime configuration; its value is not stored in Git or `/AI-build`.
+- Credential validation is performed using high-level Make outcomes only; HTTP Authorization module input/header is not inspected.
+- Invalid Bearer authentication is rejected before persistence.
+- Production validation is read-only except for normal scheduled ingest and controlled exact-retry idempotency verification.
+- Existing Production reports are never UPDATE/DELETE-ed to make room for tests or same-day conflicts.
+- Formal recurring schedules are not changed for launch testing.
+
+### Launch evidence
+
+The first real original-schedule unattended production cycle passed on 2026-09-11:
+
+- both Scheduled Tasks ran automatically;
+- both Make executions succeeded with `startedBy = auto`;
+- Neon stored exactly one row for each of `daily-news` and `framework-recommendation` on the 2026-09-11 business date;
+- persisted Markdown had no ChatGPT UI serialization;
+- homepage, archives and both detail routes rendered the new reports successfully.
+
+Detailed evidence is recorded in `phase-5-verification.md`.
 
 ## Phase 2 implementation details (2026-09-09)
 

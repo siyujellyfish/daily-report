@@ -143,3 +143,16 @@ Development is organized into the following lifecycle:
 - Phase 4 completes only after both real report types persist correctly and render on the homepage/archive/detail paths with Markdown, structured sources and Asia/Taipei date intact.
 - Phase 5, after final `INGEST_SECRET` rotation and Vercel redeploy, will apply the Phase 4 verified delivery suffix to the two actual recurring Tasks while retaining their existing schedules and research rules.
 - Detailed procedure and acceptance are maintained in `phase-4-plan.md`.
+
+## 2026-09-11 — Phase 5 production launch
+
+- The final `INGEST_SECRET` is maintained only in Vercel Production and the Make HTTP Authorization configuration. Its value is deliberately never read back into ChatGPT, Git, Issue/PR text or `/AI-build`.
+- The final Make HTTP module is not edited through ChatGPT tooling because safe full-config replacement would require first reading the credential-bearing module configuration. Credential rotation therefore remains a manual Vercel/Make UI operation; automated verification is limited to high-level Make outcomes plus independent Neon checks.
+- A rotation-era mismatched Bearer produced `Unauthorized` without creating a new Production row; after Make and Vercel were synchronized, the same exact-retry payload succeeded and remained exactly once. This is accepted as the final Bearer enforcement/idempotency gate without inspecting the header value.
+- The Phase 4 verified delivery contract is now attached to the two actual recurring Tasks. Only their prompts were extended; original research/selection rules, `flexible_schedule`, daily RRULE and enabled state remain unchanged.
+- `開發技術每日追蹤` is the canonical `daily-news` task and publishes deterministic no-result Markdown on empty days rather than silently skipping delivery.
+- `每日突破性工具推薦` is the canonical `framework-recommendation` task and retains the representative fast-growing-tool fallback rather than publishing an empty report.
+- Launch acceptance requires the original recurring schedules to trigger automatically; manual runs or temporary high-frequency schedules are not substitutes.
+- The first live unattended recurring cycle on 2026-09-11 passed for both types: Make reported `startedBy = auto`, Neon contained exactly one row for each type/business-date, persisted Markdown contained no ChatGPT UI tokens, and the homepage/archive/detail routes rendered successfully.
+- Production verification remains non-destructive. No report is UPDATE/DELETE-ed for acceptance, collision handling or retry testing.
+- Phase 5 release documentation is delivered through PR #11 and all changes entering `main` remain subject to the repository-wide squash-merge rule.
