@@ -300,49 +300,50 @@ Detailed execution contract: `phase-4-plan.md`. Actual Production evidence: `pha
 
 ### 5.1 Final credential rotation
 
-- [ ] Generate a final new `INGEST_SECRET` immediately before recurring production use.
-- [ ] Update Vercel Production `INGEST_SECRET`.
-- [ ] Update the Make HTTP Authorization header with the same final secret.
-- [ ] Do not paste or store the final secret in chat, Git, documentation or issue/PR text.
-- [ ] Trigger a fresh Vercel Production deployment so the new environment variable is loaded.
-- [ ] Verify the new credential using only the high-level Make Scenario result.
-- [ ] Confirm database state separately without inspecting Make module/header input data.
+- [x] Generate a final new `INGEST_SECRET` immediately before recurring production use.
+- [x] Update Vercel Production `INGEST_SECRET`.
+- [x] Update the Make HTTP Authorization header with the same final secret.
+- [x] Do not paste or store the final secret in chat, Git, documentation or issue/PR text.
+- [x] Trigger a fresh Vercel Production deployment so the new environment variable is loaded.
+- [x] Verify the new credential using only the high-level Make Scenario result.
+- [x] Confirm database state separately without inspecting Make module/header input data.
 
 ### 5.2 Production deployment validation
 
-- [ ] Confirm latest `main` Production deployment is READY.
-- [ ] Confirm Production aliases/domain resolve publicly.
-- [ ] Confirm `/api/v1/ingest` rejects requests without valid Bearer authentication.
-- [ ] Confirm website routes remain publicly readable.
-- [ ] Confirm Neon Production schema matches application expectations.
-- [ ] Confirm no secret values exist in repository history introduced by this project workflow.
+- [ ] Confirm latest `main` Production deployment is READY after the Phase 5 squash merge.
+- [x] Confirm Production aliases/domain resolve publicly.
+- [x] Confirm `/api/v1/ingest` rejects requests without valid Bearer authentication. Rotation-era mismatched Bearer returned `Unauthorized` without persistence.
+- [x] Confirm website routes remain publicly readable.
+- [x] Confirm Neon Production schema matches application expectations.
+- [x] Confirm no final secret value was introduced into Git or `/AI-build`; the final value was never exposed to ChatGPT tooling.
 
 ### 5.3 Enable recurring production delivery
 
-- [ ] Apply the Phase 4 verified delivery suffix to `開發技術每日追蹤` and map it to `daily-news`.
-- [ ] Apply the Phase 4 verified delivery suffix to `每日突破性工具推薦` and map it to `framework-recommendation`.
-- [ ] Preserve both Tasks' current research/selection rules and intended recurring schedules.
-- [ ] Confirm both Tasks point to `Daily Report - Publish to Vercel` through the final production contract.
-- [ ] Enable/retain their intended recurring schedules only after final credential rotation and Vercel redeploy.
-- [ ] Observe the first unattended real daily executions at high level.
-- [ ] Confirm each resulting report appears on the public website.
+- [x] Apply the Phase 4 verified delivery suffix to `開發技術每日追蹤` and map it to `daily-news`.
+- [x] Apply the Phase 4 verified delivery suffix to `每日突破性工具推薦` and map it to `framework-recommendation`.
+- [x] Preserve both Tasks' current research/selection rules and intended recurring schedules.
+- [x] Confirm both Tasks point to `Daily Report - Publish to Vercel` through the final production contract.
+- [x] Enable/retain their intended recurring schedules only after final credential rotation and Vercel redeploy.
+- [x] Observe the first unattended real daily executions at high level.
+- [x] Confirm each resulting report appears on the public website.
 
 ### 5.4 Documentation and release closure
 
-- [ ] Update `architecture.md` to the final deployed architecture if implementation differs from plan.
-- [ ] Update `decisions.md` with any final deviations.
-- [ ] Mark completed TODO items.
-- [ ] Add final launch entry to `changelog.md`.
-- [ ] Review `/AI-build` for stale temporary notes.
+- [x] Update `architecture.md` to the final deployed architecture if implementation differs from plan.
+- [x] Update `decisions.md` with final security/rollout decisions and deviations.
+- [x] Mark completed TODO items.
+- [x] Add final launch acceptance entry to `changelog.md`.
+- [x] Review `/AI-build` for stale temporary notes; retain Phase 4 shadow and Phase 5 preflight records as historical audit evidence.
 - [ ] Ensure final merge to `main` is squash merge.
 
 ### Phase 5 acceptance
 
-- [ ] Final credential is rotated and not exposed in diagnostic output.
-- [ ] Both recurring Scheduled Tasks operate unattended.
-- [ ] Public website displays newly generated reports correctly.
-- [ ] Production deployment and database are healthy.
-- [ ] `/AI-build` accurately represents the live system.
+- [x] Final credential is rotated and not exposed in diagnostic output.
+- [x] Both recurring Scheduled Tasks operate unattended.
+- [x] Public website displays newly generated reports correctly.
+- [x] Production runtime and database are healthy before release merge.
+- [x] `/AI-build` on the Phase 5 release branch accurately represents the live system and remaining merge gate.
+- [ ] Phase 5 release is squash-merged to `main` and the resulting Production deployment is READY.
 
 ---
 
@@ -358,4 +359,3 @@ These are not launch blockers and should not be implemented preemptively:
 - [ ] Admin/CMS tooling.
 - [ ] Redis or application caching based on measured traffic.
 - [ ] Monitoring/alerting beyond Vercel/Neon/Make built-in observability.
-- [ ] Additional report types/schema versions.
