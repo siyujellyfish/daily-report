@@ -310,7 +310,7 @@ Detailed execution contract: `phase-4-plan.md`. Actual Production evidence: `pha
 
 ### 5.2 Production deployment validation
 
-- [ ] Confirm latest `main` Production deployment is READY after the Phase 5 squash merge.
+- [x] Confirm latest `main` Production deployment is READY after the Phase 5 squash merge.
 - [x] Confirm Production aliases/domain resolve publicly.
 - [x] Confirm `/api/v1/ingest` rejects requests without valid Bearer authentication. Rotation-era mismatched Bearer returned `Unauthorized` without persistence.
 - [x] Confirm website routes remain publicly readable.
@@ -334,7 +334,7 @@ Detailed execution contract: `phase-4-plan.md`. Actual Production evidence: `pha
 - [x] Mark completed TODO items.
 - [x] Add final launch acceptance entry to `changelog.md`.
 - [x] Review `/AI-build` for stale temporary notes; retain Phase 4 shadow and Phase 5 preflight records as historical audit evidence.
-- [ ] Ensure final merge to `main` is squash merge.
+- [x] Ensure final merge to `main` is squash merge.
 
 ### Phase 5 acceptance
 
@@ -342,8 +342,8 @@ Detailed execution contract: `phase-4-plan.md`. Actual Production evidence: `pha
 - [x] Both recurring Scheduled Tasks operate unattended.
 - [x] Public website displays newly generated reports correctly.
 - [x] Production runtime and database are healthy before release merge.
-- [x] `/AI-build` on the Phase 5 release branch accurately represents the live system and remaining merge gate.
-- [ ] Phase 5 release is squash-merged to `main` and the resulting Production deployment is READY.
+- [x] `/AI-build` accurately represents the live system.
+- [x] Phase 5 release is squash-merged to `main` and the resulting Production deployment is READY.
 
 ---
 
