@@ -2,9 +2,9 @@
 
 ## Current status
 
-Phase 5 的 Production runtime acceptance 已於 2026-09-11 完成。Final `INGEST_SECRET` 已安全輪替並經 high-level Make outcome 驗證；兩個正式 recurring Scheduled Tasks 已保留原研究規則與 daily schedule，並完成第一輪 original-schedule unattended Production publish。Make、Neon exactly-once 與公開網站均通過。
+Phase 5 已於 2026-09-11 完成。Final `INGEST_SECRET` 已安全輪替並經 high-level Make outcome 驗證；兩個正式 recurring Scheduled Tasks 保留原研究規則與 daily schedule，並完成第一輪 original-schedule unattended Production publish。Make、Neon exactly-once、公開網站、PR #11 squash merge 與 post-merge Vercel Production 均通過。
 
-`/AI-build` release bookkeeping 已完成。目前只剩將 PR #11 由 Draft 轉為 ready、以 squash merge 進入 `main`，並確認 merge 後新的 Vercel Production deployment 為 READY。
+PR #11 已以 squash merge 合併至 `main`，squash commit 為 `b0efb79d33c4056687fa52a6fd120668cf4f176c`；對應 Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` 已達 `READY`。Phase 5 launch acceptance 全部完成。
 
 ## Preflight verification — 2026-09-10
 
@@ -142,6 +142,14 @@ Phase 4 verified delivery suffix 已正式加入兩個既有 recurring Tasks；�
 - `/reports/2026-09-11-daily-news`：完整 Markdown、TOC 與 3 個 structured source links 正常。
 - `/reports/2026-09-11-framework-recommendation`：完整 Markdown、TOC 與 6 個 structured source links 正常。
 
+## Release closure — 2026-09-11
+
+- Final PR #11 head `51ba9b67de9f0a057f35a66122b74754962f90a1` passed the full Quality workflow, including frozen install, typecheck, unit tests, production build, isolated DB integration, Playwright critical paths, read-error state and production client JavaScript budget.
+- Matching final Vercel Preview `dpl_HEDNo6SrxDTnXNrX4KcaDCx2EqYy` reached `READY`.
+- PR #11 was marked ready only after those gates passed.
+- PR #11 was merged using `squash`, producing `main` commit `b0efb79d33c4056687fa52a6fd120668cf4f176c`.
+- Matching post-merge Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` reached `READY` with `daily.azubot.xyz` and the production aliases attached.
+
 ## Security notes
 
 - Final secret value 未進入 ChatGPT、Git、PR、Issue 或 `/AI-build`。
@@ -164,5 +172,5 @@ Phase 4 verified delivery suffix 已正式加入兩個既有 recurring Tasks；�
 - [x] First unattended recurring executions publish exactly once for both report types。
 - [x] Public website renders the new recurring reports correctly。
 - [x] Persisted Markdown contains no ChatGPT UI citation serialization。
-- [x] Final `/AI-build` release bookkeeping completed on the Phase 5 branch。
-- [ ] PR #11 squash merged to `main` and post-merge Production deployment verified READY。
+- [x] Final `/AI-build` release bookkeeping completed。
+- [x] PR #11 squash merged to `main` and post-merge Production deployment verified READY。
