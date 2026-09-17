@@ -10,9 +10,11 @@
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證。
 - Phase 5 — Production hardening & launch：完成。Final `INGEST_SECRET` 已安全同步；兩個正式 recurring Tasks 保留原 daily schedule 並使用 verified delivery contract。2026-09-11 第一輪 original-schedule unattended execution 已成功，Neon 兩種類型各 exactly once，公開頁面驗證通過。PR #11 已以 squash merge 合併至 `main`（`b0efb79d33c4056687fa52a6fd120668cf4f176c`），對應 Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` 已達 `READY`。
+- Phase 6 — Adaptive categories：規劃完成、尚未實作。目標是將固定 report types 改為資料驅動 category model，加入 schema v2 相容路徑、`/category/[slug]`、動態 category navigation / homepage 與安全 migration；規劃分支為 `phase6/adaptive-categories`。
 
 ## Documents
 
+- `phase-6-plan.md`：Phase 6 自適應分類的資料模型、v1/v2 ingestion、migration、dynamic routes、UI/UX、測試與 rollout 計畫。
 - `phase-5-plan.md`：Phase 5 final credential rotation、Production hardening、recurring publishing activation、第一輪 unattended execution 與 launch closure 計畫。
 - `phase-5-verification.md`：Phase 5 Production preflight、credential validation、recurring delivery activation、first unattended execution 與 launch acceptance 實際紀錄。
 - `phase-4-plan.md`：Phase 4 真實 Scheduled Task 整合、one-shot shadow validation、payload contract、驗證矩陣與 Phase 5 handoff。
@@ -22,7 +24,7 @@
 - `phase-2-design.md`：已核准的網站風格、頁面互動與正式資料呈現規格。
 - `architecture.md`：目前與目標系統架構、資料流、runtime boundary、頁面、資料讀取層與各階段整合邊界。
 - `decisions.md`：已確定的技術與產品決策，以及後續實作約束。
-- `todo.md`：Phase 0–5 完整實作清單與驗收條件，作為主要進度來源。
+- `todo.md`：Phase 0–6 完整實作清單與驗收條件，作為主要進度來源。
 - `changelog.md`：實際完成的初始化、功能、驗證、安全與文件調整紀錄。
 
 ## Working rules
