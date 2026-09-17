@@ -1,9 +1,9 @@
 import {
+	boolean,
 	date,
 	index,
 	integer,
 	jsonb,
-	pgEnum,
 	pgTable,
 	text,
 	timestamp,
@@ -12,22 +12,45 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 
-export const reportTypeEnum = pgEnum("report_type", [
-	"daily-news",
-	"framework-recommendation",
-]);
+import type { ReportType } from "@/lib/report-types";
 
 export type ReportSource = {
 	title: string;
 	url: string;
 };
 
+export const reportCategories = pgTable("report_categories", {
+	slug: varchar("slug", { length: 80 }).primaryKey(),
+	label: varchar("label", { length: 120 }).notNull(),
+	description: varchar("description", { length: 500 }).notNull(),
+	sortOrder: integer("sort_order"),
+	isVisible: boolean("is_visible").default(true).notNull(),
+	createdAt: timestamp("created_at", {
+		withTimezone: true,
+		mode: "date",
+	})
+		.defaultNow()
+		.notNull(),
+	updatedAt: timestamp("updated_at", {
+		withTimezone: true,
+		mode: "date",
+	})
+		.defaultNow()
+		.notNull(),
+});
+
 export const reports = pgTable(
 	"reports",
 	{
 		id: uuid("id").defaultRandom().primaryKey(),
 		schemaVersion: integer("schema_version").default(1).notNull(),
-		reportType: reportTypeEnum("report_type").notNull(),
+		reportType: varchar("report_type", { length: 80 })
+			.$type<ReportType>()
+			.notNull()
+			.references(() => reportCategories.slug, {
+				onDelete: "restrict",
+				onUpdate: "cascade",
+			}),
 		reportDate: date("report_date", { mode: "string" }).notNull(),
 		title: varchar("title", { length: 300 }).notNull(),
 		contentMarkdown: text("content_markdown").notNull(),
@@ -52,5 +75,7 @@ export const reports = pgTable(
 	],
 );
 
+export type ReportCategory = typeof reportCategories.$inferSelect;
+export type NewReportCategory = typeof reportCategories.$inferInsert;
 export type Report = typeof reports.$inferSelect;
 export type NewReport = typeof reports.$inferInsert;
