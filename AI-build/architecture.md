@@ -308,3 +308,93 @@ Detailed evidence is recorded in `phase-5-verification.md`.
 - Metadata utilities live in `src/lib/site.ts`; robots and sitemap use the same canonical origin and Preview policy.
 - Existing ingestion contract, production database schema and Make Scenario are unchanged.
 - Detailed design: `phase-2-design.md`. Validation evidence is recorded in `changelog.md`.
+
+## Phase 6 — planned adaptive category architecture
+
+Phase 6 will preserve the live Phase 5 flow while replacing fixed category assumptions with persisted category metadata. The target data flow is:
+
+```text
+ChatGPT Scheduled Task
+        ↓
+Make transport
+        ↓
+POST /api/v1/ingest
+        ↓
+Bearer authentication
+        ↓
+version-discriminated Zod validation
+   ├─ schema v1: two existing fixed types
+   └─ schema v2: safe dynamic category slug + metadata
+        ↓
+category create/reuse + report persistence
+        ↓
+report_categories ← FK ← reports.report_type
+        ↓
+Server Component category/report queries
+        ↓
+Header category rail / homepage / category archive / report detail / sitemap
+```
+
+### Target category storage
+
+```text
+report_categories
+├─ slug PK
+├─ label
+├─ description
+├─ sort_order nullable
+├─ is_visible
+├─ created_at
+└─ updated_at
+
+reports
+└─ report_type varchar → report_categories.slug
+```
+
+The existing two categories are seeded first. Existing report rows and hashes are preserved. The former PostgreSQL enum is removed only after migration verification confirms all reports have a valid category reference.
+
+### Compatibility boundary
+
+- Schema v1 remains accepted for the two live recurring Tasks.
+- V1 payload normalization/hash behavior remains stable.
+- Schema v2 introduces safe dynamic category slugs and category label/description.
+- Presentation controls such as arbitrary CSS, colors, icons, visibility and route values are not accepted from ingest payloads.
+- Existing category metadata is canonical and is not silently overwritten on every daily report.
+- `payload_hash` and `(report_type, report_date)` uniqueness continue to enforce exact retry and per-category/day collision behavior.
+
+### Target public routes
+
+```text
+/
+  latest report per published category
+
+/category/[slug]
+  dynamic category archive
+
+/news
+  permanent redirect → /category/daily-news
+
+/frameworks
+  permanent redirect → /category/framework-recommendation
+
+/reports/[slug]
+  existing YYYY-MM-DD-<category-slug> detail URLs
+```
+
+Published navigation categories are `is_visible = true` and have at least one report. Empty category rows therefore never create empty public tabs.
+
+### Target navigation/rendering boundary
+
+- Category list is queried server-side; the browser does not fetch `/api/categories`.
+- Header becomes a stable first row plus a horizontally scrollable category rail.
+- Navigation entries remain normal links because each category has an independent URL/history entry.
+- Homepage cards become data-driven rather than using a fixed `REPORT_TYPES` array.
+- Existing blue/teal visual identity is retained; future category tones come from an application-controlled accessibility-checked palette.
+- Sticky Header/TOC/anchor offsets use a shared CSS token after the second Header row is introduced.
+- Navigation category query failure may degrade the navigation shell without masking the main page's existing read-error behavior.
+
+### Migration and rollout boundary
+
+Phase 6 uses a schema-first rollout only after a temporary Neon branch proves that the current Production application can still operate after the enum-to-varchar/FK migration. Synthetic third-category reports are restricted to isolated test/Preview environments; Production acceptance does not create fake content.
+
+Detailed implementation, test matrix and acceptance criteria are recorded in `phase-6-plan.md` and `todo.md`.
