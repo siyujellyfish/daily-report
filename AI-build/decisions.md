@@ -156,3 +156,26 @@ Development is organized into the following lifecycle:
 - The first live unattended recurring cycle on 2026-09-11 passed for both types: Make reported `startedBy = auto`, Neon contained exactly one row for each type/business-date, persisted Markdown contained no ChatGPT UI tokens, and the homepage/archive/detail routes rendered successfully.
 - Production verification remains non-destructive. No report is UPDATE/DELETE-ed for acceptance, collision handling or retry testing.
 - Phase 5 release documentation is delivered through PR #11 and all changes entering `main` remain subject to the repository-wide squash-merge rule.
+
+## 2026-09-17 — Phase 6 adaptive categories planning
+
+- Introduce Phase 6 as a post-launch functional phase for data-driven report categories rather than extending the fixed two-value enum each time a new push type is added.
+- Make `report_categories` the future category source of truth. Keep `reports.report_type` as the existing column name for compatibility, but migrate it from the fixed PostgreSQL enum to a string column with a foreign key to category `slug`.
+- Keep category slug as an immutable machine identifier and separate it from user-facing `label` and `description`.
+- Seed the two current categories with stable ordering; later automatically created categories use deterministic created-time/slug ordering unless an explicit server-side sort order is later assigned.
+- Do not derive categories by AI from report content. A new category is introduced only by an authenticated, validated schema-v2 ingest payload.
+- Keep schema version 1 fully compatible for the two currently enabled recurring Scheduled Tasks. Do not require an atomic migration of Tasks, Make and application code.
+- Add schema version 2 with generic safe `reportType` slug plus bounded `categoryLabel` and `categoryDescription`; do not accept arbitrary CSS, color, icon, visibility or route metadata from payloads.
+- Existing category metadata is canonical. Normal report ingest must not silently rename an existing category because a Scheduled Task sends a typo or changed label.
+- Preserve v1 normalized payload hashing behavior so an exact retry created before/after the Phase 6 application deployment remains idempotent.
+- The target canonical archive route is `/category/[slug]`. `/news` and `/frameworks` remain as permanent redirects to their corresponding category routes; existing `/reports/YYYY-MM-DD-<type>` URLs remain unchanged.
+- The public read path remains Server Components → Drizzle → Neon. Dynamic category navigation must not introduce a browser-side `/api/categories` layer.
+- Refactor the Header into a stable first row and a horizontally scrollable category rail. Treat category entries as navigation links, not ARIA tabs, because each category has its own URL and browser history entry.
+- Make the homepage latest-report cards data-driven and responsive to 1/2/3+ categories; remove copy and CSS assumptions that exactly two categories always exist.
+- Keep `daily-news` blue and `framework-recommendation` teal. Future category visual tones come only from an application-controlled, accessibility-checked deterministic palette rather than external payload styles.
+- Add one shared sticky-header offset token so TOC and anchor scrolling remain correct after the Header gains a second row.
+- Only visible categories with at least one stored report appear publicly. An empty category row created before a failed report insert must not produce an empty public tab.
+- Phase 6 does not require a new package, CMS, Redis, global client state library or alternate DB driver by default. Validate current Neon HTTP non-interactive transaction/batch capabilities first; change drivers only if a demonstrated implementation requirement exists.
+- Validate the enum-to-varchar/FK migration on a temporary Neon branch and prove the old application remains functional before using a schema-first Production rollout.
+- Third-category UI/ingest verification uses isolated Neon/Preview data. Do not create a synthetic Production category/report solely to prove the feature.
+- Detailed implementation and acceptance criteria are maintained in `phase-6-plan.md` and `todo.md`.
