@@ -2,162 +2,174 @@
 
 ## Current status
 
-Phase 6.1 application schema and reviewed migration SQL are implemented on branch `phase6/adaptive-categories` and have passed a temporary Neon branch migration verification. Neon Production remains unchanged at this checkpoint.
+Phase 6.1 is complete. The reviewed enum-to-varchar/category-FK migration was first verified on an isolated Neon temporary branch and, after explicit user authorization on 2026-09-18, the exact prepared migration was applied to Neon Production `main`.
 
-Implementation commits:
+A dedicated Neon branch named `phase6-testing` was then created from the migrated Production branch. All subsequent Phase 6 synthetic categories, fixtures, write probes and integration testing must target this branch rather than Production.
+
+Implementation checkpoints:
 
 - `85e0a0751cea6e7e47f7bd6c12b1d70ef89d193f` — add `report_categories` Drizzle schema and convert the application-side `reports.report_type` mapping to `varchar(80)` + FK.
 - `715f8b82c75e0e6b269999c84f8fa06c6bd55596` — add the manually reviewed Phase 6.1 migration SQL artifact.
-
-Quality workflow `35167680994` completed successfully for the migration-SQL checkpoint.
+- Quality workflow `35167680994` completed successfully for the migration-SQL checkpoint.
 
 ## Migration baseline finding
 
-`drizzle.config.ts` declares `out: "./drizzle"`, but the repository had no committed Drizzle migration snapshot/journal before Phase 6.1. Running a normal `drizzle-kit generate` from that state would not have a trustworthy historical snapshot from which to derive only the Phase 6 delta and could incorrectly model the current schema as an initial migration.
+`drizzle.config.ts` declares `out: "./drizzle"`, but the repository had no committed Drizzle migration snapshot/journal before Phase 6.1. Running a normal `drizzle-kit generate` from that state would not have a trustworthy historical snapshot from which to derive only the Phase 6 delta.
 
-Phase 6.1 therefore does not fabricate a historical Drizzle snapshot or journal. The enum-to-varchar/data-seed transition is maintained as an explicitly reviewed custom SQL artifact:
+Phase 6.1 therefore does not fabricate historical Drizzle metadata. The data-preserving transition is maintained as an explicitly reviewed custom SQL artifact:
 
 ```text
 drizzle/phase6_1_adaptive_categories.sql
 ```
 
-The SQL was reviewed against the live Production schema using Neon read-only schema introspection and then executed only through Neon's temporary migration branch workflow.
+The SQL was reviewed against the live schema and validated through Neon temporary-branch migration before Production promotion.
 
-## Production baseline before migration
+## Validated migration
 
-Neon project:
+The migration performs only:
 
-```text
-project: shiny-fire-00063440
-Production branch: br-empty-shape-b3x5225o (main)
-database: neondb
-```
+1. create `report_categories`;
+2. seed `daily-news` and `framework-recommendation`;
+3. convert `reports.report_type` from the fixed PostgreSQL enum to `varchar(80)` using its existing text value;
+4. add the FK from `reports.report_type` to `report_categories.slug`;
+5. remove the now-unreferenced PostgreSQL `report_type` enum.
 
-Read-only schema introspection confirmed the Production `reports` table before migration still used a user-defined PostgreSQL `report_type` enum and contained the expected indexes:
+Existing uniqueness/index behavior remains:
 
-- `reports_pkey`
-- `reports_payload_hash_unique`
-- `reports_date_idx`
-- `reports_type_date_unique`
-- `reports_type_date_idx`
+- `reports_payload_hash_unique`;
+- `reports_type_date_unique`;
+- `reports_date_idx`;
+- `reports_type_date_idx`.
 
-No Phase 6.1 write was made to Production during verification.
+## Temporary branch acceptance
 
-## Temporary migration execution
-
-Neon prepared migration:
+Prepared migration:
 
 ```text
 migration id: 81acb677-9cd6-45ca-b239-5d6a3b2f85c5
 temporary branch: mcp-migration-2026-09-17T00-43-06
 branch id: br-holy-glade-b3qaumew
-parent branch: br-empty-shape-b3x5225o
+parent: br-empty-shape-b3x5225o
 ```
 
-The temporary branch migration successfully performed:
-
-1. creation of `report_categories`;
-2. seeding `daily-news` and `framework-recommendation`;
-3. conversion of `reports.report_type` to `varchar(80)` using the existing enum value text;
-4. creation of the category foreign key;
-5. removal of the old PostgreSQL `report_type` enum.
-
-The migration has **not** been promoted to Production. Promotion requires a separate explicit approval gate.
-
-## Schema verification
-
-Temporary branch inspection confirmed:
+Before temporary migration, the verified snapshot contained 16 reports:
 
 ```text
-report_categories rows: 2
+daily-news: 7
+framework-recommendation: 9
+fingerprint: fd7628fd105d324cae6fade643dbeb67
+```
 
-daily-news
-  label: 資訊新聞
-  sort_order: 10
+After the migration and before temporary fixtures:
 
-framework-recommendation
-  label: 框架工具
-  sort_order: 20
-
-reports.report_type: character varying
+```text
+row count: 16
+fingerprint: fd7628fd105d324cae6fade643dbeb67
 orphan reports: 0
 old report_type enum exists: false
 category FK exists: true
 ```
 
-`report_categories` also has the planned columns/defaults:
+The identical fingerprint proved that the enum-to-varchar conversion did not alter those reports' IDs, report types, dates, titles, Markdown, sources, timestamps or payload hashes.
+
+A legacy schema-v1-shaped `daily-news` insert succeeded on the temporary branch. An unknown report type without a category row failed with the expected FK violation.
+
+The temporary migration branch was deleted automatically when the prepared migration was promoted.
+
+## Production migration — 2026-09-18
+
+After explicit authorization, Neon applied the exact previously tested migration to:
 
 ```text
-slug varchar PK
-label varchar NOT NULL
-description varchar NOT NULL
-sort_order integer NULL
-is_visible boolean NOT NULL DEFAULT true
-created_at timestamptz NOT NULL DEFAULT now()
-updated_at timestamptz NOT NULL DEFAULT now()
+project: shiny-fire-00063440
+branch: br-empty-shape-b3x5225o
+branch name: main
+database: neondb
 ```
 
-The existing report indexes and uniqueness constraints remained present after the type conversion.
-
-## Existing-data integrity verification
-
-Before migration, Production contained 16 report rows:
+Post-migration schema inspection confirmed:
 
 ```text
-daily-news: 7
-framework-recommendation: 9
+reports.report_type: character varying
+report_categories: present
+category FK: present
+old report_type enum: removed
+legacy unique indexes/constraints: present
 ```
 
-A deterministic verification fingerprint was calculated over every existing report's:
+Production continued receiving its normal scheduled content between the 2026-09-17 temporary verification and the 2026-09-18 Production migration. Therefore the historical 16-row fingerprint is not used as a same-instant Production before/after comparison.
 
-- id;
-- report type;
-- report date;
-- title;
-- Markdown;
-- sources JSON;
-- generated timestamp;
-- received timestamp;
-- payload hash.
-
-Results:
+The post-promotion Production audit found:
 
 ```text
-Production before migration
-row count: 16
-fingerprint: fd7628fd105d324cae6fade643dbeb67
-
-Temporary branch after migration, before test fixtures
-row count: 16
-fingerprint: fd7628fd105d324cae6fade643dbeb67
+reports: 19
+daily-news: 9
+framework-recommendation: 10
+categories: 2
+orphan reports: 0
+duplicate payload hashes: 0
 ```
 
-The matching row count and fingerprint confirm the enum-to-varchar migration did not alter the existing report contents, dates, structured sources, timestamps or payload hashes.
+No synthetic report/category was inserted into Production for acceptance and no Production report was UPDATEd or DELETEd.
 
-## Legacy v1 database compatibility probe
+The current pre-Phase-6 application also remained readable after the schema migration: Vercel fetches for `/`, `/news`, and `/frameworks` returned HTTP 200 and rendered the current 2026-09-18 content.
 
-A synthetic report was inserted only into the temporary branch using the existing schema-v1 write shape and legacy `daily-news` report type. The insert succeeded with `schema_version = 1`, demonstrating that the migrated database accepts the values the pre-Phase-6 application currently emits.
+## Phase 6 test-database isolation
 
-A second temporary-only probe using an unknown category slug failed with the expected foreign-key violation. This confirms the database no longer accepts an arbitrary report type unless its category row exists.
+A dedicated Neon branch was created after the Production migration:
 
-These probes are temporary-branch data only and are not promoted with the migration itself.
+```text
+name: phase6-testing
+branch id: br-still-leaf-b3sa98yy
+parent: br-empty-shape-b3x5225o (main)
+default: false
+primary: false
+state: ready
+```
 
-## Safety boundary
+Neon schema comparison between `phase6-testing` and `main` returned an empty schema diff immediately after creation.
 
-- Production report content was not UPDATEd or DELETEd.
-- No synthetic category/report was written to Production.
-- The Production schema has not yet been changed.
-- The temporary branch remains associated with the prepared migration until the explicit apply/discard decision.
-- Phase 6.2 ingestion changes have not started; schema-v1 application behavior remains the compatibility target for the schema-first rollout.
+A deliberate branch-only isolation probe then inserted:
 
-## Remaining Phase 6.1 gate
+```text
+phase6-isolation-probe
+```
 
-Before Phase 6.1 can be considered fully deployed:
+into `phase6-testing.report_categories`.
 
-1. explicitly approve promotion of the already-tested migration to Neon Production;
-2. apply the exact prepared migration without modifying its SQL;
-3. re-run Production read-only schema and report-fingerprint verification;
-4. verify the current pre-Phase-6 Production application remains healthy against the migrated schema;
-5. update the Phase 6.1 TODO/status records with the Production result.
+Verification:
 
-Only after those checks should implementation proceed to Phase 6.2.
+```text
+phase6-testing:
+  isolation probe count: 1
+  category count: 3
+
+main:
+  isolation probe count: 0
+  category count: 2
+```
+
+This is the operational proof that Phase 6 test writes are copy-on-write isolated from Production. The probe is intentionally retained only on the test branch as a known fixture.
+
+## Isolation rules from Phase 6.2 onward
+
+- Synthetic categories/reports and write-path tests target `phase6-testing` only.
+- Production `main` is used only for real Scheduled Task ingestion and explicitly approved schema rollout.
+- Test code continues to reject `TEST_DATABASE_URL === DATABASE_URL`.
+- No Production UPDATE/DELETE is used for test cleanup or collision handling.
+- Third-category validation remains isolated from Production.
+- If GitHub CI is pointed at a Phase 6 database, its `TEST_DATABASE_URL` must resolve to an isolated branch such as `phase6-testing`, never Production.
+
+## Phase 6.1 conclusion
+
+Phase 6.1 is accepted:
+
+- category schema implemented;
+- migration SQL reviewed;
+- temporary branch data-preservation verification passed;
+- Production migration applied only after explicit approval;
+- Production application read paths remain healthy;
+- Production contains no Phase 6 synthetic fixture;
+- dedicated `phase6-testing` branch exists and its write isolation from `main` is proven.
+
+The next implementation stage is Phase 6.2: schema-v2 ingestion with strict schema-v1 backward compatibility.
