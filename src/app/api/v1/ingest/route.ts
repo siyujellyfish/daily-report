@@ -69,28 +69,40 @@ export async function POST(request: Request) {
 
 	try {
 		const db = getDb();
+
+		// Phase 6.2 intentionally keeps the legacy read/UI ReportType union until
+		// the data-driven read layer lands in Phase 6.3. The database column is
+		// already varchar(80) and the v2 schema validates dynamic category slugs.
+		const storedReportType = payload.reportType as ReportType;
+		const reportValues = {
+			schemaVersion: payload.schemaVersion,
+			reportType: storedReportType,
+			reportDate,
+			title: payload.title,
+			contentMarkdown: payload.contentMarkdown,
+			sources: payload.sources,
+			generatedAt: new Date(payload.generatedAt),
+			payloadHash,
+		};
+
 		let categoryCreated = false;
 		let categoryMetadataMismatch = false;
+		let created:
+			| { id: string; reportType: ReportType; reportDate: string }
+			| undefined;
 
 		if (payload.schemaVersion === 2) {
-			const [createdCategory] = await db
-				.insert(reportCategories)
-				.values({
-					slug: payload.reportType,
-					label: payload.categoryLabel,
-					description: payload.categoryDescription,
-				})
-				.onConflictDoNothing()
-				.returning({
-					slug: reportCategories.slug,
-					label: reportCategories.label,
-					description: reportCategories.description,
-				});
-
-			categoryCreated = Boolean(createdCategory);
-
-			const canonicalCategory = createdCategory ?? (
-				await db
+			const [createdCategories, canonicalCategories, createdReports] = await db.batch([
+				db
+					.insert(reportCategories)
+					.values({
+						slug: payload.reportType,
+						label: payload.categoryLabel,
+						description: payload.categoryDescription,
+					})
+					.onConflictDoNothing()
+					.returning({ slug: reportCategories.slug }),
+				db
 					.select({
 						slug: reportCategories.slug,
 						label: reportCategories.label,
@@ -98,8 +110,21 @@ export async function POST(request: Request) {
 					})
 					.from(reportCategories)
 					.where(eq(reportCategories.slug, payload.reportType))
-					.limit(1)
-			)[0];
+					.limit(1),
+				db
+					.insert(reports)
+					.values(reportValues)
+					.onConflictDoNothing()
+					.returning({
+						id: reports.id,
+						reportType: reports.reportType,
+						reportDate: reports.reportDate,
+					}),
+			]);
+
+			categoryCreated = createdCategories.length > 0;
+			const canonicalCategory = canonicalCategories[0];
+			created = createdReports[0];
 
 			if (!canonicalCategory) {
 				throw new Error("Category could not be created or resolved.");
@@ -108,31 +133,17 @@ export async function POST(request: Request) {
 			categoryMetadataMismatch =
 				canonicalCategory.label !== payload.categoryLabel ||
 				canonicalCategory.description !== payload.categoryDescription;
+		} else {
+			[created] = await db
+				.insert(reports)
+				.values(reportValues)
+				.onConflictDoNothing()
+				.returning({
+					id: reports.id,
+					reportType: reports.reportType,
+					reportDate: reports.reportDate,
+				});
 		}
-
-		// Phase 6.2 intentionally keeps the legacy read/UI ReportType union until
-		// the data-driven read layer lands in Phase 6.3. The database column is
-		// already varchar(80) and the v2 schema validates dynamic category slugs.
-		const storedReportType = payload.reportType as ReportType;
-
-		const [created] = await db
-			.insert(reports)
-			.values({
-				schemaVersion: payload.schemaVersion,
-				reportType: storedReportType,
-				reportDate,
-				title: payload.title,
-				contentMarkdown: payload.contentMarkdown,
-				sources: payload.sources,
-				generatedAt: new Date(payload.generatedAt),
-				payloadHash,
-			})
-			.onConflictDoNothing()
-			.returning({
-				id: reports.id,
-				reportType: reports.reportType,
-				reportDate: reports.reportDate,
-			});
 
 		const category = payload.schemaVersion === 2
 			? {
