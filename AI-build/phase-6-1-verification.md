@@ -4,7 +4,7 @@
 
 Phase 6.1 is complete. The reviewed enum-to-varchar/category-FK migration was first verified on an isolated Neon temporary branch and, after explicit user authorization on 2026-09-18, the exact prepared migration was applied to Neon Production `main`.
 
-A dedicated Neon branch named `phase6-testing` was then created from the migrated Production branch. All subsequent Phase 6 synthetic categories, fixtures, write probes and integration testing must target this branch rather than Production.
+A fresh canonical Neon branch named `phase6-adaptive-isolated` was created from the current migrated Production `main` HEAD on 2026-09-18. All subsequent Phase 6 synthetic categories, fixtures, write probes and integration testing must target this branch rather than Production. The earlier `phase6-testing` branch is retained only as historical evidence and must not be used for Phase 6.2+ work.
 
 Implementation checkpoints:
 
@@ -116,49 +116,40 @@ The current pre-Phase-6 application also remained readable after the schema migr
 
 ## Phase 6 test-database isolation
 
-A dedicated Neon branch was created after the Production migration:
+A fresh canonical Neon branch was created from the migrated Production `main` HEAD:
 
 ```text
-name: phase6-testing
-branch id: br-still-leaf-b3sa98yy
+name: phase6-adaptive-isolated
+branch id: br-lingering-boat-b3czfbqx
 parent: br-empty-shape-b3x5225o (main)
+parent LSN: 0/3208118
 default: false
 primary: false
 state: ready
 ```
 
-Neon schema comparison between `phase6-testing` and `main` returned an empty schema diff immediately after creation.
+Neon schema comparison between `phase6-adaptive-isolated` and `main` returned an empty schema diff immediately after creation, proving the branch starts from the same Phase 6.1 schema. Neon branch writes are copy-on-write isolated and do not propagate back to the parent branch.
 
-A deliberate branch-only isolation probe then inserted:
+The earlier `phase6-testing` branch predates this canonical snapshot and is no longer used for Phase 6.2+ work. It is intentionally left untouched rather than reset or deleted.
 
-```text
-phase6-isolation-probe
-```
-
-into `phase6-testing.report_categories`.
-
-Verification:
+Production was read-only audited at this checkpoint:
 
 ```text
-phase6-testing:
-  isolation probe count: 1
-  category count: 3
-
-main:
-  isolation probe count: 0
-  category count: 2
+categories: 2
+reports: 19
+orphan reports: 0
 ```
 
-This is the operational proof that Phase 6 test writes are copy-on-write isolated from Production. The probe is intentionally retained only on the test branch as a known fixture.
+No synthetic report/category was added to Production during this isolation setup.
 
 ## Isolation rules from Phase 6.2 onward
 
-- Synthetic categories/reports and write-path tests target `phase6-testing` only.
+- Synthetic categories/reports and write-path tests target `phase6-adaptive-isolated` only.
 - Production `main` is used only for real Scheduled Task ingestion and explicitly approved schema rollout.
 - Test code continues to reject `TEST_DATABASE_URL === DATABASE_URL`.
 - No Production UPDATE/DELETE is used for test cleanup or collision handling.
 - Third-category validation remains isolated from Production.
-- If GitHub CI is pointed at a Phase 6 database, its `TEST_DATABASE_URL` must resolve to an isolated branch such as `phase6-testing`, never Production.
+- If GitHub CI is pointed at a Phase 6 database, its `TEST_DATABASE_URL` must resolve to an isolated branch specifically `phase6-adaptive-isolated`, never Production.
 
 ## Phase 6.1 conclusion
 
@@ -170,6 +161,6 @@ Phase 6.1 is accepted:
 - Production migration applied only after explicit approval;
 - Production application read paths remain healthy;
 - Production contains no Phase 6 synthetic fixture;
-- dedicated `phase6-testing` branch exists and its write isolation from `main` is proven.
+- dedicated `phase6-adaptive-isolated` branch exists from the current migrated `main` HEAD and is the sole canonical Phase 6.2+ test database.
 
 The next implementation stage is Phase 6.2: schema-v2 ingestion with strict schema-v1 backward compatibility.
