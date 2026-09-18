@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-18
+
+### Phase 6.1 — category migration and DB isolation
+
+- Confirmed Neon Production `main` is on the Phase 6.1 schema: `report_categories` exists, `reports.report_type` is varchar with category FK, legacy indexes/uniques remain, and there are no orphan reports.
+- Read-only Production checkpoint: 2 categories, 19 reports, 0 orphan reports.
+- Created fresh Neon branch `phase6-adaptive-isolated` (`br-lingering-boat-b3czfbqx`) from the current migrated `main` HEAD.
+- Immediate Neon schema comparison returned no diff between the new isolated branch and `main`.
+- Phase 6.2+ synthetic categories, fixtures, write probes and integration tests are restricted to `phase6-adaptive-isolated`; the earlier `phase6-testing` branch is no longer the canonical Phase 6 test database.
+- No synthetic Production content, Production UPDATE/DELETE, or repeated Production DDL was used during the isolation setup.
+
 ## 2026-09-11
 
 ### Phase 5 — unattended production acceptance
