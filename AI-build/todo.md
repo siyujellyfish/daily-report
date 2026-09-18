@@ -349,7 +349,7 @@ Detailed execution contract: `phase-4-plan.md`. Actual Production evidence: `pha
 
 ## Phase 6 — Adaptive categories
 
-Detailed design and rollout contract: `phase-6-plan.md`. Phase 6 is planned but not yet implemented.
+Detailed design and rollout contract: `phase-6-plan.md`. Phase 6.1 database migration and isolation are complete; Phase 6.2 ingestion work is next.
 
 ### 6.0 Planning and compatibility boundary
 
@@ -365,17 +365,17 @@ Detailed design and rollout contract: `phase-6-plan.md`. Phase 6 is planned but 
 
 ### 6.1 Category database model and migration
 
-- [ ] Add `report_categories` table with slug, label, description, optional sort order, visibility and timestamps.
-- [ ] Seed `daily-news` and `framework-recommendation` with current UI labels/descriptions and stable sort order.
-- [ ] Replace the fixed PostgreSQL `report_type` enum dependency with a string-compatible `reports.report_type` column.
-- [ ] Add FK from `reports.report_type` to `report_categories.slug`.
-- [ ] Preserve payload-hash uniqueness, `(report_type, report_date)` uniqueness and existing query indexes.
-- [ ] Generate and manually review the schema migration; use custom SQL where enum → varchar/data-preserving conversion requires it.
-- [ ] Validate migration first on a temporary Neon branch.
-- [ ] Confirm all existing report rows, hashes, dates and sources survive migration unchanged.
-- [ ] Confirm the pre-Phase-6 application can still read/write its two legacy report types after the schema-first migration.
-- [ ] Remove the old PostgreSQL enum only after confirming there are no remaining references.
-- [ ] Do not UPDATE/DELETE Production report content for migration acceptance.
+- [x] Add `report_categories` table with slug, label, description, optional sort order, visibility and timestamps.
+- [x] Seed `daily-news` and `framework-recommendation` with current UI labels/descriptions and stable sort order.
+- [x] Replace the fixed PostgreSQL `report_type` enum dependency with a string-compatible `reports.report_type` column.
+- [x] Add FK from `reports.report_type` to `report_categories.slug`.
+- [x] Preserve payload-hash uniqueness, `(report_type, report_date)` uniqueness and existing query indexes.
+- [x] Generate and manually review the schema migration; use custom SQL where enum → varchar/data-preserving conversion requires it.
+- [x] Validate migration first on a temporary Neon branch.
+- [x] Confirm all existing report rows, hashes, dates and sources survive migration unchanged.
+- [x] Confirm the pre-Phase-6 application can still read/write its two legacy report types after the schema-first migration.
+- [x] Remove the old PostgreSQL enum only after confirming there are no remaining references.
+- [x] Do not UPDATE/DELETE Production report content for migration acceptance.
 
 ### 6.2 Ingestion schema v2 and legacy v1
 
