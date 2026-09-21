@@ -454,8 +454,8 @@ Phase 6.5 automated verification passed on branch head `a8cab16c1903f19d305a7c34
 
 - [ ] Complete temporary Neon migration acceptance before Production schema changes.
 - [ ] Complete full TypeScript, unit, isolated DB integration, Playwright, read-error, production build and JS-budget checks.
-- [ ] Confirm Vercel Preview READY with isolated third-category UX verification.
-	- Preview routing is temporarily pinned only for Vercel `phase6/adaptive-categories` to the non-secret host of Neon `phase6-adaptive-isolated`; Production and unrelated Preview branches keep their existing `DATABASE_URL`. Remove this Phase 6 verification-only host override before final squash merge.
+- [x] Confirm Vercel Preview READY with isolated third-category UX verification.
+	- Preview routing is temporarily pinned only for Vercel `phase6/adaptive-categories` to the non-secret host of Neon `phase6-adaptive-isolated`; Production and unrelated Preview branches keep their existing `DATABASE_URL`. Deployment `dpl_3FfAYFUqVajnMdsd173yQAwQJNLv` reached READY and rendered the four expected published categories (`daily-news`, `framework-recommendation`, `security-news`, `long-category-navigation-fixture`) while excluding the empty and hidden fixtures. Remove this Phase 6 verification-only host override before final squash merge.
 - [ ] Apply only the previously validated backward-compatible migration to Neon Production.
 - [ ] Before new app deployment, verify the current Production app and both recurring schema-v1 Tasks still operate on the migrated DB.
 - [ ] Deploy Phase 6 application to Production only after schema-first compatibility passes.
