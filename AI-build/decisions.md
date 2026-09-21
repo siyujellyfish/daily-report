@@ -257,7 +257,7 @@ Development is organized into the following lifecycle:
 - Do not re-present an already pushed App as new. Revalidate historical active items every Sunday and list only those still free in Taiwan.
 - Unknown end dates must be explicit and rechecked on each later run. Do not infer a clock time from date-only evidence.
 - Always publish the weekly check, including weeks with no new qualifying items, so active/unknown-limit state remains observable.
-- Use three stable Markdown sections: new items, already-pushed still-active table, and combined current-status table.
+- Use exactly two stable Markdown sections: new never-pushed items, then an already-pushed still-active summary table. Do not add a redundant third status table.
 - Because the request specifies Sunday but no exact time, use a flexible morning schedule with an 08:00 baseline in Asia/Taipei rather than inventing an exact execution time.
 - Do not create a synthetic Production report to validate the new category. First Production acceptance is the original Sunday run on 2026-09-27.
 - No application dependency, code path, schema migration or database branch change is required for this phase.
