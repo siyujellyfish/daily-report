@@ -432,21 +432,23 @@ Detailed design and rollout contract: `phase-6-plan.md`. Phase 6.1 database migr
 - [x] Add unit coverage for category slug validator and generic report slug round-trip/rejection.
 - [x] Add unit coverage for v1/v2 ingest validation and v1 payload hash regression.
 - [x] Add unit coverage for deterministic category tone mapping and category presentation.
-- [ ] Add isolated Neon integration fixtures with at least three published categories plus one empty/invisible category.
-- [ ] Verify migrated legacy rows and existing queries against isolated Neon.
-- [ ] Verify v1 legacy insertion and v2 first-category publication against isolated Neon.
-- [ ] Verify existing category metadata is not silently overwritten by recurring report payloads.
-- [ ] Verify unpublished/invisible categories do not appear in public category navigation.
-- [ ] Update Playwright desktop + Pixel 7 flows for dynamic category navigation.
-- [ ] Verify 3+ category homepage layout and long category labels.
-- [ ] Verify mobile category rail causes no document-level horizontal overflow.
-- [ ] Verify keyboard focus and navigation remain accessible after removing/reworking mobile menu behavior.
-- [ ] Verify TOC anchor positions remain visible under the two-row sticky header.
-- [ ] Verify `/news` and `/frameworks` permanent redirects.
-- [ ] Verify dynamic category metadata/canonical and sitemap output.
+- [x] Add isolated Neon integration fixtures with at least three published categories plus one empty/invisible category.
+- [x] Verify migrated legacy rows and existing queries against isolated Neon.
+- [x] Verify v1 legacy insertion and v2 first-category publication against isolated Neon.
+- [x] Verify existing category metadata is not silently overwritten by recurring report payloads.
+- [x] Verify unpublished/invisible categories do not appear in public category navigation.
+- [x] Update Playwright desktop + Pixel 7 flows for dynamic category navigation.
+- [x] Verify 3+ category homepage layout and long category labels.
+- [x] Verify mobile category rail causes no document-level horizontal overflow.
+- [x] Verify keyboard focus and navigation remain accessible after removing/reworking mobile menu behavior.
+- [x] Verify TOC anchor positions remain visible under the two-row sticky header.
+- [x] Verify `/news` and `/frameworks` permanent redirects.
+- [x] Verify dynamic category metadata/canonical and sitemap output.
 - [x] Confirm public browser navigation still performs no `/api/*` read requests.
 - [x] Re-run read-error behavior and confirm Header fallback does not mask the intended application error state.
 - [x] Retain production client JavaScript budget and verify Phase 6 does not materially regress it.
+
+Phase 6.5 automated verification passed on branch head `a8cab16c1903f19d305a7c34063be84183956d37`: GitHub Quality run `35553333899` completed successfully, including frozen install, typecheck, unit tests, production build, isolated DB integration, Playwright critical paths, read-error coverage and production client-JavaScript budget. Matching Vercel Preview deployment `dpl_FEzvnXDLAEzBCV18CEgTyBgU1rMa` is READY. Synthetic dynamic-category fixtures remain isolated from Production.
 
 ### 6.6 Rollout and Production acceptance
 
