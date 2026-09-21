@@ -2,7 +2,7 @@
 
 ## 狀態與目標
 
-Phase 5 已完成 Production launch。Phase 6.1–6.4 現已在 `phase6/adaptive-categories` 完成實作：Production database 已先完成 backward-compatible category migration；branch runtime 已完成 v1/v2 ingest、dynamic category read layer、canonical `/category/[slug]` routes 與 adaptive navigation/homepage。Production application runtime 尚未部署 Phase 6，完整 3+ category / hidden-empty / metadata-sitemap acceptance 留在 Phase 6.5。
+Phase 5 已完成 Production launch。Phase 6.1–6.5 現已在 `phase6/adaptive-categories` 完成實作與 canonical isolated acceptance：Production database 已完成 backward-compatible category migration；branch runtime 已完成 v1/v2 ingest、dynamic category read layer、canonical `/category/[slug]` routes、adaptive navigation/homepage，以及 4-category / hidden-empty / v1-v2 write-path / redirects / metadata-sitemap / Pixel 7 / sticky-anchor / performance 自動驗收。Production application runtime 尚未部署 Phase 6，下一階段為 6.6 safe rollout / Production acceptance。
 
 Phase 6 的目標是將「分類」提升為資料庫中的一級實體，使新的推播分類在第一次合法發布後即可自動出現在網站分類導覽、首頁與 archive route，而不需要再次修改網站程式碼。
 
@@ -38,6 +38,15 @@ Phase 6.3–6.4 implementation前重新核對目前官方文件：
 - Drizzle PostgreSQL select 支援 partial projection、`selectDistinctOn`、joins、`exists()` 與 SQL expression ordering，可直接實作 published-category filtering 與 `NULLS LAST` ordering。
 
 Phase 6.3–6.4 不需要新增或升級 dependency；沿用既有 Next.js 16.3.4、Drizzle ORM 0.45.2、Neon serverless 1.1.0 與 Zod 4.5.4。
+
+## 2026-09-21 Phase 6.5 acceptance checkpoint
+
+- GitHub `TEST_DATABASE_URL` 已改指 canonical `phase6-adaptive-isolated`，並由 integration fixture identity assertion 驗證。
+- Canonical isolated dataset：4 published categories + 1 visible-empty + 1 hidden-published。
+- v1/v2 integration write fixtures 改用 `GITHUB_RUN_ID` run-scoped identity，避免 shared test DB 的 concurrent CI race，並在 suite 結束清理。
+- Playwright 同時驗證 desktop 與 Pixel 7：3+ category layout、long label、rail containment、308 redirects、metadata/canonical/sitemap、active state、TOC/source anchors、no browser `/api/*` reads。
+- Final Quality run `35553230724` 全綠；完整 evidence 記錄於 `phase-6-5-verification.md`。
+- 無新增/升級 dependency，Production 無 synthetic Phase 6 fixture。
 
 ## Phase 6.0 — Approved product boundary
 
