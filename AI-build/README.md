@@ -10,9 +10,14 @@
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證。
 - Phase 5 — Production hardening & launch：完成。Final `INGEST_SECRET` 已安全同步；兩個正式 recurring Tasks 保留原 daily schedule 並使用 verified delivery contract。2026-09-11 第一輪 original-schedule unattended execution 已成功，Neon 兩種類型各 exactly once，公開頁面驗證通過。PR #11 已以 squash merge 合併至 `main`（`b0efb79d33c4056687fa52a6fd120668cf4f176c`），對應 Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` 已達 `READY`。
-- Phase 6 — Adaptive categories：進行中。6.1–6.5 已完成：category schema/migration、v1/v2 ingest、data-driven read/routes、adaptive Header/homepage，以及 canonical `phase6-adaptive-isolated` 的完整 automated acceptance。GitHub `TEST_DATABASE_URL` 已驗證指向 canonical Phase 6 branch。Final 6.5 Quality run `35553230724`（commit `a8cab16c1903f19d305a7c34063be84183956d37`）通過 25 unit、9 isolated DB integration、Playwright 40 passed / 4 viewport skips、read-error 1/1 與 JS budget 1/1。Production runtime 尚未部署 Phase 6；下一階段為 6.6 safe rollout / Production acceptance。
+- Phase 6 — Adaptive categories：Production rollout 已完成。PR #13 以 squash merge 進入 `main`（`d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`），Vercel Production `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` 已 READY；Production 維持兩個真實分類且無 synthetic fixture。兩個 schema-v1 原始 2026-09-21 payload 在新 runtime 上 exact retry 成功且保持 exactly-once。post-merge `main` Quality `35554750408` 仍因 canonical test DB serialization queue 排隊，完成後補記最終 gate。
+- Phase 6.7 — UI/UX refinement：使用者已完成驗收。桌面最新報告改為單列輪播 + 左右箭頭、分類顯示限制 5 字 + `…`、分類歷史列表改為整張可點的 compact card。Quality `35557533073` 全數通過；測試資料改為每次 CI seed + always-cleanup，Neon 測試分支平時保持乾淨。Production 與 `phase6-adaptive-isolated` schema 無差異，舊測試資料與過期測試 branch 已清理，等待最終 squash merge 與 Production READY 確認。
 
 ## Documents
+
+- `phase-6-6-verification.md`：Phase 6.6 Production rollout、v1 compatibility、Production isolation 與 post-merge gate 紀錄。
+- `phase-6-7-plan.md`：Phase 6.7 UI/UX refinement 的範圍、非目標、討論 gate 與驗收方向。
+- `phase-6-7-verification.md`：Phase 6.7 UI 驗收、Quality、database cleanup 與 migration/schema 對齊紀錄。
 
 - `phase-6-plan.md`：Phase 6 自適應分類的資料模型、v1/v2 ingestion、migration、dynamic routes、UI/UX、測試與 rollout 計畫。
 - `phase-6-1-verification.md`：Phase 6.1 category schema、custom migration、Production promotion 與隔離 Neon branch 驗證紀錄。

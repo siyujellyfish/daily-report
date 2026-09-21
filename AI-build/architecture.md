@@ -543,3 +543,50 @@ Phase 6.5 exposed two real responsive constraints and fixed them in the applicat
 - report detail breadcrumb/category/content/return actions are shrinkable, and the long `返回{category}` button may wrap instead of inheriting shadcn's `shrink-0 + whitespace-nowrap` document overflow.
 
 Production remains outside this synthetic test path.
+
+
+## Phase 6.6 — Production rollout
+
+Phase 6 adaptive-category runtime is deployed to Production from squash commit `d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`.
+
+Production state after rollout:
+
+```text
+Neon main
+├─ daily-news
+└─ framework-recommendation
+
+Vercel Production
+└─ dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K → READY
+```
+
+No synthetic Phase 6 category was promoted to Production. The isolated acceptance branch remains the only location for `security-news`, the long-label fixture, empty fixture and hidden fixture.
+
+The temporary Preview-only Neon host override used to prove the four-category UI was removed before merge. Production and all normal environments therefore resolve database access exclusively through their configured `DATABASE_URL`.
+
+After deployment, the two original 2026-09-21 schema-v1 Make payloads were replayed as exact retries. Both flows completed successfully and Production retained exactly one report row for each legacy type/date, confirming the new runtime preserves v1 idempotency and compatibility.
+
+## Phase 6.7 — UI/UX refinement boundary
+
+Phase 6.7 is presentation-only unless a separately approved requirement proves otherwise. It must preserve the Phase 6 category/data contract, Server Component read architecture, canonical routes and ingest semantics.
+
+The initial refinement surfaces are Header/category rail, homepage card density, category archive scanability, report-detail reading hierarchy/TOC/sources, and mobile interaction polish. No CMS, client-side category store, redundant read API or new UI dependency is assumed.
+
+
+## Phase 6.7 — ephemeral CI fixture lifecycle
+
+The canonical test branch no longer depends on persistent synthetic rows.
+
+```text
+Quality run
+  ↓
+seed deterministic fixtures
+  ↓
+integration + Playwright + performance
+  ↓
+always() cleanup
+  ↓
+clean phase6-adaptive-isolated
+```
+
+The isolated branch schema is kept identical to Neon Production. This removes long-lived fixture categories/reports while preserving deterministic four-category acceptance during each serialized Quality run.

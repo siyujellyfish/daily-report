@@ -17,7 +17,9 @@ test("mobile category rail stays visible and navigates without a menu", async ({
 	const rail = page.getByRole("navigation", { name: "報告分類" });
 	await expect(rail).toBeVisible();
 	await expect(page.getByRole("button", { name: "選單" })).toHaveCount(0);
-	await expect(rail.getByRole("link", { name: LONG_CATEGORY_LABEL, exact: true })).toBeVisible();
+	const longCategoryLink = rail.getByRole("link", { name: LONG_CATEGORY_LABEL, exact: true });
+	await expect(longCategoryLink).toBeVisible();
+	await expect(longCategoryLink).toHaveText("這是一個用…");
 	await rail.getByRole("link", { name: "資安情報", exact: true }).click();
 	await expect(page).toHaveURL(/\/category\/security-news$/);
 	await expect(rail.getByRole("link", { name: "資安情報", exact: true })).toHaveAttribute("aria-current", "page");

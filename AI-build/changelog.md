@@ -251,3 +251,67 @@
 - Production and unrelated Preview branches continue using their existing `DATABASE_URL` unchanged.
 - Vercel deployment `dpl_3FfAYFUqVajnMdsd173yQAwQJNLv` reached READY and rendered the four expected published categories while excluding the empty and hidden fixtures.
 - The temporary host override must be removed before the final Phase 6 squash merge.
+
+
+## 2026-09-21 — Phase 6.6 Production rollout
+
+- Removed the temporary `phase6/adaptive-categories` Preview database-host override after the isolated four-category UX was manually confirmed.
+- Confirmed Production Neon remained limited to the two real categories and both had 2026-09-21 reports before rollout.
+- Squash-merged PR #13 to `main` as `d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`.
+- Vercel Production deployment `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` reached READY and serves the dynamic-category runtime.
+- Verified Production homepage, both canonical category archives, an existing 2026-09-21 report detail and sitemap successfully render from the Production database.
+- Replayed both original 2026-09-21 Make payloads after deployment as exact schema-v1 retries. Both Make executions succeeded; Neon still contains exactly one row for each legacy report type/date.
+- Confirmed no synthetic Phase 6 category/report exists in Production.
+- Created `phase6.7/ui-ux` from the Production merge for the next design-refinement phase.
+- Post-merge main Quality run `35554750408` is queued behind the canonical isolated-DB serialization backlog and remains the final non-runtime closure gate.
+
+
+## 2026-09-21 — Phase 6.7 first UI/UX slice
+
+- User approved the first Phase 6.7 direction: horizontal Scroll Area category navigation, five-character visible category labels with ellipsis, and whole-card archive navigation.
+- Reused the existing `radix-ui` dependency after checking the official Scroll Area documentation; no dependency was added or upgraded.
+- Category navigation preserves full persisted labels through `aria-label` and `title`; only the visual text is shortened.
+- Archive rows are now compact card-like links, allowing the full article block to navigate while keeping a single semantic destination per card.
+- Rebound only the `phase6.7/ui-ux` Vercel Preview to the non-secret compute host of Neon `phase6-adaptive-isolated` so four published categories and long-label behavior can be verified. Production and unrelated Preview branches remain unchanged.
+- Added unit/Playwright coverage for five-character category labels, Preview database routing, Scroll Area overflow behavior and whole-card archive navigation.
+- The Phase 6.7 Preview database override is temporary and must be removed before squash merge to `main`.
+
+
+## 2026-09-21 — Phase 6.7 homepage no-wrap correction
+
+- Corrected the first UI interpretation after user review: the requested Scroll Area applies to the homepage latest-report cards, not only the Header category rail.
+- Added a dedicated Radix Scroll Area around the homepage latest-report collection.
+- Desktop/tablet report cards now use a single horizontal grid row with overflow scrolling; a fourth or later category can no longer wrap beneath the first row.
+- Mobile keeps the existing one-column vertical report flow.
+- Homepage card category headings now use the same five-character visible truncation rule while preserving the complete category title for accessibility/native tooltip use.
+- Extended Playwright acceptance to assert that desktop card tops are identical and the report viewport has horizontal overflow with four isolated published categories.
+
+
+## 2026-09-21 — Phase 6.7 desktop carousel controls
+
+- Replaced the visible desktop report scrollbar as the primary interaction with slideshow-style previous/next arrow controls.
+- Each arrow advances approximately one report card, with controls automatically disabled at the first/last scroll edge.
+- Added horizontal scroll snapping so report cards settle on card boundaries while preserving Radix/native scrolling.
+- Respects `prefers-reduced-motion` by switching programmatic movement from smooth to immediate scrolling.
+- Mobile remains a vertical one-column report list and does not render carousel controls.
+- Added Playwright acceptance for one-row layout, arrow visibility/disabled states and actual horizontal movement.
+
+
+## 2026-09-21 — Phase 6.7 delivery cleanup preparation
+
+- User accepted the Phase 6.7 UI/UX and authorized squash merge to `main`, database consolidation and test-data removal.
+- Confirmed Neon Production and `phase6-adaptive-isolated` have no schema diff; Production already matches the repository Phase 6.1 migration.
+- Reworked Quality so the isolated branch is clean at rest: deterministic fixtures are seeded at run start and removed in an `always()` cleanup step.
+- Removed the Phase 6.7 Preview-only database routing helper from the application runtime before final merge.
+
+
+## 2026-09-21 — Phase 6.7 acceptance and database cleanup
+
+- User accepted the desktop carousel, five-character category display and compact whole-card archive navigation.
+- Final Quality run `35557533073` passed frozen install, TypeScript, 27 unit tests, production build, ephemeral fixture seed, isolated DB integration, Playwright critical paths, read-error state, production client-JS budget and always-cleanup.
+- Replaced persistent Phase 6 synthetic data with per-run fixture seeding/cleanup; the isolated branch is clean at rest.
+- Reset Neon `phase6-adaptive-isolated` from Production after cleanup and verified schema diff is empty.
+- Deleted obsolete Neon branches `phase3-testing` and `phase6-testing`; only `main` and `phase6-adaptive-isolated` remain.
+- Deleted the historical Production setup row `P1 End-to-End Test`. Production and isolated branches both report zero titles matching test/fixture/Phase synthetic patterns at rest.
+- Confirmed repository `main` already contains `drizzle/phase6_1_adaptive_categories.sql`; no Phase 6.7 schema change exists, so no additional migration is required.
+- Final Phase 6.7 Preview build `dpl_BNcWDjjQs9VpZ2Q9gEmcNFrCHezN` reached READY after the Preview-only DB override was removed.
