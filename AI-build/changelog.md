@@ -2,6 +2,19 @@
 
 ## 2026-09-18
 
+### Phase 6.2 — schema-v2 ingestion
+
+- Refactored report validation to a schema-version discriminated Zod contract while preserving the original schema-v1 normalization and fixed legacy report types.
+- Added schema-v2 support for safe dynamic category slugs plus bounded `categoryLabel` and `categoryDescription`; payload-controlled sort/visibility/style metadata remains rejected.
+- Added a fixed schema-v1 SHA-256 regression fixture (`d4b77fe6f70c4d87187485a906c7df70931e389c4f38a252245510c35eb0be5f`) to protect exact-retry compatibility across Phase 6.
+- Implemented v2 category create/reuse and report persistence using the existing Neon HTTP driver with Drizzle `db.batch()`, keeping the three statements in one non-interactive atomic transaction.
+- Existing category metadata remains canonical: repeated ingest never silently overwrites label/description; v2 responses can indicate a metadata mismatch.
+- Preserved existing report idempotency semantics: exact payload retry remains HTTP 200 + `duplicate: true`; same category/date with different payload remains HTTP 409.
+- Added isolated `security-news` category/report fixture only to `phase6-adaptive-isolated`. Canonical metadata survived a conflicting create attempt and the same category/date uniqueness constraint retained exactly one report.
+- Independently verified Production `main` still contains zero `security-news` category/report rows.
+- Final implementation Quality run `35322994905` passed at commit `76240031d5b895002f80c7ba4907ec1ca6813006`.
+- No dependency, alternate DB driver, CMS, Production synthetic content, or Production UPDATE/DELETE was introduced.
+
 ### Phase 6.1 — category migration and DB isolation
 
 - Confirmed Neon Production `main` is on the Phase 6.1 schema: `report_categories` exists, `reports.report_type` is varchar with category FK, legacy indexes/uniques remain, and there are no orphan reports.
