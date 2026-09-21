@@ -14,13 +14,15 @@
 		"test": "pnpm test:unit",
 		"test:unit": "vitest run",
 		"test:unit:watch": "vitest",
-		"test:integration": "vitest run --config vitest.integration.config.mts",
+		"test:integration": "vitest run --config vitest.integration.config.mts tests/integration/reports-db.test.ts",
 		"test:e2e": "playwright test",
 		"test:e2e:error": "playwright test --config playwright.error.config.ts",
 		"test:e2e:performance": "playwright test --config playwright.performance.config.ts",
 		"test:e2e:install": "playwright install chromium",
 		"db:generate": "drizzle-kit generate",
-		"db:migrate": "drizzle-kit migrate"
+		"db:migrate": "drizzle-kit migrate",
+		"test:fixtures:seed": "vitest run --config vitest.integration.config.mts tests/integration/phase6-fixtures-seed.test.ts",
+		"test:fixtures:cleanup": "vitest run --config vitest.integration.config.mts tests/integration/phase6-fixtures-cleanup.test.ts"
 	},
 	"dependencies": {
 		"@neondatabase/serverless": "1.1.0",
