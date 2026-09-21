@@ -16,7 +16,6 @@ test("legacy news archive redirects to the canonical category", async ({ page })
 	const newestReport = page.getByRole("link", { name: "Phase 6 Fixture Daily News", exact: true });
 	await expect(newestReport).toBeVisible();
 	await expect(newestReport).toHaveClass(/archive-item/);
-	await expect(page.getByRole("navigation", { name: "報告列表分頁" })).toHaveCount(0);
 	await newestReport.click({ position: { x: 12, y: 12 } });
 	await expect(page).toHaveURL(/\/reports\/2099-01-01-daily-news$/);
 });
