@@ -10,12 +10,13 @@
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證。
 - Phase 5 — Production hardening & launch：完成。Final `INGEST_SECRET` 已安全同步；兩個正式 recurring Tasks 保留原 daily schedule 並使用 verified delivery contract。2026-09-11 第一輪 original-schedule unattended execution 已成功，Neon 兩種類型各 exactly once，公開頁面驗證通過。PR #11 已以 squash merge 合併至 `main`（`b0efb79d33c4056687fa52a6fd120668cf4f176c`），對應 Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` 已達 `READY`。
-- Phase 6 — Adaptive categories：進行中。6.1 category schema 與 reviewed custom migration 已完成並在 temporary Neon branch 驗證；既有 16 筆 report migration 前後 fingerprint 完全一致、legacy v1 write shape 與 FK enforcement 通過。Neon Production 尚未套用 Phase 6.1 migration，等待明確 migration promotion gate；6.2 尚未開始。
+- Phase 6 — Adaptive categories：進行中。6.1 已完成並套用經 temporary branch 驗證的 backward-compatible category migration 至 Neon Production；後續測試固定使用隔離 branch `phase6-adaptive-isolated`。6.2 已完成 schema-version discriminated ingest：v1 完整相容且 hash regression 已鎖定，v2 支援安全動態 category slug/metadata，使用 Neon HTTP atomic `db.batch()` 建立/重用 category 並寫入 report。Production application 尚未部署 Phase 6 runtime；下一步為 6.3 dynamic read layer/routes。
 
 ## Documents
 
 - `phase-6-plan.md`：Phase 6 自適應分類的資料模型、v1/v2 ingestion、migration、dynamic routes、UI/UX、測試與 rollout 計畫。
-- `phase-6-1-verification.md`：Phase 6.1 category schema、custom migration、temporary Neon 資料完整性與 legacy-v1 相容驗證紀錄。
+- `phase-6-1-verification.md`：Phase 6.1 category schema、custom migration、Production promotion 與隔離 Neon branch 驗證紀錄。
+- `phase-6-2-verification.md`：Phase 6.2 v1/v2 ingestion contract、v1 hash regression、atomic Neon HTTP batch 與隔離第三分類 persistence 驗證紀錄。
 - `phase-5-plan.md`：Phase 5 final credential rotation、Production hardening、recurring publishing activation、第一輪 unattended execution 與 launch closure 計畫。
 - `phase-5-verification.md`：Phase 5 Production preflight、credential validation、recurring delivery activation、first unattended execution 與 launch acceptance 實際紀錄。
 - `phase-4-plan.md`：Phase 4 真實 Scheduled Task 整合、one-shot shadow validation、payload contract、驗證矩陣與 Phase 5 handoff。
