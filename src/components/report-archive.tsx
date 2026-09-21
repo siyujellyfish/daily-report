@@ -32,18 +32,20 @@ export async function ReportArchive({ slug, page }: { slug: string; page: number
 			<Link className="text-link" href="/">返回首頁</Link>
 		</section> : <>
 			<ol className="archive-list" start={(page - 1) * REPORT_PAGE_SIZE + 1}>
-				{result.reports.map((report) => <li className="archive-item" key={report.slug}>
-					<time className="archive-date" dateTime={report.reportDate}>{formatReportDate(report.reportDate)}</time>
-					<div>
-						<h2><Link href={`/reports/${report.slug}`} prefetch={false}>{report.title}</Link></h2>
-						<p>{report.summary}</p>
-					</div>
+				{result.reports.map((report) => <li key={report.slug}>
 					<Link
 						href={`/reports/${report.slug}`}
 						prefetch={false}
-						className="archive-arrow"
-						aria-label={`閱讀：${report.title}`}
-					>↗</Link>
+						className="archive-item"
+						aria-label={report.title}
+					>
+						<time className="archive-date" dateTime={report.reportDate}>{formatReportDate(report.reportDate)}</time>
+						<div className="archive-content">
+							<h2>{report.title}</h2>
+							<p>{report.summary}</p>
+						</div>
+						<span className="archive-arrow" aria-hidden="true">↗</span>
+					</Link>
 				</li>)}
 			</ol>
 			{result.pageCount > 1 && <nav className="pagination" aria-label="報告列表分頁">

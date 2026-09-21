@@ -57,5 +57,6 @@ test("archive renders reports using the canonical category route", async () => {
 	expect(html).toContain("共 1 篇報告");
 	expect(html).toContain("Security report");
 	expect(html).toContain("每日資安事件與漏洞整理。");
+	expect(html).toMatch(/<a[^>]+class="archive-item"[^>]+aria-label="Security report"/);
 	expect(html).not.toContain("報告列表分頁");
 });

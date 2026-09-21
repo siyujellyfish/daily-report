@@ -13,8 +13,12 @@ test("legacy news archive redirects to the canonical category", async ({ page })
 	await page.goto("/news");
 	await expect(page).toHaveURL(/\/category\/daily-news$/);
 	await expect(page.getByText("共 9 篇報告")).toBeVisible();
-	await expect(page.getByRole("link", { name: "開發技術每日追蹤｜2026-09-18", exact: true })).toBeVisible();
+	const newestReport = page.getByRole("link", { name: "開發技術每日追蹤｜2026-09-18", exact: true });
+	await expect(newestReport).toBeVisible();
+	await expect(newestReport).toHaveClass(/archive-item/);
 	await expect(page.getByRole("navigation", { name: "報告列表分頁" })).toHaveCount(0);
+	await newestReport.click({ position: { x: 12, y: 12 } });
+	await expect(page).toHaveURL(/\/reports\/2026-09-18-daily-news$/);
 });
 
 test("legacy framework archive redirects to the canonical filtered category", async ({ page }) => {

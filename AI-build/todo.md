@@ -502,11 +502,13 @@ These are not launch blockers and should not be implemented preemptively:
 
 - [x] Create `phase6.7/ui-ux` from the Phase 6 Production merge.
 - [x] Record the UI/UX refinement scope and non-goals in `phase-6-7-plan.md`.
-- [ ] Confirm visual direction and priorities with the user before implementation.
-- [ ] Refine Header/navigation hierarchy and category-rail affordance without reintroducing a hamburger dependency.
+- [x] Confirm visual direction and priorities with the user before implementation.
+- [x] Replace the category rail with Radix Scroll Area, keep semantic links, and truncate only visible navigation labels to 5 characters + ellipsis.
 - [ ] Refine homepage information density and 3+ category card rhythm.
-- [ ] Refine category archive scanability, spacing and pagination.
+- [x] Convert category archive rows into compact whole-card links while preserving pagination.
 - [ ] Refine report-detail reading hierarchy, TOC and source presentation.
 - [ ] Recheck mobile/desktop overflow, focus, contrast, reduced-motion and sticky-anchor behavior.
 - [ ] Preserve Server Components, dynamic categories, current ingest contract and client-JS budget.
-- [ ] Update Playwright visual/interaction acceptance only after the approved UI direction is implemented.
+- [x] Rebind `phase6.7/ui-ux` Preview to Neon `phase6-adaptive-isolated` for multi-category UI acceptance only.
+- [ ] Remove the Phase 6.7 Preview-only isolated Neon routing helper before squash merge to `main`.
+- [x] Update Playwright/unit acceptance for Scroll Area, visible-label truncation and whole-card archive navigation.

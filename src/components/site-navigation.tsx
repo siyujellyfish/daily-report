@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { ScrollArea } from "radix-ui";
 import { useEffect, useState } from "react";
 
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { truncateCategoryLabel } from "@/lib/category-label";
 
 type NavigationCategory = {
 	slug: string;
@@ -27,7 +29,9 @@ export function SiteNavigation({ categories }: { categories: NavigationCategory[
 	const { theme, setTheme } = useTheme();
 	const activeSlug = activeCategorySlug(pathname);
 
-	useEffect(() => { setMounted(true); }, []);
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	return <div className="navigation-shell">
 		<div className="header-actions">
@@ -53,14 +57,25 @@ export function SiteNavigation({ categories }: { categories: NavigationCategory[
 			</div>
 		</div>
 		<nav className="category-rail" aria-label="報告分類">
-			<div className="category-rail-inner">
-				{categories.map((category) => <Link
-					key={category.slug}
-					href={category.href}
-					prefetch={false}
-					aria-current={activeSlug === category.slug ? "page" : undefined}
-				>{category.label}</Link>)}
-			</div>
+			<ScrollArea.Root className="category-scroll-area" type="auto">
+				<ScrollArea.Viewport className="category-scroll-viewport">
+					<div className="category-rail-inner">
+						{categories.map((category) => <Link
+							key={category.slug}
+							href={category.href}
+							prefetch={false}
+							aria-current={activeSlug === category.slug ? "page" : undefined}
+							aria-label={category.label}
+							title={category.label}
+						>
+							<span aria-hidden="true">{truncateCategoryLabel(category.label)}</span>
+						</Link>)}
+					</div>
+				</ScrollArea.Viewport>
+				<ScrollArea.Scrollbar className="category-scrollbar" orientation="horizontal">
+					<ScrollArea.Thumb className="category-scroll-thumb" />
+				</ScrollArea.Scrollbar>
+			</ScrollArea.Root>
 		</nav>
 	</div>;
 }

@@ -264,3 +264,14 @@
 - Confirmed no synthetic Phase 6 category/report exists in Production.
 - Created `phase6.7/ui-ux` from the Production merge for the next design-refinement phase.
 - Post-merge main Quality run `35554750408` is queued behind the canonical isolated-DB serialization backlog and remains the final non-runtime closure gate.
+
+
+## 2026-09-21 — Phase 6.7 first UI/UX slice
+
+- User approved the first Phase 6.7 direction: horizontal Scroll Area category navigation, five-character visible category labels with ellipsis, and whole-card archive navigation.
+- Reused the existing `radix-ui` dependency after checking the official Scroll Area documentation; no dependency was added or upgraded.
+- Category navigation preserves full persisted labels through `aria-label` and `title`; only the visual text is shortened.
+- Archive rows are now compact card-like links, allowing the full article block to navigate while keeping a single semantic destination per card.
+- Rebound only the `phase6.7/ui-ux` Vercel Preview to the non-secret compute host of Neon `phase6-adaptive-isolated` so four published categories and long-label behavior can be verified. Production and unrelated Preview branches remain unchanged.
+- Added unit/Playwright coverage for five-character category labels, Preview database routing, Scroll Area overflow behavior and whole-card archive navigation.
+- The Phase 6.7 Preview database override is temporary and must be removed before squash merge to `main`.

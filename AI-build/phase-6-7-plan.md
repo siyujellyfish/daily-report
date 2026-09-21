@@ -2,7 +2,7 @@
 
 ## Status
 
-Planning only. No UI runtime change is authorized by this document.
+First implementation slice approved on 2026-09-21. The user confirmed the recommended direction and explicitly requested the Phase 6.7 Preview be rebound to Neon `phase6-adaptive-isolated`.
 
 Branch:
 
@@ -104,16 +104,18 @@ Phase 6.7 does not automatically include:
 - animation libraries;
 - arbitrary category colors/icons from payloads.
 
-## Design gate before implementation
+## Approved first-slice decisions
 
-Before modifying UI code, confirm these decisions with the user:
+- Replace the category rail's raw CSS overflow with the existing `radix-ui` Scroll Area primitive; no package addition is required.
+- Keep category navigation as semantic links, not tabs.
+- Render navigation labels at a maximum of five visible Unicode characters and append `…` when longer.
+- Preserve each category's complete persisted label in the link's accessible name and native title.
+- Give category links a minimum inline width so the mobile rail still presents an intentional horizontal-scroll affordance.
+- Convert archive rows into compact card-like links: the whole article block navigates to the report detail.
+- Keep homepage editorial report cards unchanged in this slice because they already contain two distinct destinations (detail + archive).
+- Rebind only the `phase6.7/ui-ux` Vercel Preview to Neon `phase6-adaptive-isolated` for four-published-category UX acceptance.
+- The Preview database host override is verification-only and must be removed before any Phase 6.7 merge to `main`.
 
-1. **Overall density** — keep the current spacious editorial layout, make it moderately denser, or significantly compact it for many categories.
-2. **Header emphasis** — keep the current two-row visual weight or make the first row/rail more compact while preserving always-visible categories.
-3. **Homepage card strategy** — keep full editorial cards for every category or reduce preview content so 4–6 categories fit more efficiently.
-4. **Report-detail direction** — preserve the current newspaper/editorial reading style or increase documentation-like structure around TOC/metadata.
-
-A visual/demo checkpoint should precede final implementation.
 
 ## Implementation constraints
 
@@ -137,3 +139,29 @@ Phase 6.7 implementation is complete only when:
 - public browser reads remain free of redundant `/api/*` calls;
 - production client JavaScript budget does not regress materially;
 - `/AI-build` records the final design decisions and verification.
+
+
+## First-slice implementation
+
+The implementation uses the project's existing `radix-ui` package and follows the official Scroll Area primitive composition:
+
+```text
+ScrollArea.Root
+└─ ScrollArea.Viewport
+   └─ category links
+└─ ScrollArea.Scrollbar (horizontal)
+   └─ ScrollArea.Thumb
+```
+
+The official Radix guidance retains native scrolling and keyboard scrolling behavior; Phase 6.7 adds no custom wheel/drag state.
+
+Preview database routing is scoped to:
+
+```text
+VERCEL_ENV=preview
+VERCEL_GIT_COMMIT_REF=phase6.7/ui-ux
+        ↓
+Neon phase6-adaptive-isolated
+```
+
+Production and unrelated Preview branches continue using their configured `DATABASE_URL` unchanged.

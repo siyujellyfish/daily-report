@@ -40,7 +40,9 @@ test("published category rail and homepage adapt to four categories", async ({ p
 	await expect(rail.getByRole("link", { name: "資訊新聞", exact: true })).toBeVisible();
 	await expect(rail.getByRole("link", { name: "框架工具", exact: true })).toBeVisible();
 	await expect(rail.getByRole("link", { name: "資安情報", exact: true })).toBeVisible();
-	await expect(rail.getByRole("link", { name: LONG_CATEGORY_LABEL, exact: true })).toBeVisible();
+	const longCategoryLink = rail.getByRole("link", { name: LONG_CATEGORY_LABEL, exact: true });
+	await expect(longCategoryLink).toBeVisible();
+	await expect(longCategoryLink).toHaveText("這是一個用…");
 	await expect(rail.getByText("空分類驗收")).toHaveCount(0);
 	await expect(rail.getByText("隱藏分類驗收")).toHaveCount(0);
 
@@ -54,7 +56,7 @@ test("published category rail and homepage adapt to four categories", async ({ p
 
 	const layout = await page.evaluate(() => {
 		const grid = document.querySelector<HTMLElement>(".featured-grid");
-		const rail = document.querySelector<HTMLElement>(".category-rail");
+		const rail = document.querySelector<HTMLElement>(".category-scroll-viewport");
 		if (!grid || !rail) throw new Error("Adaptive layout elements are missing.");
 		return {
 			documentWidth: document.documentElement.scrollWidth,
