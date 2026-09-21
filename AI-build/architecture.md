@@ -571,3 +571,22 @@ After deployment, the two original 2026-09-21 schema-v1 Make payloads were repla
 Phase 6.7 is presentation-only unless a separately approved requirement proves otherwise. It must preserve the Phase 6 category/data contract, Server Component read architecture, canonical routes and ingest semantics.
 
 The initial refinement surfaces are Header/category rail, homepage card density, category archive scanability, report-detail reading hierarchy/TOC/sources, and mobile interaction polish. No CMS, client-side category store, redundant read API or new UI dependency is assumed.
+
+
+## Phase 6.7 — ephemeral CI fixture lifecycle
+
+The canonical test branch no longer depends on persistent synthetic rows.
+
+```text
+Quality run
+  ↓
+seed deterministic fixtures
+  ↓
+integration + Playwright + performance
+  ↓
+always() cleanup
+  ↓
+clean phase6-adaptive-isolated
+```
+
+The isolated branch schema is kept identical to Neon Production. This removes long-lived fixture categories/reports while preserving deterministic four-category acceptance during each serialized Quality run.
