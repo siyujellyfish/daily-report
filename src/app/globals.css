@@ -1130,7 +1130,7 @@ main {
 	overflow-wrap:anywhere
 }
 .prose h2,.prose h3,.prose h4,.prose h5,.prose h6 {
-	scroll-margin-top:115px
+	scroll-margin-top:var(--sticky-header-offset)
 }
 main:focus {
 	outline:none
@@ -1142,21 +1142,6 @@ main:focus {
 	gap:24px
 }
 @media(max-width:720px) {
-	.navigation-shell {
-		display:contents
-	}
-	.nav {
-		order:5
-	}
-	.theme-control {
-		margin-left:auto
-	}
-	.header {
-		gap:10px
-	}
-	.nav.open {
-		display:flex
-	}
 	.feature h4 {
 		font-size:25px
 	}
@@ -1217,10 +1202,7 @@ main:focus {
 	.theme-control .theme-select {
 		max-width: 98px;
 	}
-	.menu-toggle {
-		padding: 6px 8px;
-	}
 	.header {
-		gap: 8px;
+		column-gap: 8px;
 	}
 }
