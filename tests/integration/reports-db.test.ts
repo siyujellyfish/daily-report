@@ -3,10 +3,22 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 const INTEGRATION_SECRET = "phase6-integration-secret";
-const INGEST_CATEGORY = "phase6-ingest-validation";
-const V1_REPORT_DATE = "2000-01-02";
-const V2_REPORT_DATE = "2000-01-03";
-const V2_MISMATCH_DATE = "2000-01-04";
+const RUN_TOKEN = (process.env.GITHUB_RUN_ID ?? `local-${process.pid}`)
+	.toLowerCase()
+	.replace(/[^a-z0-9-]/g, "-")
+	.slice(-32);
+const INGEST_CATEGORY = `phase6-ingest-${RUN_TOKEN}`;
+
+function runScopedDate(offset: number) {
+	const digits = RUN_TOKEN.replace(/\D/g, "");
+	const seed = Number.parseInt(digits.slice(-8), 10) || process.pid;
+	const date = new Date(Date.UTC(2000, 0, 1 + ((seed * 3 + offset) % 9000)));
+	return date.toISOString().slice(0, 10);
+}
+
+const V1_REPORT_DATE = runScopedDate(0);
+const V2_REPORT_DATE = runScopedDate(1);
+const V2_MISMATCH_DATE = runScopedDate(2);
 
 type ReportsModule = typeof import("../../src/lib/reports");
 type DbModule = typeof import("../../src/db");
@@ -147,7 +159,7 @@ describe("Phase 6 isolated ingest compatibility", () => {
 			schemaVersion: 1,
 			reportType: "daily-news",
 			title: "Phase 6.5 v1 ingest fixture",
-			generatedAt: "2000-01-02T08:00:00+08:00",
+			generatedAt: `${V1_REPORT_DATE}T08:00:00+08:00`,
 			contentMarkdown: "Phase 6.5 v1 integration.",
 			sources: [],
 		};
@@ -174,7 +186,7 @@ describe("Phase 6 isolated ingest compatibility", () => {
 			categoryLabel: "Phase 6 Ingest Validation",
 			categoryDescription: "Canonical isolated integration metadata.",
 			title: "Phase 6.5 v2 ingest fixture",
-			generatedAt: "2000-01-03T08:00:00+08:00",
+			generatedAt: `${V2_REPORT_DATE}T08:00:00+08:00`,
 			contentMarkdown: "Phase 6.5 v2 integration.",
 			sources: [],
 		};
@@ -206,7 +218,7 @@ describe("Phase 6 isolated ingest compatibility", () => {
 			categoryLabel: "Attempted Rename",
 			categoryDescription: "This must not replace canonical metadata.",
 			title: "Phase 6.5 v2 mismatch fixture",
-			generatedAt: "2000-01-04T08:00:00+08:00",
+			generatedAt: `${V2_MISMATCH_DATE}T08:00:00+08:00`,
 		}));
 		expect(response.status).toBe(201);
 		expect(await response.json()).toMatchObject({
