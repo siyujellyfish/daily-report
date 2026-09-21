@@ -10,7 +10,7 @@
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證。
 - Phase 5 — Production hardening & launch：完成。Final `INGEST_SECRET` 已安全同步；兩個正式 recurring Tasks 保留原 daily schedule 並使用 verified delivery contract。2026-09-11 第一輪 original-schedule unattended execution 已成功，Neon 兩種類型各 exactly once，公開頁面驗證通過。PR #11 已以 squash merge 合併至 `main`（`b0efb79d33c4056687fa52a6fd120668cf4f176c`），對應 Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` 已達 `READY`。
-- Phase 6 — Adaptive categories：進行中。6.1–6.2 已完成 category schema/migration 與 v1/v2 ingest；6.3–6.4 已完成 data-driven server read layer、`/category/[slug]` canonical routes、legacy 308 redirects、dynamic sitemap/metadata、兩列 adaptive Header/category rail、data-driven homepage、deterministic category tones 與 shared sticky offset。最新 Quality run `35548140378` 通過 25 unit、4 isolated DB integration、Playwright 30 passed / 4 skipped、read-error 1/1 與 JS budget 1/1。Production runtime 尚未部署 Phase 6；下一階段為 6.5 完整 3+ category / hidden-empty / metadata-sitemap / redirect-status 驗證。
+- Phase 6 — Adaptive categories：進行中。6.1–6.5 已完成：category schema/migration、v1/v2 ingest、data-driven read/routes、adaptive Header/homepage，以及 canonical `phase6-adaptive-isolated` 的完整 automated acceptance。GitHub `TEST_DATABASE_URL` 已驗證指向 canonical Phase 6 branch。Final 6.5 Quality run `35553230724`（commit `a8cab16c1903f19d305a7c34063be84183956d37`）通過 25 unit、9 isolated DB integration、Playwright 40 passed / 4 viewport skips、read-error 1/1 與 JS budget 1/1。Production runtime 尚未部署 Phase 6；下一階段為 6.6 safe rollout / Production acceptance。
 
 ## Documents
 
@@ -18,6 +18,7 @@
 - `phase-6-1-verification.md`：Phase 6.1 category schema、custom migration、Production promotion 與隔離 Neon branch 驗證紀錄。
 - `phase-6-2-verification.md`：Phase 6.2 v1/v2 ingestion contract、v1 hash regression、atomic Neon HTTP batch 與隔離第三分類 persistence 驗證紀錄。
 - `phase-6-3-4-verification.md`：Phase 6.3 dynamic read/routes 與 Phase 6.4 adaptive UI/UX 的實作、隔離 DB 與 Quality 驗證紀錄。
+- `phase-6-5-verification.md`：Phase 6.5 canonical test connection、3+ category/hidden-empty fixtures、v1/v2 write-path、308/metadata/sitemap/mobile/sticky/performance 的完整自動驗收紀錄。
 - `phase-5-plan.md`：Phase 5 final credential rotation、Production hardening、recurring publishing activation、第一輪 unattended execution 與 launch closure 計畫。
 - `phase-5-verification.md`：Phase 5 Production preflight、credential validation、recurring delivery activation、first unattended execution 與 launch acceptance 實際紀錄。
 - `phase-4-plan.md`：Phase 4 真實 Scheduled Task 整合、one-shot shadow validation、payload contract、驗證矩陣與 Phase 5 handoff。
