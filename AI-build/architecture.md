@@ -45,13 +45,22 @@ ChatGPT Scheduled Tasks
 
 ## Report storage
 
-The initial data model uses one `reports` table:
+Phase 6.1 migrated category identity into a first-class table while preserving the existing report column name:
 
 ```text
+report_categories
+├─ slug varchar(80) PK
+├─ label varchar(120)
+├─ description varchar(500)
+├─ sort_order integer nullable
+├─ is_visible boolean
+├─ created_at timestamptz
+└─ updated_at timestamptz
+
 reports
 ├─ id UUID
 ├─ schema_version
-├─ report_type
+├─ report_type varchar(80) → report_categories.slug
 ├─ report_date
 ├─ title
 ├─ content_markdown
@@ -61,12 +70,12 @@ reports
 └─ payload_hash
 ```
 
-Supported `report_type` values:
+The two legacy schema-v1 report types remain:
 
 - `daily-news`
 - `framework-recommendation`
 
-Source links remain JSONB because the product only needs attribution/rendering. A relational source table should be introduced only if source-level analytics, filtering, deduplication or cross-report queries become real requirements.
+The database is no longer restricted to those two values; authenticated schema-v2 ingestion can introduce additional validated category slugs. Source links remain JSONB because the product only needs attribution/rendering. A relational source table should be introduced only if source-level analytics, filtering, deduplication or cross-report queries become real requirements.
 
 ## Ingestion behavior
 
@@ -77,10 +86,16 @@ Idempotency is enforced at two levels:
 
 Other ingestion constraints:
 
-- Only schema version `1` is currently accepted.
-- `sources: null` or omitted sources are normalized to `[]` for Make compatibility.
+- Schema version `1` remains accepted exactly for the two live legacy report types.
+- Schema version `2` accepts a validated dynamic category slug plus bounded category label/description.
+- V1 `sources: null` or omitted sources still normalize to `[]` for Make compatibility, and its normalized SHA-256 behavior is regression-locked.
+- V2 category metadata is insert-once canonical metadata; normal report ingest never silently renames an existing category.
+- `sort_order`, `is_visible` and arbitrary presentation values are not payload-controlled.
+- V2 category create/reuse, canonical metadata read and report insert execute atomically through Drizzle Neon HTTP `db.batch()`.
 - Source URLs must remain structured data rather than ChatGPT UI citation serialization.
 - Business date boundaries use `Asia/Taipei`.
+
+The Production database already has the Phase 6.1 schema, while the Phase 6 application runtime remains undeployed until the later rollout gate.
 
 ## Phase 2 — implemented public read architecture
 
@@ -309,7 +324,7 @@ Detailed evidence is recorded in `phase-5-verification.md`.
 - Existing ingestion contract, production database schema and Make Scenario are unchanged.
 - Detailed design: `phase-2-design.md`. Validation evidence is recorded in `changelog.md`.
 
-## Phase 6 — planned adaptive category architecture
+## Phase 6 — adaptive category architecture (6.1–6.2 implemented)
 
 Phase 6 will preserve the live Phase 5 flow while replacing fixed category assumptions with persisted category metadata. The target data flow is:
 
@@ -393,8 +408,34 @@ Published navigation categories are `is_visible = true` and have at least one re
 - Sticky Header/TOC/anchor offsets use a shared CSS token after the second Header row is introduced.
 - Navigation category query failure may degrade the navigation shell without masking the main page's existing read-error behavior.
 
+### Implemented ingestion boundary through Phase 6.2
+
+```text
+POST /api/v1/ingest
+        ↓
+Bearer authentication
+        ↓
+z.discriminatedUnion("schemaVersion")
+   ├─ v1
+   │   ├─ daily-news | framework-recommendation
+   │   └─ original normalization/hash behavior
+   └─ v2
+       ├─ safe slug: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+       ├─ bounded label/description
+       └─ Neon HTTP atomic batch
+            ├─ category INSERT ... ON CONFLICT DO NOTHING
+            ├─ canonical category SELECT
+            └─ report INSERT ... ON CONFLICT DO NOTHING
+```
+
+V2 responses may report whether a category was newly created and whether submitted metadata differs from the stored canonical metadata; mismatches never mutate the category row.
+
+No WebSocket database driver, new dependency, CMS or browser write/read layer was added for this feature.
+
 ### Migration and rollout boundary
 
-Phase 6 uses a schema-first rollout only after a temporary Neon branch proves that the current Production application can still operate after the enum-to-varchar/FK migration. Synthetic third-category reports are restricted to isolated test/Preview environments; Production acceptance does not create fake content.
+The Phase 6.1 enum-to-varchar/FK migration was validated on a temporary Neon branch and then promoted to Neon Production after explicit approval. A fresh `phase6-adaptive-isolated` branch was created from the migrated Production HEAD and is the sole Phase 6.2+ synthetic-write target.
 
-Detailed implementation, test matrix and acceptance criteria are recorded in `phase-6-plan.md` and `todo.md`.
+The Phase 6 runtime itself is not yet deployed to Production. Synthetic third-category reports remain restricted to the isolated branch/Preview path; Production acceptance does not create fake content.
+
+Detailed implementation, test matrix and acceptance criteria are recorded in `phase-6-plan.md`, `phase-6-1-verification.md`, `phase-6-2-verification.md` and `todo.md`.
