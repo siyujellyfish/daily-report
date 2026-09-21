@@ -242,3 +242,12 @@
 - GitHub Quality run `35553333899` passed at commit `a8cab16c1903f19d305a7c34063be84183956d37`, including typecheck, unit, build, isolated DB integration, Playwright critical paths, read-error and production client-JavaScript budget.
 - Matching Vercel Preview `dpl_FEzvnXDLAEzBCV18CEgTyBgU1rMa` reached READY.
 - Production runtime remains unchanged; Phase 6.6 rollout is the next gate.
+
+
+## 2026-09-21 — Phase 6 isolated Preview routing corrected
+
+- Confirmed the Vercel `phase6/adaptive-categories` Preview was still reading the Production Neon branch, which explained why only the two live categories rendered.
+- Added a Phase-6-verification-only server-side database host override scoped to `VERCEL_ENV=preview` and `VERCEL_GIT_COMMIT_REF=phase6/adaptive-categories`, targeting the non-secret compute host of Neon `phase6-adaptive-isolated`.
+- Production and unrelated Preview branches continue using their existing `DATABASE_URL` unchanged.
+- Vercel deployment `dpl_3FfAYFUqVajnMdsd173yQAwQJNLv` reached READY and rendered the four expected published categories while excluding the empty and hidden fixtures.
+- The temporary host override must be removed before the final Phase 6 squash merge.
