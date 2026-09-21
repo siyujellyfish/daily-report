@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { truncateCategoryLabel } from "@/lib/category-label";
 import { formatReportDate } from "@/lib/report-date";
 import type { PublicCategory, PublicReport } from "@/lib/reports";
 
@@ -14,9 +15,9 @@ export function ReportCard({
 }) {
 	return <Card className={`feature category-scope ${category.style}`}>
 		<CardHeader className="feature-top">
-			<h3 className="category">
+			<h3 className="category" aria-label={category.title} title={category.title}>
 				<span className="category-icon" aria-hidden="true">{category.icon}</span>
-				{category.title}
+				<span aria-hidden="true">{truncateCategoryLabel(category.title)}</span>
 			</h3>
 			<span className="issue">{category.issue}</span>
 		</CardHeader>

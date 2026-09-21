@@ -56,12 +56,19 @@ test("published category rail and homepage adapt to four categories", async ({ p
 
 	const layout = await page.evaluate(() => {
 		const grid = document.querySelector<HTMLElement>(".featured-grid");
+		const featuredViewport = document.querySelector<HTMLElement>(".featured-scroll-viewport");
 		const rail = document.querySelector<HTMLElement>(".category-scroll-viewport");
-		if (!grid || !rail) throw new Error("Adaptive layout elements are missing.");
+		const cards = [...document.querySelectorAll<HTMLElement>(".featured-grid > .feature")];
+		if (!grid || !featuredViewport || !rail) throw new Error("Adaptive layout elements are missing.");
 		return {
 			documentWidth: document.documentElement.scrollWidth,
 			viewportWidth: document.documentElement.clientWidth,
-			gridColumns: getComputedStyle(grid).gridTemplateColumns.split(/\s+/).filter(Boolean).length,
+			gridDisplay: getComputedStyle(grid).display,
+			gridFlow: getComputedStyle(grid).gridAutoFlow,
+			featuredOverflowX: getComputedStyle(featuredViewport).overflowX,
+			featuredScrollWidth: featuredViewport.scrollWidth,
+			featuredClientWidth: featuredViewport.clientWidth,
+			cardTops: cards.map((card) => Math.round(card.getBoundingClientRect().top)),
 			railOverflowX: getComputedStyle(rail).overflowX,
 			railScrollWidth: rail.scrollWidth,
 			railClientWidth: rail.clientWidth,
@@ -71,10 +78,14 @@ test("published category rail and homepage adapt to four categories", async ({ p
 	expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth + 2);
 	expect(["auto", "scroll"]).toContain(layout.railOverflowX);
 	if (testInfo.project.name.includes("mobile")) {
-		expect(layout.gridColumns).toBe(1);
+		expect(layout.gridDisplay).toBe("grid");
+		expect(new Set(layout.cardTops).size).toBe(layout.cardTops.length);
 		expect(layout.railScrollWidth).toBeGreaterThan(layout.railClientWidth);
 	} else {
-		expect(layout.gridColumns).toBeGreaterThanOrEqual(3);
+		expect(layout.gridFlow).toBe("column");
+		expect(new Set(layout.cardTops).size).toBe(1);
+		expect(["auto", "scroll"]).toContain(layout.featuredOverflowX);
+		expect(layout.featuredScrollWidth).toBeGreaterThan(layout.featuredClientWidth);
 	}
 });
 

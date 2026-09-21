@@ -67,3 +67,23 @@ test("invalid, empty, hidden and missing categories or reports return 404", asyn
 	response = await page.goto("/news?page=0");
 	expect(response?.status()).toBe(404);
 });
+
+
+test("homepage latest reports stay in one horizontal desktop row", async ({ page }, testInfo) => {
+	test.skip(testInfo.project.name.includes("mobile"), "Desktop/tablet horizontal report rail only.");
+	await page.goto("/");
+	const viewport = page.locator(".featured-scroll-viewport");
+	await expect(viewport).toBeVisible();
+	const state = await page.evaluate(() => {
+		const viewport = document.querySelector<HTMLElement>(".featured-scroll-viewport");
+		const cards = [...document.querySelectorAll<HTMLElement>(".featured-grid > .feature")];
+		if (!viewport) throw new Error("Featured report Scroll Area is missing.");
+		return {
+			scrollWidth: viewport.scrollWidth,
+			clientWidth: viewport.clientWidth,
+			tops: cards.map((card) => Math.round(card.getBoundingClientRect().top)),
+		};
+	});
+	expect(new Set(state.tops).size).toBe(1);
+	expect(state.scrollWidth).toBeGreaterThan(state.clientWidth);
+});

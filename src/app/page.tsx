@@ -1,3 +1,4 @@
+import { FeaturedReportsScroll } from "@/components/featured-reports-scroll";
 import { ReportCard } from "@/components/report-card";
 import { formatReportDate } from "@/lib/report-date";
 import { getLatestPublishedReports } from "@/lib/reports";
@@ -28,13 +29,13 @@ export default async function Home() {
 				<span>依分類呈現最新內容</span>
 			</div>
 			{items.length > 0
-				? <div className="featured-grid">
+				? <FeaturedReportsScroll>
 					{items.map(({ category, report }) => <ReportCard
 						key={category.slug}
 						category={category}
 						report={report}
 					/>)}
-				</div>
+				</FeaturedReportsScroll>
 				: <div className="empty compact-empty">
 					<h2>尚無已發布報告</h2>
 					<p>第一篇報告發布後，會顯示在這裡。</p>

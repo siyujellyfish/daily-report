@@ -275,3 +275,13 @@
 - Rebound only the `phase6.7/ui-ux` Vercel Preview to the non-secret compute host of Neon `phase6-adaptive-isolated` so four published categories and long-label behavior can be verified. Production and unrelated Preview branches remain unchanged.
 - Added unit/Playwright coverage for five-character category labels, Preview database routing, Scroll Area overflow behavior and whole-card archive navigation.
 - The Phase 6.7 Preview database override is temporary and must be removed before squash merge to `main`.
+
+
+## 2026-09-21 — Phase 6.7 homepage no-wrap correction
+
+- Corrected the first UI interpretation after user review: the requested Scroll Area applies to the homepage latest-report cards, not only the Header category rail.
+- Added a dedicated Radix Scroll Area around the homepage latest-report collection.
+- Desktop/tablet report cards now use a single horizontal grid row with overflow scrolling; a fourth or later category can no longer wrap beneath the first row.
+- Mobile keeps the existing one-column vertical report flow.
+- Homepage card category headings now use the same five-character visible truncation rule while preserving the complete category title for accessibility/native tooltip use.
+- Extended Playwright acceptance to assert that desktop card tops are identical and the report viewport has horizontal overflow with four isolated published categories.

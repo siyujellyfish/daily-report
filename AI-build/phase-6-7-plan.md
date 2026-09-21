@@ -165,3 +165,25 @@ Neon phase6-adaptive-isolated
 ```
 
 Production and unrelated Preview branches continue using their configured `DATABASE_URL` unchanged.
+
+
+## Homepage latest-report row
+
+The user's intent is that desktop report cards must never wrap onto a second row. The homepage therefore uses a separate Radix Scroll Area:
+
+```text
+desktop/tablet
+FeaturedReportsScroll
+└─ one horizontal grid row
+   ├─ report card
+   ├─ report card
+   ├─ report card
+   └─ report card → horizontal scroll
+
+mobile
+└─ one-column vertical cards
+```
+
+The desktop card row uses fixed editorial card width so three cards fit the current 1160px content area and any additional category becomes horizontal overflow instead of wrapping. The scrollbar remains visible as the discoverability affordance.
+
+Homepage card category headings follow the same visible five-character limit as navigation labels, while their full category title remains available through accessible/title text.
