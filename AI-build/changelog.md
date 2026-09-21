@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-09-21
+
+### Phase 6.3–6.4 — dynamic categories and adaptive UI
+
+- Replaced fixed public category assumptions with server-side persisted category queries using visible + published filtering and deterministic category ordering.
+- Added canonical `/category/[slug]` archives; `/news` and `/frameworks` now permanently redirect to their category routes while preserving valid pagination.
+- Generalized report slug parsing to validated dynamic category suffixes without changing existing report URLs.
+- Report detail breadcrumb/category links and Production sitemap now use persisted category metadata.
+- Refactored the Header to two rows with a server-fed, horizontally scrollable category rail and removed the mobile hamburger state.
+- Refactored homepage latest cards to be data-driven with responsive 1/2/3+ category layout and generalized editorial copy.
+- Added deterministic application-owned category tones: legacy blue/teal plus violet/amber/rose/cyan for future categories; arbitrary payload styling remains impossible.
+- Centralized sticky Header/TOC/report-anchor offsets with `--sticky-header-offset`.
+- Added Header category-query degradation so DB navigation failure does not mask the existing page error boundary.
+- Added generic category presentation/slug tests and updated Playwright flows for canonical routes, dynamic rail, active-category state and all built-in light/dark contrast tokens.
+- The historical isolated `phase3-testing` CI database received only an additive category table + two legacy seeds so the current GitHub `TEST_DATABASE_URL` remains usable; Production was not changed.
+- Canonical `phase6-adaptive-isolated` read-only verification returns three published categories in expected order, including `security-news`.
+- Final implementation Quality run `35548140378` passed: 25 unit, 4 DB integration, 30 Playwright passed / 4 skipped, read-error 1/1 and JS budget 1/1.
+- Production runtime remains pre-Phase-6; no Phase 6 synthetic Production report/category was created.
+
 ## 2026-09-18
 
 ### Phase 6.2 — schema-v2 ingestion
