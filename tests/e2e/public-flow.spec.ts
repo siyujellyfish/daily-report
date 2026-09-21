@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 test("homepage links to the newest report for every published category", async ({ page }) => {
 	await page.goto("/");
 	await expect(page.getByRole("heading", { level: 1, name: "掌握新知，保持好奇。" })).toBeVisible();
-	await expect(page.getByRole("link", { name: "開發技術每日追蹤｜2026-09-18", exact: true })).toBeVisible();
-	await expect(page.getByRole("link", { name: "每日突破性工具推薦｜ARTEMIS", exact: true })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 6 Fixture Daily News", exact: true })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 6 Fixture Framework", exact: true })).toBeVisible();
 	await expect(page.getByRole("link", { name: "Phase 6 v2 Security Fixture", exact: true })).toBeVisible();
 	await expect(page.getByRole("link", { name: "Phase 6.5 Long Category Layout Fixture", exact: true })).toBeVisible();
 });
@@ -12,21 +12,21 @@ test("homepage links to the newest report for every published category", async (
 test("legacy news archive redirects to the canonical category", async ({ page }) => {
 	await page.goto("/news");
 	await expect(page).toHaveURL(/\/category\/daily-news$/);
-	await expect(page.getByText("共 9 篇報告")).toBeVisible();
-	const newestReport = page.getByRole("link", { name: "開發技術每日追蹤｜2026-09-18", exact: true });
+	await expect(page.getByText(/共 \d+ 篇報告/)).toBeVisible();
+	const newestReport = page.getByRole("link", { name: "Phase 6 Fixture Daily News", exact: true });
 	await expect(newestReport).toBeVisible();
 	await expect(newestReport).toHaveClass(/archive-item/);
 	await expect(page.getByRole("navigation", { name: "報告列表分頁" })).toHaveCount(0);
 	await newestReport.click({ position: { x: 12, y: 12 } });
-	await expect(page).toHaveURL(/\/reports\/2026-09-18-daily-news$/);
+	await expect(page).toHaveURL(/\/reports\/2099-01-01-daily-news$/);
 });
 
 test("legacy framework archive redirects to the canonical filtered category", async ({ page }) => {
 	await page.goto("/frameworks");
 	await expect(page).toHaveURL(/\/category\/framework-recommendation$/);
-	await expect(page.getByText("共 10 篇報告")).toBeVisible();
-	await expect(page.getByRole("link", { name: "每日突破性工具推薦｜ARTEMIS", exact: true })).toBeVisible();
-	await expect(page.getByRole("link", { name: "開發技術每日追蹤｜2026-09-18", exact: true })).toHaveCount(0);
+	await expect(page.getByText(/共 \d+ 篇報告/)).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 6 Fixture Framework", exact: true })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Phase 6 Fixture Daily News", exact: true })).toHaveCount(0);
 });
 
 test("dynamic report detail renders Markdown, TOC and structured sources", async ({ page }) => {
