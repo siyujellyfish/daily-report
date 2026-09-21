@@ -611,11 +611,27 @@ main {
 	border-bottom:1px solid var(--line);
 	padding-bottom:28px
 }
+.article-grid > article,
+.article-heading,
+.prose,
+.codebox,
+.table-scroll,
+.breadcrumb {
+	min-width:0;
+	max-width:100%
+}
+.breadcrumb > * {
+	min-width:0;
+	max-width:100%;
+	overflow-wrap:anywhere
+}
 .article-heading .category {
-	display:inline;
+	display:inline-block;
+	width:auto;
 	max-width:100%;
 	white-space:normal;
-	overflow-wrap:anywhere
+	overflow-wrap:anywhere;
+	word-break:break-word
 }
 .article-heading h1 {
 	font-size:clamp(28px,4vw,42px);
@@ -717,6 +733,9 @@ main {
 	font-size:12px
 }
 .codebox pre {
+	width:100%;
+	max-width:100%;
+	min-width:0;
 	overflow-x:auto;
 	margin:0;
 	padding:19px;
