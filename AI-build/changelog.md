@@ -2,6 +2,19 @@
 
 ## 2026-09-21
 
+### Phase 6.5 — canonical isolated acceptance
+
+- Verified the updated GitHub `TEST_DATABASE_URL` points to canonical Neon `phase6-adaptive-isolated` without exposing the secret value. A rerun of the previous Quality job immediately observed the canonical Phase 6 dataset rather than the old Phase 3 fixture counts.
+- Added persistent isolated acceptance fixtures: `security-news`, a long-label published category, one visible-empty category and one hidden-published category. Production received no synthetic fixture.
+- Expanded isolated integration coverage to 9 tests covering ordered published categories, hidden/empty filtering, latest/archive/detail reads, schema-v1 create/retry/409, schema-v2 category create/retry/metadata mismatch/409, unauthorized rejection and payload presentation-control rejection.
+- Made integration ingest fixtures run-scoped from `GITHUB_RUN_ID` so parallel Quality runs cannot race on shared canonical test data; ephemeral rows/categories are cleaned after the suite.
+- Expanded Playwright to four published categories with explicit HTTP 308 assertions, canonical/OG/sitemap checks, desktop 3+ card layout, Pixel 7 rail/document-overflow checks, long category labels, active state and physical sticky-header anchor positioning.
+- Phase 6.5 exposed and fixed real mobile overflow: category rail intrinsic sizing is contained; report detail containers are shrinkable; the long return-category action now wraps instead of inheriting `shrink-0 + whitespace-nowrap`.
+- Final Quality run `35553230724` at commit `a8cab16c1903f19d305a7c34063be84183956d37` passed: 25 unit tests, 9 isolated DB integration tests, Playwright 40 passed / 4 viewport-conditional skips, read-error 1/1 and production client-JS budget 1/1.
+- Client-JS measurements remained stable: homepage 504,993 bytes; both tested dynamic category routes 504,993 bytes; dynamic report detail 511,609 bytes, all below the 1 MiB guard.
+- Post-test read-only verification: isolated branch 6 categories / 22 reports / 4 published categories / zero temporary ingest categories / zero temporary v1 rows; Production 2 categories / 25 reports / zero Phase 6 fixture categories.
+- Phase 6 runtime is still not deployed to Production; next step is Phase 6.6 safe rollout and Production acceptance.
+
 ### Phase 6.3–6.4 — dynamic categories and adaptive UI
 
 - Replaced fixed public category assumptions with server-side persisted category queries using visible + published filtering and deterministic category ordering.
