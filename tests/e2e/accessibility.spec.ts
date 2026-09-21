@@ -117,16 +117,38 @@ test("public reading flow performs no browser-side API reads", async ({ page }, 
 test("mobile report keeps wide content inside local scroll containers", async ({ page }, testInfo) => {
 	test.skip(!testInfo.project.name.includes("mobile"), "Mobile-only layout check.");
 	await page.goto("/reports/2026-09-19-long-category-navigation-fixture");
-	const layout = await page.evaluate(() => ({
-		documentWidth: document.documentElement.scrollWidth,
-		viewportWidth: document.documentElement.clientWidth,
-		containers: [...document.querySelectorAll<HTMLElement>(".table-scroll, .codebox pre")].map((element) => ({
-			overflowX: getComputedStyle(element).overflowX,
-			scrollWidth: element.scrollWidth,
-			clientWidth: element.clientWidth,
-		})),
-	}));
-	expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth + 2);
+	const layout = await page.evaluate(() => {
+		const viewportWidth = document.documentElement.clientWidth;
+		return {
+			documentWidth: document.documentElement.scrollWidth,
+			viewportWidth,
+			overflowing: [...document.querySelectorAll<HTMLElement>("body *")]
+				.map((element) => {
+					const box = element.getBoundingClientRect();
+					return {
+						tag: element.tagName,
+						className: element.className,
+						id: element.id,
+						left: Math.round(box.left),
+						right: Math.round(box.right),
+						width: Math.round(box.width),
+						scrollWidth: element.scrollWidth,
+						clientWidth: element.clientWidth,
+					};
+				})
+				.filter((element) => element.right > viewportWidth + 2 || element.left < -2)
+				.slice(0, 20),
+			containers: [...document.querySelectorAll<HTMLElement>(".table-scroll, .codebox pre")].map((element) => ({
+				overflowX: getComputedStyle(element).overflowX,
+				scrollWidth: element.scrollWidth,
+				clientWidth: element.clientWidth,
+			})),
+		};
+	});
+	expect(
+		layout.documentWidth,
+		`overflowing elements: ${JSON.stringify(layout.overflowing)}`,
+	).toBeLessThanOrEqual(layout.viewportWidth + 2);
 	expect(layout.containers.length).toBeGreaterThanOrEqual(2);
 	for (const container of layout.containers) {
 		expect(["auto", "scroll"]).toContain(container.overflowX);
