@@ -210,10 +210,13 @@ button:disabled {
 	grid-column:1 / -1;
 	grid-row:2;
 	min-width:0;
+	width:100%;
+	max-width:100%;
 	overflow-x:auto;
 	border-top:1px solid var(--line);
 	scrollbar-width:thin;
-	overscroll-behavior-inline:contain
+	overscroll-behavior-inline:contain;
+	contain:inline-size
 }
 .category-rail-inner {
 	display:flex;
@@ -879,6 +882,8 @@ main {
 		max-width:88px
 	}
 	.category-rail {
+		width:calc(100% + 36px);
+		max-width:calc(100% + 36px);
 		margin-inline:-18px;
 		padding-inline:18px
 	}
