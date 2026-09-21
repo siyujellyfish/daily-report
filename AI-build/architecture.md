@@ -590,3 +590,53 @@ clean phase6-adaptive-isolated
 ```
 
 The isolated branch schema is kept identical to Neon Production. This removes long-lived fixture categories/reports while preserving deterministic four-category acceptance during each serialized Quality run.
+
+## Phase 7 — weekly App Store limited-free publishing
+
+The live publishing transport now uses schema v2 for all current Scheduled Tasks:
+
+```text
+ChatGPT Scheduled Tasks
+    ├─ 開發技術每日追蹤
+    │    └─ daily-news / 資訊新聞
+    ├─ 每日突破性工具推薦
+    │    └─ framework-recommendation / 框架工具
+    └─ App Store 限免週報
+         └─ app-store-limited-free / App限免
+                ↓
+      Daily Report - Publish to Vercel
+                ↓
+      schemaVersion: 2
+      reportType
+      categoryLabel
+      categoryDescription
+      title
+      contentMarkdown
+      generatedAt
+      sources[]
+                ↓
+          POST /api/v1/ingest
+```
+
+The ingest endpoint still accepts legacy schema v1 for backward compatibility; only the live Make serialization path changed to v2.
+
+The weekly App Store task runs each Sunday in Asia/Taipei. Because no exact clock time was specified, it uses a flexible morning schedule with an 08:00 baseline. The first scheduled run is 2026-09-27.
+
+Historical deduplication and active-status tracking intentionally use the public website as the durable published-history source:
+
+```text
+/category/app-store-limited-free
+        ↓
+historical detail reports
+        ↓
+already-pushed set
+        ↓
+current Taiwan App Store revalidation
+        ├─ previously pushed + still free → active table
+        ├─ previously pushed + paid/removed → omit from active table
+        └─ new qualified item → new recommendation
+```
+
+A qualifying item requires both a Taiwan App Store product page that is currently free to acquire and independent price/promotion evidence that it changed from paid to temporarily free. Permanent-free/freemium/free-trial/subscription/IAP-discount cases are rejected.
+
+No application package, Next.js route, database table or migration is added for Phase 7; Phase 6 dynamic categories provide the required runtime support.
