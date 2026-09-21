@@ -2,7 +2,7 @@
 
 ## 狀態與目標
 
-Phase 5 已完成 Production launch，目前網站分類仍固定為 `daily-news` 與 `framework-recommendation`，分類資訊同時硬編於 PostgreSQL enum、Zod ingest schema、TypeScript 型別、slug parser、首頁卡片、導覽列、archive routes、detail page 與 sitemap。
+Phase 5 已完成 Production launch。Phase 6.1–6.4 現已在 `phase6/adaptive-categories` 完成實作：Production database 已先完成 backward-compatible category migration；branch runtime 已完成 v1/v2 ingest、dynamic category read layer、canonical `/category/[slug]` routes 與 adaptive navigation/homepage。Production application runtime 尚未部署 Phase 6，完整 3+ category / hidden-empty / metadata-sitemap acceptance 留在 Phase 6.5。
 
 Phase 6 的目標是將「分類」提升為資料庫中的一級實體，使新的推播分類在第一次合法發布後即可自動出現在網站分類導覽、首頁與 archive route，而不需要再次修改網站程式碼。
 
@@ -27,6 +27,17 @@ Phase 6 規劃前重新確認官方文件：
 - Drizzle 的 Neon HTTP driver 適合 single / non-interactive transaction；若真的需要 interactive transaction 才考慮 WebSocket driver：https://orm.drizzle.team/docs/get-started/neon-new
 
 目前 repo 為 Next.js 16.3.4；官方文件在規劃日顯示 latest 16.3.5。Phase 6 本身不需要新增 dependency。實作開始前重新確認現有 dependency 的 stable/compatible patch 狀態；若只為本功能不需要新 API，不把無關的大版本升級綁入 Phase 6。
+
+## 2026-09-21 implementation reference checkpoint
+
+Phase 6.3–6.4 implementation前重新核對目前官方文件：
+
+- Next.js App Router Server Components 應直接讀取 server-side data，不為內部頁面讀取新增 redundant API。
+- Next.js dynamic route / async params 與 `generateMetadata` 模式維持適用。
+- Next.js `permanentRedirect()` 用於永久 URL 遷移並產生 308 semantics。
+- Drizzle PostgreSQL select 支援 partial projection、`selectDistinctOn`、joins、`exists()` 與 SQL expression ordering，可直接實作 published-category filtering 與 `NULLS LAST` ordering。
+
+Phase 6.3–6.4 不需要新增或升級 dependency；沿用既有 Next.js 16.3.4、Drizzle ORM 0.45.2、Neon serverless 1.1.0 與 Zod 4.5.4。
 
 ## Phase 6.0 — Approved product boundary
 
