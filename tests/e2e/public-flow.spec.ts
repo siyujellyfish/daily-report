@@ -7,20 +7,22 @@ test("homepage links to the newest reports", async ({ page }) => {
 	await expect(page.getByRole("link", { name: "Phase 3 Framework Fixture", exact: true })).toBeVisible();
 });
 
-test("daily-news archive paginates newest first", async ({ page }) => {
+test("legacy news archive redirects to the canonical category and paginates newest first", async ({ page }) => {
 	await page.goto("/news");
+	await expect(page).toHaveURL(/\/category\/daily-news$/);
 	await expect(page.getByText("共 13 篇報告")).toBeVisible();
 	await expect(page.getByRole("link", { name: "Phase 3 Daily News 09", exact: true })).toBeVisible();
 	await expect(page.getByRole("navigation", { name: "報告列表分頁" })).toBeVisible();
 
 	await page.getByRole("link", { name: "下一頁" }).click();
-	await expect(page).toHaveURL(/\/news\?page=2$/);
+	await expect(page).toHaveURL(/\/category\/daily-news\?page=2$/);
 	await expect(page.getByText("第 2 / 2 頁")).toBeVisible();
 	await expect(page.getByRole("link", { name: "Phase 3 Daily News 28", exact: true })).toBeVisible();
 });
 
-test("framework archive is filtered correctly", async ({ page }) => {
+test("legacy framework archive redirects to the canonical filtered category", async ({ page }) => {
 	await page.goto("/frameworks");
+	await expect(page).toHaveURL(/\/category\/framework-recommendation$/);
 	await expect(page.getByText("共 2 篇報告")).toBeVisible();
 	await expect(page.getByRole("link", { name: "Phase 3 Framework Fixture", exact: true })).toBeVisible();
 	await expect(page.getByRole("link", { name: "P1 End-to-End Test", exact: true })).toBeVisible();
@@ -30,6 +32,7 @@ test("framework archive is filtered correctly", async ({ page }) => {
 test("report detail renders Markdown, TOC and structured sources", async ({ page }) => {
 	await page.goto("/reports/2026-09-09-daily-news");
 	await expect(page.getByRole("heading", { level: 1, name: "Phase 3 Daily News 09" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "資訊新聞", exact: true }).last()).toHaveAttribute("href", "/category/daily-news");
 	await expect(page.locator("#report-section-1")).toHaveText("Alpha");
 	await expect(page.locator("#report-section-2")).toHaveText("Beta");
 	await expect(page.locator("#report-section-3")).toHaveText("Alpha");
@@ -43,11 +46,14 @@ test("report detail renders Markdown, TOC and structured sources", async ({ page
 	await expect(source).toHaveAttribute("rel", "noopener noreferrer");
 });
 
-test("invalid and missing reports return 404", async ({ page }) => {
+test("invalid and missing categories or reports return 404", async ({ page }) => {
 	let response = await page.goto("/reports/2026-02-30-daily-news");
 	expect(response?.status()).toBe(404);
 
 	response = await page.goto("/reports/2026-01-01-daily-news");
+	expect(response?.status()).toBe(404);
+
+	response = await page.goto("/category/not-published");
 	expect(response?.status()).toBe(404);
 
 	response = await page.goto("/news?page=0");
