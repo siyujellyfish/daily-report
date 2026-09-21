@@ -525,3 +525,54 @@ These are not launch blockers and should not be implemented preemptively:
 - [x] Remove known Production setup test report `P1 End-to-End Test`; Production and isolated branches now report zero test/fixture rows at rest.
 - [x] Squash-merge Phase 6.7 to `main` as `c613ae4fc66e6e7b7a713cd48cc060324c630134`.
 - [x] Confirm Vercel Production deployment `dpl_6c4p7qHGMHT6ugnPpNjUdtwEgM25` READY, main Quality run `35558081267` successful, and Production data remains real-content-only.
+
+---
+
+## Phase 7 — App Store limited-free weekly publishing
+
+Detailed contract: `phase-7-app-store-weekly.md`.
+
+### 7.1 Delivery transport
+
+- [x] Reuse the existing authenticated `POST /api/v1/ingest` endpoint and Phase 6 schema v2 dynamic-category contract.
+- [x] Upgrade `Daily Report - Publish to Vercel` JSON serialization from fixed schema v1 to schema v2.
+- [x] Add required Make inputs `categoryLabel` and `categoryDescription`.
+- [x] Keep the Make HTTP module and Authorization configuration untouched and unread.
+- [x] Update both existing live daily Scheduled Tasks with their canonical category label/description so the new Make interface does not break them.
+- [x] Do not add or upgrade application packages.
+
+### 7.2 Weekly task and qualification rules
+
+- [x] Create an enabled weekly Sunday Scheduled Task in Asia/Taipei.
+- [x] Use `reportType = app-store-limited-free`, label `App限免`.
+- [x] Require Taiwan App Store direct availability and current free acquisition.
+- [x] Require evidence that each item was paid and is temporarily free.
+- [x] Exclude permanent-free, freemium, free-trial, subscription-free and IAP-discount cases.
+- [x] Include games and non-game apps.
+- [x] Use public category/report history to prevent a previously pushed app from being presented as new again.
+- [x] Recheck previously pushed apps every run and keep only currently active limited-free items in the active table.
+- [x] Recheck unknown end dates on every later run.
+- [x] Publish a weekly status report even when there are no new qualifying apps.
+
+### 7.3 Report format
+
+- [x] First section: `本週新發現的限時免費 App` with function, recommendation reason, start/end and Taiwan App Store link per app.
+- [x] Second section: `已推送且目前仍在限免` table with App/type/start/end/App Store.
+- [x] Third section: `本週狀態總表` table with App/status/start/end/App Store.
+- [x] Mark unknown end time as `未知（下次推播重新確認）`.
+- [x] Do not invent a clock time when only a date is known; use `YYYY-MM-DD（時間未知）`.
+- [x] Preserve official Taiwan App Store pages and promotion/price-history evidence in structured `sources[]`.
+
+### 7.4 First unattended Production acceptance
+
+- [ ] Let the 2026-09-27 Sunday schedule execute without a manual run or synthetic Production fixture.
+- [ ] Confirm high-level Make success without inspecting HTTP Authorization/header inputs.
+- [ ] Confirm Neon Production persists the new category/report exactly once.
+- [ ] Confirm homepage, category archive and detail route render the new report.
+- [ ] Confirm the report matches all three Markdown sections/tables and all required start/end/App Store fields.
+- [ ] Confirm only qualified paid → temporary-free Taiwan items were included.
+- [ ] Confirm any unknown deadlines are explicitly marked for next-run recheck.
+
+### Phase 7 acceptance
+
+Phase 7 closes only after the first original-schedule Sunday Production execution passes the checks above. Until then, configuration is live but first-run acceptance remains pending.
