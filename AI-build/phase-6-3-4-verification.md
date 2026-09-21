@@ -177,9 +177,9 @@ Read-only published-category verification returned:
 
 This confirms a third v2 category is discoverable using the same ordering rule without application source enumeration.
 
-### Legacy CI branch compatibility
+### Legacy CI branch compatibility at the Phase 6.4 checkpoint
 
-GitHub `TEST_DATABASE_URL` still targets the older isolated `phase3-testing` branch, whose `reports.report_type` remains the original PostgreSQL enum.
+At the Phase 6.4 checkpoint, GitHub `TEST_DATABASE_URL` still targeted the older isolated `phase3-testing` branch, whose `reports.report_type` remained the original PostgreSQL enum. This paragraph is historical evidence for that checkpoint; Phase 6.5 subsequently moved `TEST_DATABASE_URL` to canonical `phase6-adaptive-isolated`.
 
 To keep that historical fixture environment usable without Production access, only these additive changes were made to that isolated branch:
 
@@ -265,4 +265,4 @@ Phase 6.3 and 6.4 are complete:
 - current Quality remains green;
 - Production runtime and synthetic Production content remain unchanged.
 
-Next stage: Phase 6.5 automated verification with the canonical 3+ category isolated dataset.
+Phase 6.5 was subsequently completed using canonical `phase6-adaptive-isolated`; see `phase-6-5-verification.md`.
