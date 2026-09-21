@@ -2,8 +2,8 @@ import { expect, test } from "@playwright/test";
 
 const PUBLIC_ROUTES = [
 	"/",
-	"/news",
-	"/frameworks",
+	"/category/daily-news",
+	"/category/framework-recommendation",
 	"/reports/2026-09-09-daily-news",
 ];
 
@@ -77,7 +77,7 @@ test("light and dark text tokens meet WCAG AA normal-text contrast", async ({ pa
 		await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
 		const colors = await page.evaluate(() => {
 			const style = getComputedStyle(document.documentElement);
-			return Object.fromEntries(["--bg", "--surface", "--ink", "--muted", "--blue", "--blue-soft", "--teal", "--teal-soft", "--code", "--code-ink"]
+			return Object.fromEntries(["--bg", "--surface", "--ink", "--muted", "--blue", "--blue-soft", "--teal", "--teal-soft", "--violet", "--violet-soft", "--amber", "--amber-soft", "--rose", "--rose-soft", "--cyan", "--cyan-soft", "--code", "--code-ink"]
 				.map((name) => [name, style.getPropertyValue(name).trim()]));
 		});
 		const pairs: Array<[string, string]> = [
@@ -86,6 +86,10 @@ test("light and dark text tokens meet WCAG AA normal-text contrast", async ({ pa
 			["--muted", "--surface"],
 			["--blue", "--blue-soft"],
 			["--teal", "--teal-soft"],
+			["--violet", "--violet-soft"],
+			["--amber", "--amber-soft"],
+			["--rose", "--rose-soft"],
+			["--cyan", "--cyan-soft"],
 			["--code-ink", "--code"],
 		];
 		for (const [foreground, background] of pairs) {
