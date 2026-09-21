@@ -251,3 +251,16 @@
 - Production and unrelated Preview branches continue using their existing `DATABASE_URL` unchanged.
 - Vercel deployment `dpl_3FfAYFUqVajnMdsd173yQAwQJNLv` reached READY and rendered the four expected published categories while excluding the empty and hidden fixtures.
 - The temporary host override must be removed before the final Phase 6 squash merge.
+
+
+## 2026-09-21 — Phase 6.6 Production rollout
+
+- Removed the temporary `phase6/adaptive-categories` Preview database-host override after the isolated four-category UX was manually confirmed.
+- Confirmed Production Neon remained limited to the two real categories and both had 2026-09-21 reports before rollout.
+- Squash-merged PR #13 to `main` as `d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`.
+- Vercel Production deployment `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` reached READY and serves the dynamic-category runtime.
+- Verified Production homepage, both canonical category archives, an existing 2026-09-21 report detail and sitemap successfully render from the Production database.
+- Replayed both original 2026-09-21 Make payloads after deployment as exact schema-v1 retries. Both Make executions succeeded; Neon still contains exactly one row for each legacy report type/date.
+- Confirmed no synthetic Phase 6 category/report exists in Production.
+- Created `phase6.7/ui-ux` from the Production merge for the next design-refinement phase.
+- Post-merge main Quality run `35554750408` is queued behind the canonical isolated-DB serialization backlog and remains the final non-runtime closure gate.

@@ -452,22 +452,23 @@ Phase 6.5 automated verification passed on branch head `a8cab16c1903f19d305a7c34
 
 ### 6.6 Rollout and Production acceptance
 
-- [ ] Complete temporary Neon migration acceptance before Production schema changes.
-- [ ] Complete full TypeScript, unit, isolated DB integration, Playwright, read-error, production build and JS-budget checks.
+- [x] Complete temporary Neon migration acceptance before Production schema changes.
+- [x] Complete full TypeScript, unit, isolated DB integration, Playwright, read-error, production build and JS-budget checks.
 - [x] Confirm Vercel Preview READY with isolated third-category UX verification.
-	- Preview routing is temporarily pinned only for Vercel `phase6/adaptive-categories` to the non-secret host of Neon `phase6-adaptive-isolated`; Production and unrelated Preview branches keep their existing `DATABASE_URL`. Deployment `dpl_3FfAYFUqVajnMdsd173yQAwQJNLv` reached READY and rendered the four expected published categories (`daily-news`, `framework-recommendation`, `security-news`, `long-category-navigation-fixture`) while excluding the empty and hidden fixtures. Remove this Phase 6 verification-only host override before final squash merge.
-- [ ] Apply only the previously validated backward-compatible migration to Neon Production.
-- [ ] Before new app deployment, verify the current Production app and both recurring schema-v1 Tasks still operate on the migrated DB.
-- [ ] Deploy Phase 6 application to Production only after schema-first compatibility passes.
-- [ ] Verify `/`, both legacy redirects, both canonical category pages and existing report detail URLs.
-- [ ] Verify both existing unattended recurring Tasks still publish successfully under v1.
-- [ ] Do not create a synthetic third-category Production report solely for acceptance.
-- [ ] Record the first future real v2 category publication as post-Phase-6 operational evidence; it must require no application redeploy.
-- [ ] Update `architecture.md`, `decisions.md`, `changelog.md`, `README.md`, `todo.md` and a Phase 6 verification record to actual implementation state.
-- [ ] Open/review Phase 6 PR and ensure final merge to `main` uses squash merge.
-- [ ] Confirm post-merge `main` Quality and Vercel Production deployment READY.
+- [x] Apply only the previously validated backward-compatible migration to Neon Production.
+- [x] Before new app deployment, verify the current Production app and both recurring schema-v1 Tasks still operate on the migrated DB.
+- [x] Deploy Phase 6 application to Production after schema-first compatibility passes.
+- [x] Verify Production `/`, both canonical category pages, existing report detail and sitemap; legacy 308 behavior remains covered by the deployed `permanentRedirect()` implementation and Phase 6.5 direct-response Playwright checks.
+- [x] Verify the deployed schema-v1 ingest path by exact-retrying both 2026-09-21 original Make payloads; both succeeded and Neon remained exactly one row per type/date.
+- [x] Do not create a synthetic third-category Production report solely for acceptance.
+- [x] Define the first future real v2 category publication as post-Phase-6 operational evidence; it must require no application redeploy.
+- [x] Remove the Phase-6-verification-only Preview database host override before final delivery.
+- [x] Squash-merge Phase 6 PR #13 to `main` as `d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`.
+- [x] Confirm Vercel Production deployment `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` READY.
+- [ ] Confirm post-merge `main` Quality run `35554750408` after the serialized canonical-test queue drains.
+- [x] Create the Phase 6.7 UI/UX planning branch without changing Production runtime.
 
-### Phase 6 acceptance
+# Phase 6 acceptance
 
 - [ ] Category source of truth is data-driven and existing report data is intact.
 - [ ] New safe v2 category slugs no longer require application source changes.
@@ -495,3 +496,17 @@ These are not launch blockers and should not be implemented preemptively:
 - [ ] Admin/CMS tooling, including category rename/reorder UI if a real operating need emerges.
 - [ ] Redis or application caching based on measured traffic.
 - [ ] Monitoring/alerting beyond Vercel/Neon/Make built-in observability.
+
+
+## Phase 6.7 — UI/UX refinement
+
+- [x] Create `phase6.7/ui-ux` from the Phase 6 Production merge.
+- [x] Record the UI/UX refinement scope and non-goals in `phase-6-7-plan.md`.
+- [ ] Confirm visual direction and priorities with the user before implementation.
+- [ ] Refine Header/navigation hierarchy and category-rail affordance without reintroducing a hamburger dependency.
+- [ ] Refine homepage information density and 3+ category card rhythm.
+- [ ] Refine category archive scanability, spacing and pagination.
+- [ ] Refine report-detail reading hierarchy, TOC and source presentation.
+- [ ] Recheck mobile/desktop overflow, focus, contrast, reduced-motion and sticky-anchor behavior.
+- [ ] Preserve Server Components, dynamic categories, current ingest contract and client-JS budget.
+- [ ] Update Playwright visual/interaction acceptance only after the approved UI direction is implemented.
