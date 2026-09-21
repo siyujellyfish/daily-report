@@ -324,7 +324,7 @@ Detailed evidence is recorded in `phase-5-verification.md`.
 - Existing ingestion contract, production database schema and Make Scenario are unchanged.
 - Detailed design: `phase-2-design.md`. Validation evidence is recorded in `changelog.md`.
 
-## Phase 6 — adaptive category architecture (6.1–6.2 implemented)
+## Phase 6 — adaptive category architecture (6.1–6.4 implemented)
 
 Phase 6 will preserve the live Phase 5 flow while replacing fixed category assumptions with persisted category metadata. The target data flow is:
 
@@ -377,7 +377,7 @@ The existing two categories are seeded first. Existing report rows and hashes ar
 - Existing category metadata is canonical and is not silently overwritten on every daily report.
 - `payload_hash` and `(report_type, report_date)` uniqueness continue to enforce exact retry and per-category/day collision behavior.
 
-### Target public routes
+### Implemented public routes
 
 ```text
 /
@@ -398,7 +398,7 @@ The existing two categories are seeded first. Existing report rows and hashes ar
 
 Published navigation categories are `is_visible = true` and have at least one report. Empty category rows therefore never create empty public tabs.
 
-### Target navigation/rendering boundary
+### Implemented navigation/rendering boundary
 
 - Category list is queried server-side; the browser does not fetch `/api/categories`.
 - Header becomes a stable first row plus a horizontally scrollable category rail.
@@ -439,3 +439,67 @@ The Phase 6.1 enum-to-varchar/FK migration was validated on a temporary Neon bra
 The Phase 6 runtime itself is not yet deployed to Production. Synthetic third-category reports remain restricted to the isolated branch/Preview path; Production acceptance does not create fake content.
 
 Detailed implementation, test matrix and acceptance criteria are recorded in `phase-6-plan.md`, `phase-6-1-verification.md`, `phase-6-2-verification.md` and `todo.md`.
+
+
+### Implemented Phase 6.3–6.4 read/UI flow
+
+The public read path is now fully category-driven:
+
+```text
+report_categories
+      ↓
+getPublishedCategories()
+      ├─ is_visible = true
+      ├─ EXISTS(report)
+      └─ sort_order ASC NULLS LAST, created_at ASC, slug ASC
+      ↓
+Server Components
+      ├─ Header category rail
+      ├─ Homepage latest report per category
+      ├─ /category/[slug]
+      ├─ /reports/[slug]
+      └─ sitemap
+```
+
+Implemented query functions:
+
+```text
+getPublishedCategories()
+getPublishedCategory(slug)
+getLatestPublishedReports()
+getReportsByCategory(slug, page)
+getReportBySlug(slug)
+getCategorySitemapEntries()
+getReportSitemapEntries()
+```
+
+The report slug parser now treats the first 10 characters as the report date and validates the remaining suffix with the shared safe category-slug rule. Existing report detail URLs therefore remain unchanged while new v2 category slugs require no source-code enumeration.
+
+The canonical archive route is `/category/[slug]`. The legacy `/news` and `/frameworks` pages call Next.js `permanentRedirect()` and preserve valid page numbers when redirecting to the canonical category route.
+
+Report detail queries join category metadata and expose only the public category projection (slug, label, description plus application-owned presentation mapping). Internal category visibility, ordering and timestamps are not sent to page components.
+
+The Header now uses a two-row layout:
+
+```text
+row 1: brand | home | theme
+row 2: horizontally scrollable category rail
+```
+
+Category data is loaded in the Server Component and only `slug`, `label` and canonical `href` are passed to the small Client navigation component. A Header category-query failure is caught and degrades to the static shell instead of masking the page-level read error.
+
+Homepage rendering uses the same ordered published-category list and the latest report for each category. The grid uses responsive auto-fit/minmax behavior, while mobile remains one column.
+
+Application-owned category tones are deterministic:
+
+```text
+daily-news → blue
+framework-recommendation → teal
+future categories → violet | amber | rose | cyan
+```
+
+All palette pairs are defined for light/dark themes and checked against the existing WCAG AA 4.5:1 text contrast guard. External payloads still cannot set style/color/icon values.
+
+A shared `--sticky-header-offset` CSS token now drives document scroll padding, report heading/source scroll margins and desktop TOC positioning.
+
+The canonical synthetic third-category dataset remains only on Neon `phase6-adaptive-isolated`. The legacy CI fixture branch received only an additive `report_categories` table plus the two legacy seed rows so the existing `TEST_DATABASE_URL` can exercise the new read layer without Production access.
