@@ -511,5 +511,17 @@ These are not launch blockers and should not be implemented preemptively:
 - [ ] Recheck mobile/desktop overflow, focus, contrast, reduced-motion and sticky-anchor behavior.
 - [ ] Preserve Server Components, dynamic categories, current ingest contract and client-JS budget.
 - [x] Rebind `phase6.7/ui-ux` Preview to Neon `phase6-adaptive-isolated` for multi-category UI acceptance only.
-- [ ] Remove the Phase 6.7 Preview-only isolated Neon routing helper before squash merge to `main`.
+- [x] Remove the Phase 6.7 Preview-only isolated Neon routing helper before squash merge to `main`.
 - [x] Update Playwright/unit acceptance for Scroll Area, visible-label truncation and whole-card archive navigation.
+
+
+### Phase 6.7 final delivery
+
+- [x] User accepted the desktop carousel, category label truncation and compact whole-card archive navigation.
+- [x] Replace persistent isolated fixtures with Quality seed/always-cleanup steps.
+- [x] Verify Production and isolated branch schemas are identical before database cleanup.
+- [ ] Reset `phase6-adaptive-isolated` to Production HEAD and confirm zero synthetic categories/reports remain outside each active CI run.
+- [ ] Remove obsolete Neon test branches after confirming they are no longer referenced.
+- [ ] Remove known Production setup test report `P1 End-to-End Test`.
+- [ ] Squash-merge Phase 6.7 to `main`.
+- [ ] Confirm resulting Vercel Production deployment READY and Production data remains real-content-only.
