@@ -611,6 +611,12 @@ main {
 	border-bottom:1px solid var(--line);
 	padding-bottom:28px
 }
+.article-heading .category {
+	display:inline;
+	max-width:100%;
+	white-space:normal;
+	overflow-wrap:anywhere
+}
 .article-heading h1 {
 	font-size:clamp(28px,4vw,42px);
 	line-height:1.45;
