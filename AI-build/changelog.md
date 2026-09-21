@@ -295,3 +295,11 @@
 - Respects `prefers-reduced-motion` by switching programmatic movement from smooth to immediate scrolling.
 - Mobile remains a vertical one-column report list and does not render carousel controls.
 - Added Playwright acceptance for one-row layout, arrow visibility/disabled states and actual horizontal movement.
+
+
+## 2026-09-21 — Phase 6.7 delivery cleanup preparation
+
+- User accepted the Phase 6.7 UI/UX and authorized squash merge to `main`, database consolidation and test-data removal.
+- Confirmed Neon Production and `phase6-adaptive-isolated` have no schema diff; Production already matches the repository Phase 6.1 migration.
+- Reworked Quality so the isolated branch is clean at rest: deterministic fixtures are seeded at run start and removed in an `always()` cleanup step.
+- Removed the Phase 6.7 Preview-only database routing helper from the application runtime before final merge.
