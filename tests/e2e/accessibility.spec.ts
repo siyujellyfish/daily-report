@@ -4,7 +4,9 @@ const PUBLIC_ROUTES = [
 	"/",
 	"/category/daily-news",
 	"/category/framework-recommendation",
-	"/reports/2026-09-09-daily-news",
+	"/category/security-news",
+	"/category/long-category-navigation-fixture",
+	"/reports/2026-09-19-long-category-navigation-fixture",
 ];
 
 function channel(value: number) {
@@ -106,15 +108,15 @@ test("public reading flow performs no browser-side API reads", async ({ page }, 
 		if (url.pathname.startsWith("/api/")) apiRequests.push(`${request.method()} ${url.pathname}`);
 	});
 	await page.goto("/");
-	await page.getByRole("link", { name: "資訊新聞", exact: true }).click();
-	await page.getByRole("link", { name: "Phase 3 Daily News 09", exact: true }).click();
-	await expect(page.getByRole("heading", { level: 1, name: "Phase 3 Daily News 09" })).toBeVisible();
+	await page.getByRole("link", { name: "資安情報", exact: true }).click();
+	await page.getByRole("link", { name: "Phase 6 v2 Security Fixture", exact: true }).click();
+	await expect(page.getByRole("heading", { level: 1, name: "Phase 6 v2 Security Fixture" })).toBeVisible();
 	expect(apiRequests).toEqual([]);
 });
 
 test("mobile report keeps wide content inside local scroll containers", async ({ page }, testInfo) => {
 	test.skip(!testInfo.project.name.includes("mobile"), "Mobile-only layout check.");
-	await page.goto("/reports/2026-09-09-daily-news");
+	await page.goto("/reports/2026-09-19-long-category-navigation-fixture");
 	const layout = await page.evaluate(() => ({
 		documentWidth: document.documentElement.scrollWidth,
 		viewportWidth: document.documentElement.clientWidth,
