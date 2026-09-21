@@ -1,4 +1,4 @@
-import type { ReportType } from "./report-types";
+import { isCategorySlug } from "./report-types";
 
 export const REPORT_TIME_ZONE = "Asia/Taipei";
 
@@ -35,14 +35,14 @@ export function formatGeneratedAt(value: string) {
 	}).format(new Date(value));
 }
 
-export function getReportSlug(date: string, type: ReportType) {
+export function getReportSlug(date: string, type: string) {
 	return `${date}-${type}`;
 }
 
-export function parseReportSlug(slug: string): { date: string; type: ReportType } | null {
-	const match = /^(\d{4}-\d{2}-\d{2})-(daily-news|framework-recommendation)$/.exec(slug);
-	if (!match || !isReportDate(match[1])) return null;
-	return { date: match[1], type: match[2] as ReportType };
+export function parseReportSlug(slug: string): { date: string; type: string } | null {
+	const match = /^(\d{4}-\d{2}-\d{2})-(.+)$/.exec(slug);
+	if (!match || !isReportDate(match[1]) || !isCategorySlug(match[2])) return null;
+	return { date: match[1], type: match[2] };
 }
 
 export const REPORT_PAGE_SIZE = 10;
