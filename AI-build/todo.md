@@ -379,18 +379,18 @@ Detailed design and rollout contract: `phase-6-plan.md`. Phase 6.1 database migr
 
 ### 6.2 Ingestion schema v2 and legacy v1
 
-- [ ] Refactor ingest validation into a schema-version discriminated contract.
-- [ ] Preserve v1 accepted payloads and legacy report-type validation.
-- [ ] Add a regression fixture proving v1 normalized payload hashing remains byte-for-byte behaviorally compatible for exact retries.
-- [ ] Add v2 `reportType` generic safe slug validation.
-- [ ] Add bounded `categoryLabel` and `categoryDescription` to v2.
-- [ ] Keep `title`, `generatedAt`, Markdown and sources validation/safety boundaries.
-- [ ] Create category metadata on first valid v2 publication when the slug does not exist.
-- [ ] Treat existing stored category metadata as canonical; daily report ingest must not silently rename existing categories.
-- [ ] Keep `sort_order` and `is_visible` server/database-controlled rather than payload-controlled.
-- [ ] Validate current Neon HTTP non-interactive transaction/batch support for category-create + report-insert flow.
-- [ ] If no suitable atomic primitive is used, ensure empty category rows remain publicly invisible through `EXISTS(report)` filtering rather than adding a new DB driver solely for this feature.
-- [ ] Preserve HTTP 200 exact duplicate and HTTP 409 same-category/date different-payload semantics.
+- [x] Refactor ingest validation into a schema-version discriminated contract.
+- [x] Preserve v1 accepted payloads and legacy report-type validation.
+- [x] Add a regression fixture proving v1 normalized payload hashing remains byte-for-byte behaviorally compatible for exact retries.
+- [x] Add v2 `reportType` generic safe slug validation.
+- [x] Add bounded `categoryLabel` and `categoryDescription` to v2.
+- [x] Keep `title`, `generatedAt`, Markdown and sources validation/safety boundaries.
+- [x] Create category metadata on first valid v2 publication when the slug does not exist.
+- [x] Treat existing stored category metadata as canonical; daily report ingest must not silently rename existing categories.
+- [x] Keep `sort_order` and `is_visible` server/database-controlled rather than payload-controlled.
+- [x] Validate current Neon HTTP non-interactive transaction/batch support for category-create + report-insert flow.
+- [x] If no suitable atomic primitive is used, ensure empty category rows remain publicly invisible through `EXISTS(report)` filtering rather than adding a new DB driver solely for this feature. Not required for persistence safety because Phase 6.2 uses atomic Neon HTTP `db.batch()`; the published-category `EXISTS(report)` filter remains planned in 6.3.
+- [x] Preserve HTTP 200 exact duplicate and HTTP 409 same-category/date different-payload semantics.
 
 ### 6.3 Dynamic server read layer and routes
 
