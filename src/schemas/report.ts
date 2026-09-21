@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CATEGORY_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+import { CATEGORY_SLUG_PATTERN } from "@/lib/report-types";
 
 const sourceSchema = z.object({
 	title: z.string().trim().min(1).max(300),
