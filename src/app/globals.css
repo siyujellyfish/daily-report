@@ -811,7 +811,16 @@ main {
 	display:flex;
 	justify-content:space-between;
 	align-items:center;
-	gap:18px
+	gap:18px;
+	flex-wrap:wrap;
+	min-width:0
+}
+.article-return .button {
+	min-width:0;
+	max-width:100%;
+	white-space:normal;
+	overflow-wrap:anywhere;
+	text-align:center
 }
 .empty {
 	text-align:center;
