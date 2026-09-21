@@ -324,7 +324,7 @@ Detailed evidence is recorded in `phase-5-verification.md`.
 - Existing ingestion contract, production database schema and Make Scenario are unchanged.
 - Detailed design: `phase-2-design.md`. Validation evidence is recorded in `changelog.md`.
 
-## Phase 6 — adaptive category architecture (6.1–6.4 implemented)
+## Phase 6 — adaptive category architecture (6.1–6.5 implemented)
 
 Phase 6 will preserve the live Phase 5 flow while replacing fixed category assumptions with persisted category metadata. The target data flow is:
 
@@ -502,4 +502,44 @@ All palette pairs are defined for light/dark themes and checked against the exis
 
 A shared `--sticky-header-offset` CSS token now drives document scroll padding, report heading/source scroll margins and desktop TOC positioning.
 
-The canonical synthetic third-category dataset remains only on Neon `phase6-adaptive-isolated`. The legacy CI fixture branch received only an additive `report_categories` table plus the two legacy seed rows so the existing `TEST_DATABASE_URL` can exercise the new read layer without Production access.
+The canonical synthetic Phase 6 dataset remains only on Neon `phase6-adaptive-isolated`. As of Phase 6.5, GitHub `TEST_DATABASE_URL` points to this canonical branch, and the integration suite explicitly proves the expected published-category set before exercising reads/writes. The older `phase3-testing` branch is no longer used by the Phase 6 Quality gate.
+
+
+### Phase 6.5 verification architecture
+
+The canonical Phase 6 Quality path is:
+
+```text
+GitHub Actions
+      ↓
+TEST_DATABASE_URL
+      ↓
+phase6-adaptive-isolated
+      ├─ 4 published categories
+      │   ├─ daily-news
+      │   ├─ framework-recommendation
+      │   ├─ security-news
+      │   └─ long-category-navigation-fixture
+      ├─ 1 visible empty category
+      └─ 1 hidden category with a report
+```
+
+Persistent synthetic fixtures exist only on the isolated branch. Integration-only ingest fixtures are run-scoped using `GITHUB_RUN_ID`, then removed in `afterAll`, so concurrent Quality runs cannot delete or collide with each other's v1/v2 acceptance data.
+
+The Phase 6.5 integration suite covers:
+
+- canonical test-branch identity through the expected ordered published-category set;
+- visible+published filtering;
+- latest-per-category and dynamic archive/detail reads;
+- schema-v1 create / exact retry / same-slot 409;
+- schema-v2 category creation / exact retry / metadata mismatch / same-slot 409;
+- unauthorized and payload-controlled presentation rejection.
+
+Playwright covers desktop and Pixel 7 for four published categories, explicit 308 redirects, dynamic canonical/OG/sitemap output, active category state, long-label layout, mobile rail containment, TOC/source anchor placement, accessibility and browser-side no-`/api/*` read behavior.
+
+Phase 6.5 exposed two real responsive constraints and fixed them in the application rather than weakening tests:
+
+- category rail intrinsic sizing is contained so its max-content row does not widen the document;
+- report detail breadcrumb/category/content/return actions are shrinkable, and the long `返回{category}` button may wrap instead of inheriting shadcn's `shrink-0 + whitespace-nowrap` document overflow.
+
+Production remains outside this synthetic test path.
