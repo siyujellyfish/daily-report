@@ -1,9 +1,8 @@
 import { getReportSlug } from "./report-date";
 import { analyzeReportMarkdown, safeSourceUrl } from "./report-markdown";
-import type { ReportType } from "./report-types";
 
 export type ReportRecord = {
-	reportType: ReportType;
+	reportType: string;
 	reportDate: string;
 	title: string;
 	contentMarkdown: string;
