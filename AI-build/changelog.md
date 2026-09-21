@@ -333,7 +333,7 @@
 - Added the enabled `App Store 限免週報` Scheduled Task for every Sunday in Asia/Taipei; the first scheduled date is 2026-09-27.
 - Defined Taiwan-only qualification as verified paid → temporary-free status, with games and applications allowed and permanent-free/freemium/trial/subscription/IAP promotions excluded.
 - Added historical-report deduplication plus per-run revalidation of previously pushed items, including mandatory follow-up for unknown end dates.
-- Locked the report into three Markdown sections: new limited-free items, already-pushed still-active table, and combined active-status table.
+- Locked the report into exactly two Markdown sections: new never-pushed limited-free items, then the already-pushed still-active summary table.
 - Required start/end information and Taiwan App Store links on every newly pushed item and both status tables; date-only/unknown deadlines remain explicitly marked rather than inferred.
 - Upgraded `Daily Report - Publish to Vercel` from hard-coded schema v1 serialization to schema v2 inputs including category label/description.
 - Updated the two existing live daily Scheduled Tasks with their canonical category metadata so their next executions remain compatible with the Make interface change.
