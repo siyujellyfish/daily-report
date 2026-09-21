@@ -37,7 +37,7 @@ export const getPublishedCategories = cache(async () => {
 	const hasReport = db
 		.select({ value: sql`1` })
 		.from(reports)
-		.where(eq(reports.reportType, reportCategories.slug));
+		.where(sql`${reports.reportType}::text = ${reportCategories.slug}`);
 
 	const rows = await db
 		.select(publicCategoryColumns)
@@ -58,7 +58,7 @@ export const getPublishedCategory = cache(async (slug: string) => {
 	const hasReport = db
 		.select({ value: sql`1` })
 		.from(reports)
-		.where(eq(reports.reportType, reportCategories.slug));
+		.where(sql`${reports.reportType}::text = ${reportCategories.slug}`);
 
 	const [row] = await db
 		.select(publicCategoryColumns)
@@ -81,7 +81,7 @@ export const getLatestPublishedReports = cache(async () => {
 	const rows = await db
 		.selectDistinctOn([reports.reportType], publicReportColumns)
 		.from(reports)
-		.innerJoin(reportCategories, eq(reportCategories.slug, reports.reportType))
+		.innerJoin(reportCategories, sql`${reports.reportType}::text = ${reportCategories.slug}`)
 		.where(eq(reportCategories.isVisible, true))
 		.orderBy(
 			reports.reportType,
@@ -159,7 +159,7 @@ export const getReportBySlug = cache(async (slug: string) => {
 			categoryDescription: reportCategories.description,
 		})
 		.from(reports)
-		.innerJoin(reportCategories, eq(reportCategories.slug, reports.reportType))
+		.innerJoin(reportCategories, sql`${reports.reportType}::text = ${reportCategories.slug}`)
 		.where(and(
 			eq(reports.reportType, parsed.type),
 			eq(reports.reportDate, parsed.date),
@@ -197,7 +197,7 @@ export async function getReportSitemapEntries() {
 			reportDate: reports.reportDate,
 		})
 		.from(reports)
-		.innerJoin(reportCategories, eq(reportCategories.slug, reports.reportType))
+		.innerJoin(reportCategories, sql`${reports.reportType}::text = ${reportCategories.slug}`)
 		.where(eq(reportCategories.isVisible, true))
 		.orderBy(desc(reports.reportDate), reports.reportType);
 
