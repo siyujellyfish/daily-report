@@ -326,3 +326,17 @@
 - Confirmed only Neon `main` and `phase6-adaptive-isolated` branches remain; obsolete test branches are removed.
 - Confirmed Production and isolated branch contain no synthetic/test/fixture/POC/end-to-end report titles at rest.
 - Confirmed the repository's current migration remains `drizzle/phase6_1_adaptive_categories.sql`; no Phase 6.7 schema migration is required.
+
+## 2026-09-21 — Phase 7 App Store weekly configured
+
+- Created `feature/app-store-weekly` from `main` for documentation and acceptance tracking; no direct `main` change was made.
+- Added the enabled `App Store 限免週報` Scheduled Task for every Sunday in Asia/Taipei; the first scheduled date is 2026-09-27.
+- Defined Taiwan-only qualification as verified paid → temporary-free status, with games and applications allowed and permanent-free/freemium/trial/subscription/IAP promotions excluded.
+- Added historical-report deduplication plus per-run revalidation of previously pushed items, including mandatory follow-up for unknown end dates.
+- Locked the report into exactly two Markdown sections: new never-pushed limited-free items, then the already-pushed still-active summary table.
+- Required start/end information and Taiwan App Store links on every newly pushed item and both status tables; date-only/unknown deadlines remain explicitly marked rather than inferred.
+- Upgraded `Daily Report - Publish to Vercel` from hard-coded schema v1 serialization to schema v2 inputs including category label/description.
+- Updated the two existing live daily Scheduled Tasks with their canonical category metadata so their next executions remain compatible with the Make interface change.
+- Did not read or modify the credential-bearing Make HTTP module or Authorization configuration.
+- No application source code, dependency, database schema or migration change was required because Phase 6 dynamic categories already support this report type.
+- Deliberately did not insert a synthetic mid-week Production report. First end-to-end acceptance remains pending the 2026-09-27 original Sunday execution.

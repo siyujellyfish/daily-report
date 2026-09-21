@@ -243,3 +243,21 @@ Development is organized into the following lifecycle:
 - Quality owns fixture lifecycle: deterministic synthetic rows are seeded before DB/browser acceptance and removed in an `always()` cleanup step.
 - Obsolete Neon test branches may be removed once no active configuration references them.
 - The historical Production setup report titled `P1 End-to-End Test` is test data and should be deleted during this explicitly authorized cleanup; normal Production reports are not modified.
+
+## 2026-09-21 — Phase 7 App Store limited-free weekly publishing
+
+- Add one recurring Sunday Scheduled Task for Taiwan App Store temporary paid-to-free recommendations, including both games and applications.
+- Treat `app-store-limited-free` as a real dynamic schema-v2 category with label `App限免`; do not add a hard-coded application enum or route.
+- Upgrade the existing Make JSON serialization to schema v2 and require category label/description. Keep the API's schema-v1 compatibility path intact.
+- Update both existing daily Scheduled Tasks with their already-canonical category metadata before making the new Make fields required, preventing a transport-interface regression.
+- Do not inspect or rewrite the Make HTTP request module while changing the Scenario interface/JSON mapper; the final Authorization secret remains outside readable tooling.
+- Define limited-free strictly as a previously paid App becoming directly free for a temporary period. Permanent-free, freemium, free trials, subscription promotions and in-app-purchase discounts are not equivalent.
+- Require Taiwan App Store availability plus price/promotion-history evidence before including an item. Exclude uncertain candidates instead of weakening the definition.
+- Use the public category/history pages as the published-state ledger for cross-run deduplication rather than adding a new database table solely for App tracking.
+- Do not re-present an already pushed App as new. Revalidate historical active items every Sunday and list only those still free in Taiwan.
+- Unknown end dates must be explicit and rechecked on each later run. Do not infer a clock time from date-only evidence.
+- Always publish the weekly check, including weeks with no new qualifying items, so active/unknown-limit state remains observable.
+- Use exactly two stable Markdown sections: new never-pushed items, then an already-pushed still-active summary table. Do not add a redundant third status table.
+- Because the request specifies Sunday but no exact time, use a flexible morning schedule with an 08:00 baseline in Asia/Taipei rather than inventing an exact execution time.
+- Do not create a synthetic Production report to validate the new category. First Production acceptance is the original Sunday run on 2026-09-27.
+- No application dependency, code path, schema migration or database branch change is required for this phase.
