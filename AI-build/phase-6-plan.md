@@ -43,7 +43,8 @@ Phase 6.3–6.4 不需要新增或升級 dependency；沿用既有 Next.js 16.3.
 
 - GitHub `TEST_DATABASE_URL` 已改指 canonical `phase6-adaptive-isolated`，並由 integration fixture identity assertion 驗證。
 - Canonical isolated dataset：4 published categories + 1 visible-empty + 1 hidden-published。
-- v1/v2 integration write fixtures 改用 `GITHUB_RUN_ID` run-scoped identity，避免 shared test DB 的 concurrent CI race，並在 suite 結束清理。
+- v1/v2 integration write fixtures 改用 `GITHUB_RUN_ID` run-scoped identity，避免 shared test DB 的 row collision，並在 suite 結束清理。
+- Quality workflow 使用固定 `daily-report-canonical-test-db` concurrency group + `queue: max` 序列化共享 canonical Neon branch 的完整驗收，避免 transient visible v2 category 跨 run 影響 public/browser assertions。
 - Playwright 同時驗證 desktop 與 Pixel 7：3+ category layout、long label、rail containment、308 redirects、metadata/canonical/sitemap、active state、TOC/source anchors、no browser `/api/*` reads。
 - Final Quality run `35553230724` 全綠；完整 evidence 記錄於 `phase-6-5-verification.md`。
 - 無新增/升級 dependency，Production 無 synthetic Phase 6 fixture。

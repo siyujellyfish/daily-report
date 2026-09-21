@@ -109,7 +109,17 @@ run-scoped legacy v1 report date
 
 Every run removes only its own temporary rows in `afterAll`.
 
-This allows concurrent Quality runs against the shared canonical isolated branch without cross-run deletion/collision.
+Run-scoped fixture identity prevents direct row deletion/collision, but Phase 6.5 documentation commits also exposed a subtler shared-state race: a schema-v2 test category is correctly visible between its 201 creation and cleanup, so a concurrent workflow can temporarily observe a fifth published category.
+
+The Quality workflow therefore adds:
+
+```yaml
+concurrency:
+  group: daily-report-canonical-test-db
+  queue: max
+```
+
+GitHub queues the complete Quality runs that share this canonical database rather than running their integration/browser acceptance windows simultaneously. This keeps real v2 visibility semantics intact; tests do not hide or special-case `phase6-ingest-*` categories in application code.
 
 ## Playwright acceptance
 
