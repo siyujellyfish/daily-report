@@ -558,7 +558,6 @@ Detailed contract: `phase-7-app-store-weekly.md`.
 
 - [x] First section: `本週新發現的限時免費 App` with function, recommendation reason, start/end and Taiwan App Store link per app.
 - [x] Second section: `已推送且目前仍在限免` table with App/type/start/end/App Store.
-- [x] Third section: `本週狀態總表` table with App/status/start/end/App Store.
 - [x] Mark unknown end time as `未知（下次推播重新確認）`.
 - [x] Do not invent a clock time when only a date is known; use `YYYY-MM-DD（時間未知）`.
 - [x] Preserve official Taiwan App Store pages and promotion/price-history evidence in structured `sources[]`.
@@ -569,7 +568,7 @@ Detailed contract: `phase-7-app-store-weekly.md`.
 - [ ] Confirm high-level Make success without inspecting HTTP Authorization/header inputs.
 - [ ] Confirm Neon Production persists the new category/report exactly once.
 - [ ] Confirm homepage, category archive and detail route render the new report.
-- [ ] Confirm the report matches all three Markdown sections/tables and all required start/end/App Store fields.
+- [ ] Confirm the report matches the two required sections and all required start/end/App Store fields.
 - [ ] Confirm only qualified paid → temporary-free Taiwan items were included.
 - [ ] Confirm any unknown deadlines are explicitly marked for next-run recheck.
 
