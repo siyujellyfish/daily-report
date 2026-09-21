@@ -430,7 +430,7 @@ Detailed design and rollout contract: `phase-6-plan.md`. Phase 6.1 database migr
 ### 6.5 Automated verification
 
 - [ ] Add unit coverage for category slug validator and generic report slug round-trip/rejection.
-- [ ] Add unit coverage for v1/v2 ingest validation and v1 payload hash regression.
+- [x] Add unit coverage for v1/v2 ingest validation and v1 payload hash regression.
 - [ ] Add unit coverage for deterministic category tone mapping and category presentation.
 - [ ] Add isolated Neon integration fixtures with at least three published categories plus one empty/invisible category.
 - [ ] Verify migrated legacy rows and existing queries against isolated Neon.
