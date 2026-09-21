@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-http";
 
+import { resolveDatabaseUrl } from "./database-url";
 import * as schema from "./schema";
 
 function createDatabase() {
@@ -9,7 +10,7 @@ function createDatabase() {
 		throw new Error("DATABASE_URL is not configured.");
 	}
 
-	return drizzle(databaseUrl, { schema });
+	return drizzle(resolveDatabaseUrl(databaseUrl), { schema });
 }
 
 let database: ReturnType<typeof createDatabase> | undefined;
