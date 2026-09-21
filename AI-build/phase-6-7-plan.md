@@ -187,3 +187,21 @@ mobile
 The desktop card row uses fixed editorial card width so three cards fit the current 1160px content area and any additional category becomes horizontal overflow instead of wrapping. The scrollbar remains visible as the discoverability affordance.
 
 Homepage card category headings follow the same visible five-character limit as navigation labels, while their full category title remains available through accessible/title text.
+
+
+## Desktop carousel controls
+
+The desktop/tablet homepage report rail now uses slideshow-style left/right controls rather than exposing the horizontal scrollbar as the primary control.
+
+Behavior:
+
+- cards remain in one non-wrapping horizontal row;
+- left/right controls move approximately one card per activation;
+- the previous control is disabled at the leading edge;
+- the next control is disabled at the trailing edge;
+- native horizontal scrolling remains available through the Radix Scroll Area viewport;
+- CSS scroll snapping aligns report cards after scrolling;
+- reduced-motion preference disables smooth programmatic scrolling;
+- controls are hidden on the mobile one-column layout.
+
+This preserves native Scroll Area behavior while adding explicit carousel affordance; no carousel dependency is introduced.

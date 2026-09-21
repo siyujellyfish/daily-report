@@ -505,7 +505,7 @@ These are not launch blockers and should not be implemented preemptively:
 - [x] Confirm visual direction and priorities with the user before implementation.
 - [x] Replace the category rail with Radix Scroll Area, keep semantic links, and truncate only visible navigation labels to 5 characters + ellipsis.
 - [x] Truncate homepage card category labels to 5 visible characters + ellipsis while retaining full accessible/title text.
-- [x] Refine homepage 3+ category rhythm into a desktop horizontal Scroll Area so report cards never wrap to a second row; retain mobile vertical cards.
+- [x] Refine homepage 3+ category rhythm into a desktop horizontal Scroll Area so report cards never wrap to a second row; add slideshow-style previous/next arrow controls and retain mobile vertical cards.
 - [x] Convert category archive rows into compact whole-card links while preserving pagination.
 - [ ] Refine report-detail reading hierarchy, TOC and source presentation.
 - [ ] Recheck mobile/desktop overflow, focus, contrast, reduced-motion and sticky-anchor behavior.

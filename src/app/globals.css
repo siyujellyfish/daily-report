@@ -341,6 +341,10 @@ button:disabled {
 	font-size:12px;
 	letter-spacing:1px
 }
+.featured-carousel {
+	position:relative;
+	width:100%
+}
 .featured-scroll-area {
 	position:relative;
 	width:100%;
@@ -352,7 +356,12 @@ button:disabled {
 	max-width:100%;
 	overflow-x:scroll!important;
 	overflow-y:hidden!important;
-	overscroll-behavior-inline:contain
+	overscroll-behavior-inline:contain;
+	scroll-snap-type:x mandatory;
+	scrollbar-width:none
+}
+.featured-scroll-viewport::-webkit-scrollbar {
+	display:none
 }
 .featured-scroll-viewport>div {
 	min-width:100%
@@ -364,26 +373,40 @@ button:disabled {
 	grid-template-columns:none;
 	gap:24px;
 	width:max-content;
-	min-width:100%;
-	padding-bottom:8px
+	min-width:100%
 }
-.featured-scrollbar {
-	display:flex;
-	height:9px;
-	padding:3px 1px;
-	margin-top:8px;
-	background:transparent;
-	touch-action:none;
-	user-select:none
+.featured-grid>.feature {
+	scroll-snap-align:start
 }
-.featured-scroll-thumb {
-	position:relative;
-	flex:1;
-	border-radius:999px;
-	background:var(--line)
+.featured-carousel-control {
+	position:absolute;
+	z-index:3;
+	top:50%;
+	width:44px;
+	height:44px;
+	display:grid;
+	place-items:center;
+	border:1px solid var(--line);
+	border-radius:50%;
+	background:color-mix(in srgb,var(--surface) 94%,transparent);
+	color:var(--ink);
+	box-shadow:0 8px 24px #0002;
+	transform:translateY(-50%);
+	transition:background .15s,border-color .15s,transform .15s,opacity .15s
 }
-.featured-scroll-thumb:hover {
-	background:var(--muted)
+.featured-carousel-control:hover:not(:disabled) {
+	border-color:var(--muted);
+	background:var(--surface);
+	transform:translateY(-50%) scale(1.04)
+}
+.featured-carousel-control:disabled {
+	opacity:.28
+}
+.featured-carousel-prev {
+	left:-22px
+}
+.featured-carousel-next {
+	right:-22px
 }
 .feature {
 	position:relative;
@@ -1033,11 +1056,15 @@ main {
 	.edition {
 		display:none
 	}
+	.featured-carousel {
+		width:100%
+	}
 	.featured-scroll-area {
 		overflow:visible
 	}
 	.featured-scroll-viewport {
-		overflow:visible!important
+		overflow:visible!important;
+		scroll-snap-type:none
 	}
 	.featured-scroll-viewport>div {
 		width:100%
@@ -1048,10 +1075,9 @@ main {
 		grid-auto-columns:auto;
 		grid-template-columns:1fr;
 		gap:20px;
-		width:100%;
-		padding-bottom:0
+		width:100%
 	}
-	.featured-scrollbar {
+	.featured-carousel-control {
 		display:none
 	}
 	.feature h4 {

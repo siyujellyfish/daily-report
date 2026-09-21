@@ -285,3 +285,13 @@
 - Mobile keeps the existing one-column vertical report flow.
 - Homepage card category headings now use the same five-character visible truncation rule while preserving the complete category title for accessibility/native tooltip use.
 - Extended Playwright acceptance to assert that desktop card tops are identical and the report viewport has horizontal overflow with four isolated published categories.
+
+
+## 2026-09-21 — Phase 6.7 desktop carousel controls
+
+- Replaced the visible desktop report scrollbar as the primary interaction with slideshow-style previous/next arrow controls.
+- Each arrow advances approximately one report card, with controls automatically disabled at the first/last scroll edge.
+- Added horizontal scroll snapping so report cards settle on card boundaries while preserving Radix/native scrolling.
+- Respects `prefers-reduced-motion` by switching programmatic movement from smooth to immediate scrolling.
+- Mobile remains a vertical one-column report list and does not render carousel controls.
+- Added Playwright acceptance for one-row layout, arrow visibility/disabled states and actual horizontal movement.

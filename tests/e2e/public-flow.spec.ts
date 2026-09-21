@@ -69,12 +69,20 @@ test("invalid, empty, hidden and missing categories or reports return 404", asyn
 });
 
 
-test("homepage latest reports stay in one horizontal desktop row", async ({ page }, testInfo) => {
-	test.skip(testInfo.project.name.includes("mobile"), "Desktop/tablet horizontal report rail only.");
+test("homepage desktop report carousel stays on one row and advances with arrow controls", async ({ page }, testInfo) => {
+	test.skip(testInfo.project.name.includes("mobile"), "Desktop/tablet report carousel only.");
 	await page.goto("/");
 	const viewport = page.locator(".featured-scroll-viewport");
+	const previous = page.getByRole("button", { name: "上一則報告" });
+	const next = page.getByRole("button", { name: "下一則報告" });
+
 	await expect(viewport).toBeVisible();
-	const state = await page.evaluate(() => {
+	await expect(previous).toBeVisible();
+	await expect(next).toBeVisible();
+	await expect(previous).toBeDisabled();
+	await expect(next).toBeEnabled();
+
+	const initial = await page.evaluate(() => {
 		const viewport = document.querySelector<HTMLElement>(".featured-scroll-viewport");
 		const cards = [...document.querySelectorAll<HTMLElement>(".featured-grid > .feature")];
 		if (!viewport) throw new Error("Featured report Scroll Area is missing.");
@@ -84,6 +92,11 @@ test("homepage latest reports stay in one horizontal desktop row", async ({ page
 			tops: cards.map((card) => Math.round(card.getBoundingClientRect().top)),
 		};
 	});
-	expect(new Set(state.tops).size).toBe(1);
-	expect(state.scrollWidth).toBeGreaterThan(state.clientWidth);
+	expect(new Set(initial.tops).size).toBe(1);
+	expect(initial.scrollWidth).toBeGreaterThan(initial.clientWidth);
+
+	await next.click();
+	await expect.poll(async () => viewport.evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
+	await expect(previous).toBeEnabled();
+	await expect(next).toBeDisabled();
 });
