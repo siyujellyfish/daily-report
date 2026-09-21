@@ -63,3 +63,30 @@ Production schema matches it and Phase 6.7 contains no database schema change. T
 ## Delivery boundary
 
 The temporary Vercel Preview database override was removed before merge. Production and normal Preview runtime database selection again relies exclusively on configured `DATABASE_URL`.
+
+
+## Post-merge closure
+
+Phase 6.7 was squash-merged to `main` as:
+
+```text
+c613ae4fc66e6e7b7a713cd48cc060324c630134
+```
+
+Post-merge verification:
+
+```text
+GitHub Quality: 35558081267 → success
+Vercel Production: dpl_6c4p7qHGMHT6ugnPpNjUdtwEgM25 → READY
+```
+
+Final database verification confirmed:
+
+- Neon Production and `phase6-adaptive-isolated` expose the same `reports` / `report_categories` column definitions and constraints;
+- both branches contain exactly the two real categories at rest;
+- both contain 24 real report rows at the verification point;
+- no report title matching test / fixture / POC / end-to-end / phase synthetic naming remains;
+- obsolete `phase3-testing` and `phase6-testing` branches are absent;
+- `phase6-adaptive-isolated` remains only as the resettable CI target.
+
+Repository migration state remains current at `drizzle/phase6_1_adaptive_categories.sql`; Phase 6.7 is UI-only and introduces no additional schema migration.
