@@ -465,22 +465,22 @@ Phase 6.5 automated verification passed on branch head `a8cab16c1903f19d305a7c34
 - [x] Remove the Phase-6-verification-only Preview database host override before final delivery.
 - [x] Squash-merge Phase 6 PR #13 to `main` as `d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`.
 - [x] Confirm Vercel Production deployment `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` READY.
-- [ ] Confirm post-merge `main` Quality run `35554750408` after the serialized canonical-test queue drains.
+- [x] Confirm post-merge `main` Quality run `35554750408` completed successfully.
 - [x] Create the Phase 6.7 UI/UX planning branch without changing Production runtime.
 
 # Phase 6 acceptance
 
-- [ ] Category source of truth is data-driven and existing report data is intact.
-- [ ] New safe v2 category slugs no longer require application source changes.
-- [ ] Existing recurring v1 Tasks remain backward compatible and unattended.
-- [ ] v1 exact-retry hashing and conflict behavior remain unchanged.
-- [ ] Dynamic category navigation/home/archive/detail/metadata/sitemap are generated from persisted categories.
-- [ ] Legacy `/news` and `/frameworks` remain reachable through permanent redirects.
-- [ ] Mobile/desktop navigation, accessibility, sticky-header/TOC behavior and performance tests pass with 3+ categories.
-- [ ] No unnecessary package, CMS, Redis, public read API or arbitrary payload-controlled UI surface was added.
-- [ ] Production rollout is migration-safe and non-destructive.
-- [ ] `/AI-build` matches the deployed system.
-- [ ] Phase 6 is squash-merged to `main` and resulting Production deployment is READY.
+- [x] Category source of truth is data-driven and existing report data is intact.
+- [x] New safe v2 category slugs no longer require application source changes.
+- [x] Existing recurring v1 Tasks remain backward compatible and unattended.
+- [x] v1 exact-retry hashing and conflict behavior remain unchanged.
+- [x] Dynamic category navigation/home/archive/detail/metadata/sitemap are generated from persisted categories.
+- [x] Legacy `/news` and `/frameworks` remain reachable through permanent redirects.
+- [x] Mobile/desktop navigation, accessibility, sticky-header/TOC behavior and performance tests pass with 3+ categories.
+- [x] No unnecessary package, CMS, Redis, public read API or arbitrary payload-controlled UI surface was added.
+- [x] Production rollout is migration-safe and non-destructive.
+- [x] `/AI-build` matches the deployed system.
+- [x] Phase 6 is squash-merged to `main` and resulting Production deployment is READY.
 
 ---
 
@@ -507,9 +507,9 @@ These are not launch blockers and should not be implemented preemptively:
 - [x] Truncate homepage card category labels to 5 visible characters + ellipsis while retaining full accessible/title text.
 - [x] Refine homepage 3+ category rhythm into a desktop horizontal Scroll Area so report cards never wrap to a second row; add slideshow-style previous/next arrow controls and retain mobile vertical cards.
 - [x] Convert category archive rows into compact whole-card links while preserving pagination.
-- [ ] Refine report-detail reading hierarchy, TOC and source presentation.
-- [ ] Recheck mobile/desktop overflow, focus, contrast, reduced-motion and sticky-anchor behavior.
-- [ ] Preserve Server Components, dynamic categories, current ingest contract and client-JS budget.
+- [x] Review report-detail reading hierarchy, TOC and source presentation; accepted without further Phase 6.7 changes.
+- [x] Recheck mobile/desktop overflow, focus, contrast, reduced-motion and sticky-anchor behavior in Quality run `35557533073`.
+- [x] Preserve Server Components, dynamic categories, current ingest contract and client-JS budget.
 - [x] Rebind `phase6.7/ui-ux` Preview to Neon `phase6-adaptive-isolated` for multi-category UI acceptance only.
 - [x] Remove the Phase 6.7 Preview-only isolated Neon routing helper before squash merge to `main`.
 - [x] Update Playwright/unit acceptance for Scroll Area, visible-label truncation and whole-card archive navigation.
@@ -520,8 +520,8 @@ These are not launch blockers and should not be implemented preemptively:
 - [x] User accepted the desktop carousel, category label truncation and compact whole-card archive navigation.
 - [x] Replace persistent isolated fixtures with Quality seed/always-cleanup steps.
 - [x] Verify Production and isolated branch schemas are identical before database cleanup.
-- [ ] Reset `phase6-adaptive-isolated` to Production HEAD and confirm zero synthetic categories/reports remain outside each active CI run.
-- [ ] Remove obsolete Neon test branches after confirming they are no longer referenced.
-- [ ] Remove known Production setup test report `P1 End-to-End Test`.
-- [ ] Squash-merge Phase 6.7 to `main`.
+- [x] Reset `phase6-adaptive-isolated` to Production HEAD and confirm zero synthetic categories/reports remain outside each active CI run.
+- [x] Remove obsolete Neon `phase3-testing` and `phase6-testing` branches.
+- [x] Remove known Production setup test report `P1 End-to-End Test`; Production and isolated branches now report zero test/fixture rows at rest.
+- [ ] Squash-merge Phase 6.7 to `main` after this final documentation checkpoint.
 - [ ] Confirm resulting Vercel Production deployment READY and Production data remains real-content-only.

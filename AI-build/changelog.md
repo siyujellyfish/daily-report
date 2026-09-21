@@ -303,3 +303,15 @@
 - Confirmed Neon Production and `phase6-adaptive-isolated` have no schema diff; Production already matches the repository Phase 6.1 migration.
 - Reworked Quality so the isolated branch is clean at rest: deterministic fixtures are seeded at run start and removed in an `always()` cleanup step.
 - Removed the Phase 6.7 Preview-only database routing helper from the application runtime before final merge.
+
+
+## 2026-09-21 — Phase 6.7 acceptance and database cleanup
+
+- User accepted the desktop carousel, five-character category display and compact whole-card archive navigation.
+- Final Quality run `35557533073` passed frozen install, TypeScript, 27 unit tests, production build, ephemeral fixture seed, isolated DB integration, Playwright critical paths, read-error state, production client-JS budget and always-cleanup.
+- Replaced persistent Phase 6 synthetic data with per-run fixture seeding/cleanup; the isolated branch is clean at rest.
+- Reset Neon `phase6-adaptive-isolated` from Production after cleanup and verified schema diff is empty.
+- Deleted obsolete Neon branches `phase3-testing` and `phase6-testing`; only `main` and `phase6-adaptive-isolated` remain.
+- Deleted the historical Production setup row `P1 End-to-End Test`. Production and isolated branches both report zero titles matching test/fixture/Phase synthetic patterns at rest.
+- Confirmed repository `main` already contains `drizzle/phase6_1_adaptive_categories.sql`; no Phase 6.7 schema change exists, so no additional migration is required.
+- Final Phase 6.7 Preview build `dpl_BNcWDjjQs9VpZ2Q9gEmcNFrCHezN` reached READY after the Preview-only DB override was removed.
