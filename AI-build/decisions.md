@@ -234,3 +234,12 @@ Development is organized into the following lifecycle:
 - Post-deploy schema-v1 compatibility may be verified with exact retries of already-persisted original payloads; this must not create replacement or synthetic Production content.
 - Phase 6.7 is a UI/UX refinement phase. It does not reopen the category data model, route architecture, v1/v2 ingest contract, Make transport role or Server Component read boundary by default.
 - Phase 6.7 implementation starts only after visual direction and priorities are confirmed; no dependency addition is assumed.
+
+
+## 2026-09-21 — Remove persistent test data
+
+- Phase 6.7 acceptance allows the temporary Preview database routing override to be removed before merge.
+- `phase6-adaptive-isolated` remains the CI database target but must be clean at rest.
+- Quality owns fixture lifecycle: deterministic synthetic rows are seeded before DB/browser acceptance and removed in an `always()` cleanup step.
+- Obsolete Neon test branches may be removed once no active configuration references them.
+- The historical Production setup report titled `P1 End-to-End Test` is test data and should be deleted during this explicitly authorized cleanup; normal Production reports are not modified.
