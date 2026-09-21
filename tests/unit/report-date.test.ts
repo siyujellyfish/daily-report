@@ -20,18 +20,25 @@ describe("report date helpers", () => {
 		expect(isReportDate("2026-04-31")).toBe(false);
 	});
 
-	it("round-trips supported report slugs", () => {
-		const slug = getReportSlug("2026-09-09", "framework-recommendation");
-		expect(slug).toBe("2026-09-09-framework-recommendation");
-		expect(parseReportSlug(slug)).toEqual({
+	it("round-trips legacy and dynamic category report slugs", () => {
+		const legacy = getReportSlug("2026-09-09", "framework-recommendation");
+		expect(parseReportSlug(legacy)).toEqual({
 			date: "2026-09-09",
 			type: "framework-recommendation",
 		});
+
+		const dynamic = getReportSlug("2026-09-18", "security-news");
+		expect(dynamic).toBe("2026-09-18-security-news");
+		expect(parseReportSlug(dynamic)).toEqual({
+			date: "2026-09-18",
+			type: "security-news",
+		});
 	});
 
-	it("rejects malformed and unsupported report slugs", () => {
+	it("rejects malformed dates and unsafe category slugs", () => {
 		expect(parseReportSlug("2026-02-30-daily-news")).toBeNull();
-		expect(parseReportSlug("2026-09-09-weekly-news")).toBeNull();
+		expect(parseReportSlug("2026-09-09-Security-News")).toBeNull();
+		expect(parseReportSlug("2026-09-09-security_news")).toBeNull();
 		expect(parseReportSlug("not-a-slug")).toBeNull();
 	});
 

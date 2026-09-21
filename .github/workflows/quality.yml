@@ -4,6 +4,13 @@ on:
   push:
   pull_request:
 
+# Integration and browser acceptance share one canonical Neon test branch.
+# Queue complete Quality runs so temporary v2 categories cannot leak across
+# concurrent push/pull_request acceptance windows.
+concurrency:
+  group: daily-report-canonical-test-db
+  queue: max
+
 permissions:
   contents: read
 

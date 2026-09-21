@@ -3,8 +3,9 @@ import { expect, test } from "@playwright/test";
 const CLIENT_JS_BUDGET_BYTES = 1024 * 1024;
 const ROUTES = [
 	"/",
-	"/news",
-	"/reports/2026-09-09-daily-news",
+	"/category/security-news",
+	"/category/long-category-navigation-fixture",
+	"/reports/2026-09-19-long-category-navigation-fixture",
 ];
 
 test("cold public routes stay within the production client JavaScript budget", async ({ browser }) => {

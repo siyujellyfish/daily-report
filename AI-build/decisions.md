@@ -156,3 +156,71 @@ Development is organized into the following lifecycle:
 - The first live unattended recurring cycle on 2026-09-11 passed for both types: Make reported `startedBy = auto`, Neon contained exactly one row for each type/business-date, persisted Markdown contained no ChatGPT UI tokens, and the homepage/archive/detail routes rendered successfully.
 - Production verification remains non-destructive. No report is UPDATE/DELETE-ed for acceptance, collision handling or retry testing.
 - Phase 5 release documentation is delivered through PR #11 and all changes entering `main` remain subject to the repository-wide squash-merge rule.
+
+## 2026-09-17 — Phase 6 adaptive categories planning
+
+- Introduce Phase 6 as a post-launch functional phase for data-driven report categories rather than extending the fixed two-value enum each time a new push type is added.
+- Make `report_categories` the future category source of truth. Keep `reports.report_type` as the existing column name for compatibility, but migrate it from the fixed PostgreSQL enum to a string column with a foreign key to category `slug`.
+- Keep category slug as an immutable machine identifier and separate it from user-facing `label` and `description`.
+- Seed the two current categories with stable ordering; later automatically created categories use deterministic created-time/slug ordering unless an explicit server-side sort order is later assigned.
+- Do not derive categories by AI from report content. A new category is introduced only by an authenticated, validated schema-v2 ingest payload.
+- Keep schema version 1 fully compatible for the two currently enabled recurring Scheduled Tasks. Do not require an atomic migration of Tasks, Make and application code.
+- Add schema version 2 with generic safe `reportType` slug plus bounded `categoryLabel` and `categoryDescription`; do not accept arbitrary CSS, color, icon, visibility or route metadata from payloads.
+- Existing category metadata is canonical. Normal report ingest must not silently rename an existing category because a Scheduled Task sends a typo or changed label.
+- Preserve v1 normalized payload hashing behavior so an exact retry created before/after the Phase 6 application deployment remains idempotent.
+- The target canonical archive route is `/category/[slug]`. `/news` and `/frameworks` remain as permanent redirects to their corresponding category routes; existing `/reports/YYYY-MM-DD-<type>` URLs remain unchanged.
+- The public read path remains Server Components → Drizzle → Neon. Dynamic category navigation must not introduce a browser-side `/api/categories` layer.
+- Refactor the Header into a stable first row and a horizontally scrollable category rail. Treat category entries as navigation links, not ARIA tabs, because each category has its own URL and browser history entry.
+- Make the homepage latest-report cards data-driven and responsive to 1/2/3+ categories; remove copy and CSS assumptions that exactly two categories always exist.
+- Keep `daily-news` blue and `framework-recommendation` teal. Future category visual tones come only from an application-controlled, accessibility-checked deterministic palette rather than external payload styles.
+- Add one shared sticky-header offset token so TOC and anchor scrolling remain correct after the Header gains a second row.
+- Only visible categories with at least one stored report appear publicly. An empty category row created before a failed report insert must not produce an empty public tab.
+- Phase 6 does not require a new package, CMS, Redis, global client state library or alternate DB driver by default. Validate current Neon HTTP non-interactive transaction/batch capabilities first; change drivers only if a demonstrated implementation requirement exists.
+- Validate the enum-to-varchar/FK migration on a temporary Neon branch and prove the old application remains functional before using a schema-first Production rollout.
+- Third-category UI/ingest verification uses isolated Neon/Preview data. Do not create a synthetic Production category/report solely to prove the feature.
+- Detailed implementation and acceptance criteria are maintained in `phase-6-plan.md` and `todo.md`.
+
+
+## 2026-09-18 — Phase 6.2 ingestion implementation
+
+- Keep `POST /api/v1/ingest` as the single authenticated write endpoint; schema versioning happens inside the payload contract rather than by adding a second route.
+- Use Zod `z.discriminatedUnion("schemaVersion", ...)` so schema v1 and v2 have explicit independent contracts.
+- Preserve the schema-v1 field order, trimming behavior, `sources: null/omitted → []` normalization and SHA-256 serialization behavior. A fixed regression fixture protects the pre-Phase-6 normalized hash.
+- Schema v1 remains limited to `daily-news` and `framework-recommendation` so the two live recurring Tasks do not silently change semantics.
+- Schema v2 accepts category slugs matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` with maximum length 80, plus trimmed label up to 120 characters and description up to 500 characters.
+- Do not accept `sort_order`, `is_visible`, arbitrary colors/styles/icons or route metadata from v2 payloads.
+- Treat the first stored category metadata as canonical. Subsequent report ingestion for the same slug may report a metadata mismatch but must not UPDATE the stored label/description.
+- Use the existing Neon HTTP driver and Drizzle `db.batch()` for v2 category create/reuse, canonical metadata read and report insert. The batch uses Neon HTTP's non-interactive transaction primitive, so no WebSocket driver is introduced.
+- Preserve the existing `payload_hash` and `(report_type, report_date)` conflict semantics: exact retry remains HTTP 200 + `duplicate: true`; different same-category/date content remains HTTP 409.
+- Keep all Phase 6 synthetic v2 data on `phase6-adaptive-isolated`. The isolated `security-news` fixture is intentionally absent from Production.
+- No package was added or upgraded for Phase 6.2.
+
+
+## 2026-09-21 — Phase 6.3/6.4 dynamic read and adaptive UI
+
+- Treat persisted `report_categories` rows as the public category source of truth; public categories must be visible and have at least one report.
+- Order categories by `sort_order ASC NULLS LAST`, then `created_at ASC`, then `slug ASC`.
+- Keep public category projections minimal: slug, label and description from the database; tone, route, icon, eyebrow and issue labels are application-owned presentation values.
+- Keep the existing report URL shape and generalize only the parser to a validated category slug after the fixed date prefix.
+- Make `/category/[slug]` canonical. Keep `/news` and `/frameworks` as permanent redirects rather than duplicated archive pages.
+- Generate category archive metadata and Production sitemap entries from persisted categories; do not list legacy redirect URLs as canonical sitemap entries.
+- Keep category reads server-side. The Client navigation receives only minimal serialized category navigation data and never fetches a browser `/api/categories`.
+- Replace the mobile hamburger with an always-visible horizontally scrollable category rail. Category navigation remains semantic links, not ARIA tabs.
+- Determine active category from the canonical category path or the report-detail category suffix.
+- Preserve blue/teal for the two legacy categories. Future category colors come from a deterministic application-owned palette; payloads remain unable to control visual presentation.
+- Use one `--sticky-header-offset` CSS token for scroll padding, report anchors and TOC positioning after introducing the second Header row.
+- Catch Header category-query failures so the navigation shell can degrade without replacing the intended page-level database error state.
+- Keep the legacy Phase 3 CI database isolated. To support current CI reads, add only the category table and two legacy category rows there; do not use it as the canonical Phase 6 synthetic-data branch and do not alter Production.
+
+
+## 2026-09-21 — Phase 6.5 canonical acceptance
+
+- GitHub `TEST_DATABASE_URL` now points to Neon `phase6-adaptive-isolated`; the Quality integration suite proves that connection by asserting the canonical ordered published-category fixture set before write-path tests.
+- Do not read or print the Repository Secret value to verify it. Re-running the existing Quality workflow after the secret change is sufficient evidence because the old Phase 3 assertions fail against the canonical Phase 6 row counts/category set.
+- Keep persistent acceptance fixtures isolated: four published categories, one visible-empty category and one hidden-published category exist only on `phase6-adaptive-isolated`.
+- Keep integration write fixtures ephemeral and run-scoped. Use `GITHUB_RUN_ID` to derive a unique v2 category slug and v1 report date so runs cannot delete or collide with each other's fixtures; cleanup remains mandatory in `afterAll`.
+- Serialize the complete Quality workflow with GitHub Actions concurrency group `daily-report-canonical-test-db` and `queue: max`. Run-scoped identities prevent direct row collisions, while workflow serialization prevents one run's briefly-visible v2 category from entering another run's public-category/browser assertions.
+- Treat long labels as a real responsive input, not a test-only edge case. Category rail max-content width must be contained, and report detail actions must be allowed to shrink/wrap.
+- Preserve local overflow behavior for tables/code/rails; do not mask document overflow with `body { overflow-x: hidden }`.
+- Phase 6.5 acceptance is automated and does not require manual UI sign-off because desktop + Pixel 7, redirects, metadata/sitemap, anchor positioning, accessibility, read-error and client-JS budget are all covered by the final Quality gate.
+- Production remains excluded from synthetic acceptance writes; no Phase 6 fixture category/report is present there.

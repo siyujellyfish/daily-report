@@ -3,38 +3,64 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 
-export function SiteNavigation() {
+type NavigationCategory = {
+	slug: string;
+	label: string;
+	href: string;
+};
+
+function activeCategorySlug(pathname: string) {
+	const archive = /^\/category\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(pathname);
+	if (archive) return archive[1];
+
+	const report = /^\/reports\/\d{4}-\d{2}-\d{2}-(.+)\/?$/.exec(pathname);
+	return report?.[1] ?? null;
+}
+
+export function SiteNavigation({ categories }: { categories: NavigationCategory[] }) {
 	const pathname = usePathname();
-	const [open, setOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
 	const { theme, setTheme } = useTheme();
-	const menuRef = useRef<HTMLButtonElement>(null);
+	const activeSlug = activeCategorySlug(pathname);
+
 	useEffect(() => { setMounted(true); }, []);
-	const links = [
-		{ href: "/", label: "首頁", active: pathname === "/" },
-		{ href: "/news", label: "資訊新聞", active: pathname === "/news" || pathname.endsWith("-daily-news") },
-		{ href: "/frameworks", label: "框架工具", active: pathname === "/frameworks" || pathname.endsWith("-framework-recommendation") },
-	];
-	return (
-		<div className="navigation-shell" onKeyDown={(event) => {
-			if (event.key === "Escape" && open) { setOpen(false); menuRef.current?.focus(); }
-		}}>
-			<nav id="main-nav" className={`nav ${open ? "open" : ""}`} aria-label="主要導覽">
-				{links.map((link) => <Link key={link.href} href={link.href} prefetch={false} aria-current={link.active ? "page" : undefined} onClick={() => setOpen(false)}>{link.label}</Link>)}
-			</nav>
+
+	return <div className="navigation-shell">
+		<div className="header-actions">
+			<Link
+				className="home-link"
+				href="/"
+				aria-current={pathname === "/" ? "page" : undefined}
+			>首頁</Link>
 			<div className="theme-control">
 				<label htmlFor="theme" aria-label="外觀主題">◐</label>
-				<NativeSelect id="theme" aria-label="外觀主題" value={mounted ? theme : "system"} onChange={(event) => setTheme(event.target.value)} disabled={!mounted} className="theme-select">
+				<NativeSelect
+					id="theme"
+					aria-label="外觀主題"
+					value={mounted ? theme : "system"}
+					onChange={(event) => setTheme(event.target.value)}
+					disabled={!mounted}
+					className="theme-select"
+				>
 					<NativeSelectOption value="system">跟隨系統</NativeSelectOption>
 					<NativeSelectOption value="light">淺色模式</NativeSelectOption>
 					<NativeSelectOption value="dark">深色模式</NativeSelectOption>
 				</NativeSelect>
 			</div>
-			<Button ref={menuRef} variant="outline" className="menu-toggle" aria-controls="main-nav" aria-expanded={open} onClick={() => setOpen(!open)}>選單</Button>
 		</div>
-	);
+		<nav className="category-rail" aria-label="報告分類">
+			<div className="category-rail-inner">
+				{categories.map((category) => <Link
+					key={category.slug}
+					href={category.href}
+					prefetch={false}
+					aria-current={activeSlug === category.slug ? "page" : undefined}
+				>{category.label}</Link>)}
+			</div>
+		</nav>
+	</div>;
 }

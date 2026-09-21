@@ -347,6 +347,142 @@ Detailed execution contract: `phase-4-plan.md`. Actual Production evidence: `pha
 
 ---
 
+## Phase 6 — Adaptive categories
+
+Detailed design and rollout contract: `phase-6-plan.md`. Phase 6.1 database migration and isolation are complete; Phase 6.2 ingestion work is next.
+
+### 6.0 Planning and compatibility boundary
+
+- [x] Audit current fixed-category coupling across DB enum, Zod, TypeScript, slug parser, queries, routes, navigation, homepage, detail and sitemap.
+- [x] Recheck current official Next.js / Drizzle / Neon documentation relevant to dynamic routes, permanent redirects, migrations and Neon HTTP transaction boundaries.
+- [x] Approve data-driven category model rather than `SELECT DISTINCT report_type` only.
+- [x] Approve `/category/[slug]` as canonical archive route.
+- [x] Approve permanent redirects from `/news` and `/frameworks`.
+- [x] Approve two-row Header with a horizontal adaptive category rail.
+- [x] Approve schema v1/v2 transition rather than breaking the two active Production Scheduled Tasks.
+- [x] Define that Phase 6 adds no CMS/admin UI, no browser read API and no arbitrary payload-controlled presentation values.
+- [x] Define that synthetic third-category verification remains isolated from Production.
+
+### 6.1 Category database model and migration
+
+- [x] Add `report_categories` table with slug, label, description, optional sort order, visibility and timestamps.
+- [x] Seed `daily-news` and `framework-recommendation` with current UI labels/descriptions and stable sort order.
+- [x] Replace the fixed PostgreSQL `report_type` enum dependency with a string-compatible `reports.report_type` column.
+- [x] Add FK from `reports.report_type` to `report_categories.slug`.
+- [x] Preserve payload-hash uniqueness, `(report_type, report_date)` uniqueness and existing query indexes.
+- [x] Generate and manually review the schema migration; use custom SQL where enum → varchar/data-preserving conversion requires it.
+- [x] Validate migration first on a temporary Neon branch.
+- [x] Confirm all existing report rows, hashes, dates and sources survive migration unchanged.
+- [x] Confirm the pre-Phase-6 application can still read/write its two legacy report types after the schema-first migration.
+- [x] Remove the old PostgreSQL enum only after confirming there are no remaining references.
+- [x] Do not UPDATE/DELETE Production report content for migration acceptance.
+
+### 6.2 Ingestion schema v2 and legacy v1
+
+- [x] Refactor ingest validation into a schema-version discriminated contract.
+- [x] Preserve v1 accepted payloads and legacy report-type validation.
+- [x] Add a regression fixture proving v1 normalized payload hashing remains byte-for-byte behaviorally compatible for exact retries.
+- [x] Add v2 `reportType` generic safe slug validation.
+- [x] Add bounded `categoryLabel` and `categoryDescription` to v2.
+- [x] Keep `title`, `generatedAt`, Markdown and sources validation/safety boundaries.
+- [x] Create category metadata on first valid v2 publication when the slug does not exist.
+- [x] Treat existing stored category metadata as canonical; daily report ingest must not silently rename existing categories.
+- [x] Keep `sort_order` and `is_visible` server/database-controlled rather than payload-controlled.
+- [x] Validate current Neon HTTP non-interactive transaction/batch support for category-create + report-insert flow.
+- [x] If no suitable atomic primitive is used, ensure empty category rows remain publicly invisible through `EXISTS(report)` filtering rather than adding a new DB driver solely for this feature. Not required for persistence safety because Phase 6.2 uses atomic Neon HTTP `db.batch()`; the published-category `EXISTS(report)` filter remains planned in 6.3.
+- [x] Preserve HTTP 200 exact duplicate and HTTP 409 same-category/date different-payload semantics.
+
+### 6.3 Dynamic server read layer and routes
+
+- [x] Add `getPublishedCategories()`.
+- [x] Add data-driven latest-report-per-category query for homepage.
+- [x] Replace fixed type archive query with category-slug query.
+- [x] Add category presentation mapping without exposing internal ingest metadata.
+- [x] Add `/category/[slug]` dynamic archive page.
+- [x] Return 404 for invalid, absent, invisible or unpublished categories.
+- [x] Change report slug parser from fixed enum regex to date + validated generic category slug.
+- [x] Keep existing report detail URLs unchanged.
+- [x] Make report detail breadcrumb/category link use the data-driven category row.
+- [x] Convert `/news` to permanent redirect → `/category/daily-news`.
+- [x] Convert `/frameworks` to permanent redirect → `/category/framework-recommendation`.
+- [x] Update canonical metadata to use dynamic category routes.
+- [x] Update sitemap to enumerate published categories + reports dynamically.
+- [x] Keep Preview noindex behavior intact.
+
+### 6.4 Adaptive UI/UX
+
+- [x] Refactor Header into stable first row (brand/home/theme) plus dynamic category rail.
+- [x] Fetch categories server-side and pass minimal data to the navigation client boundary; do not add `/api/categories`.
+- [x] Make category rail horizontally overflow-safe on desktop and mobile.
+- [x] Keep semantic navigation links rather than implementing ARIA tabs for URL navigation.
+- [x] Remove obsolete mobile hamburger state if category rail makes it unnecessary; update focus/Escape behavior accordingly.
+- [x] Add active category state for category archive and report detail routes.
+- [x] Change homepage from fixed two-card rendering to data-driven latest cards.
+- [x] Change homepage grid to responsive 1 / 2 / 3-column behavior without assuming two categories.
+- [x] Generalize homepage copy that currently refers to exactly two content types.
+- [x] Preserve blue identity for `daily-news` and teal for `framework-recommendation`.
+- [x] Add deterministic safe palette mapping for later categories without accepting CSS/colors/icons from ingest payload.
+- [x] Replace category-specific `.frameworks` styling assumptions with reusable category tone semantics where needed.
+- [x] Introduce shared sticky-header offset token for document scroll padding, report headings and TOC positioning.
+- [x] Ensure category-navigation DB failure can degrade without breaking static error/404 shell rendering.
+- [x] Verify light/dark contrast for every built-in category tone.
+
+### 6.5 Automated verification
+
+- [x] Add unit coverage for category slug validator and generic report slug round-trip/rejection.
+- [x] Add unit coverage for v1/v2 ingest validation and v1 payload hash regression.
+- [x] Add unit coverage for deterministic category tone mapping and category presentation.
+- [x] Add isolated Neon integration fixtures with at least three published categories plus one empty/invisible category.
+- [x] Verify migrated legacy rows and existing queries against isolated Neon.
+- [x] Verify v1 legacy insertion and v2 first-category publication against isolated Neon.
+- [x] Verify existing category metadata is not silently overwritten by recurring report payloads.
+- [x] Verify unpublished/invisible categories do not appear in public category navigation.
+- [x] Update Playwright desktop + Pixel 7 flows for dynamic category navigation.
+- [x] Verify 3+ category homepage layout and long category labels.
+- [x] Verify mobile category rail causes no document-level horizontal overflow.
+- [x] Verify keyboard focus and navigation remain accessible after removing/reworking mobile menu behavior.
+- [x] Verify TOC anchor positions remain visible under the two-row sticky header.
+- [x] Verify `/news` and `/frameworks` permanent redirects.
+- [x] Verify dynamic category metadata/canonical and sitemap output.
+- [x] Confirm public browser navigation still performs no `/api/*` read requests.
+- [x] Re-run read-error behavior and confirm Header fallback does not mask the intended application error state.
+- [x] Retain production client JavaScript budget and verify Phase 6 does not materially regress it.
+
+Phase 6.5 automated verification passed on branch head `a8cab16c1903f19d305a7c34063be84183956d37`: GitHub Quality run `35553333899` completed successfully, including frozen install, typecheck, unit tests, production build, isolated DB integration, Playwright critical paths, read-error coverage and production client-JavaScript budget. Matching Vercel Preview deployment `dpl_FEzvnXDLAEzBCV18CEgTyBgU1rMa` is READY. Synthetic dynamic-category fixtures remain isolated from Production.
+
+### 6.6 Rollout and Production acceptance
+
+- [ ] Complete temporary Neon migration acceptance before Production schema changes.
+- [ ] Complete full TypeScript, unit, isolated DB integration, Playwright, read-error, production build and JS-budget checks.
+- [x] Confirm Vercel Preview READY with isolated third-category UX verification.
+	- Preview routing is temporarily pinned only for Vercel `phase6/adaptive-categories` to the non-secret host of Neon `phase6-adaptive-isolated`; Production and unrelated Preview branches keep their existing `DATABASE_URL`. Deployment `dpl_3FfAYFUqVajnMdsd173yQAwQJNLv` reached READY and rendered the four expected published categories (`daily-news`, `framework-recommendation`, `security-news`, `long-category-navigation-fixture`) while excluding the empty and hidden fixtures. Remove this Phase 6 verification-only host override before final squash merge.
+- [ ] Apply only the previously validated backward-compatible migration to Neon Production.
+- [ ] Before new app deployment, verify the current Production app and both recurring schema-v1 Tasks still operate on the migrated DB.
+- [ ] Deploy Phase 6 application to Production only after schema-first compatibility passes.
+- [ ] Verify `/`, both legacy redirects, both canonical category pages and existing report detail URLs.
+- [ ] Verify both existing unattended recurring Tasks still publish successfully under v1.
+- [ ] Do not create a synthetic third-category Production report solely for acceptance.
+- [ ] Record the first future real v2 category publication as post-Phase-6 operational evidence; it must require no application redeploy.
+- [ ] Update `architecture.md`, `decisions.md`, `changelog.md`, `README.md`, `todo.md` and a Phase 6 verification record to actual implementation state.
+- [ ] Open/review Phase 6 PR and ensure final merge to `main` uses squash merge.
+- [ ] Confirm post-merge `main` Quality and Vercel Production deployment READY.
+
+### Phase 6 acceptance
+
+- [ ] Category source of truth is data-driven and existing report data is intact.
+- [ ] New safe v2 category slugs no longer require application source changes.
+- [ ] Existing recurring v1 Tasks remain backward compatible and unattended.
+- [ ] v1 exact-retry hashing and conflict behavior remain unchanged.
+- [ ] Dynamic category navigation/home/archive/detail/metadata/sitemap are generated from persisted categories.
+- [ ] Legacy `/news` and `/frameworks` remain reachable through permanent redirects.
+- [ ] Mobile/desktop navigation, accessibility, sticky-header/TOC behavior and performance tests pass with 3+ categories.
+- [ ] No unnecessary package, CMS, Redis, public read API or arbitrary payload-controlled UI surface was added.
+- [ ] Production rollout is migration-safe and non-destructive.
+- [ ] `/AI-build` matches the deployed system.
+- [ ] Phase 6 is squash-merged to `main` and resulting Production deployment is READY.
+
+---
+
 ## Post-launch backlog — only when justified
 
 These are not launch blockers and should not be implemented preemptively:
@@ -356,7 +492,6 @@ These are not launch blockers and should not be implemented preemptively:
 - [ ] Search across report content.
 - [ ] Tag/topic filtering.
 - [ ] Source-level relational model and analytics.
-- [ ] Admin/CMS tooling.
+- [ ] Admin/CMS tooling, including category rename/reorder UI if a real operating need emerges.
 - [ ] Redis or application caching based on measured traffic.
 - [ ] Monitoring/alerting beyond Vercel/Neon/Make built-in observability.
-- [ ] Additional report types/schema versions.

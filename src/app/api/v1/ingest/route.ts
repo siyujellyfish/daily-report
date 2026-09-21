@@ -2,12 +2,13 @@ import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getDb } from "@/db";
-import { reports } from "@/db/schema";
+import { reportCategories, reports } from "@/db/schema";
 import {
 	getTaipeiReportDate,
 	hashReportPayload,
 	isAuthorizedBearer,
 } from "@/lib/report-payload";
+import type { ReportType } from "@/lib/report-types";
 import { reportIngestSchema } from "@/schemas/report";
 
 export const runtime = "nodejs";
@@ -68,30 +69,98 @@ export async function POST(request: Request) {
 
 	try {
 		const db = getDb();
-		const [created] = await db
-			.insert(reports)
-			.values({
-				schemaVersion: payload.schemaVersion,
-				reportType: payload.reportType,
-				reportDate,
-				title: payload.title,
-				contentMarkdown: payload.contentMarkdown,
-				sources: payload.sources,
-				generatedAt: new Date(payload.generatedAt),
-				payloadHash,
-			})
-			.onConflictDoNothing()
-			.returning({
-				id: reports.id,
-				reportType: reports.reportType,
-				reportDate: reports.reportDate,
-			});
+
+		// Phase 6.2 intentionally keeps the legacy read/UI ReportType union until
+		// the data-driven read layer lands in Phase 6.3. The database column is
+		// already varchar(80) and the v2 schema validates dynamic category slugs.
+		const storedReportType = payload.reportType as ReportType;
+		const reportValues = {
+			schemaVersion: payload.schemaVersion,
+			reportType: storedReportType,
+			reportDate,
+			title: payload.title,
+			contentMarkdown: payload.contentMarkdown,
+			sources: payload.sources,
+			generatedAt: new Date(payload.generatedAt),
+			payloadHash,
+		};
+
+		let categoryCreated = false;
+		let categoryMetadataMismatch = false;
+		let created:
+			| { id: string; reportType: ReportType; reportDate: string }
+			| undefined;
+
+		if (payload.schemaVersion === 2) {
+			const [createdCategories, canonicalCategories, createdReports] = await db.batch([
+				db
+					.insert(reportCategories)
+					.values({
+						slug: payload.reportType,
+						label: payload.categoryLabel,
+						description: payload.categoryDescription,
+					})
+					.onConflictDoNothing()
+					.returning({ slug: reportCategories.slug }),
+				db
+					.select({
+						slug: reportCategories.slug,
+						label: reportCategories.label,
+						description: reportCategories.description,
+					})
+					.from(reportCategories)
+					.where(eq(reportCategories.slug, payload.reportType))
+					.limit(1),
+				db
+					.insert(reports)
+					.values(reportValues)
+					.onConflictDoNothing()
+					.returning({
+						id: reports.id,
+						reportType: reports.reportType,
+						reportDate: reports.reportDate,
+					}),
+			]);
+
+			categoryCreated = createdCategories.length > 0;
+			const canonicalCategory = canonicalCategories[0];
+			created = createdReports[0];
+
+			if (!canonicalCategory) {
+				throw new Error("Category could not be created or resolved.");
+			}
+
+			categoryMetadataMismatch =
+				canonicalCategory.label !== payload.categoryLabel ||
+				canonicalCategory.description !== payload.categoryDescription;
+		} else {
+			[created] = await db
+				.insert(reports)
+				.values(reportValues)
+				.onConflictDoNothing()
+				.returning({
+					id: reports.id,
+					reportType: reports.reportType,
+					reportDate: reports.reportDate,
+				});
+		}
+
+		const category = payload.schemaVersion === 2
+			? {
+				category: {
+					slug: payload.reportType,
+					created: categoryCreated,
+					metadataMismatch: categoryMetadataMismatch,
+				},
+			}
+			: {};
 
 		if (created) {
 			return NextResponse.json(
 				{
 					data: created,
 					duplicate: false,
+					...category,
 				},
 				{ status: 201 },
 			);
@@ -108,7 +177,11 @@ export async function POST(request: Request) {
 			.limit(1);
 
 		if (samePayload) {
-			return NextResponse.json({ data: samePayload, duplicate: true });
+			return NextResponse.json({
+				data: samePayload,
+				duplicate: true,
+				...category,
+			});
 		}
 
 		const [sameReportSlot] = await db
@@ -116,7 +189,7 @@ export async function POST(request: Request) {
 			.from(reports)
 			.where(
 				and(
-					eq(reports.reportType, payload.reportType),
+					eq(reports.reportType, storedReportType),
 					eq(reports.reportDate, reportDate),
 				),
 			)

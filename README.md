@@ -1,6 +1,6 @@
 # Daily Report
 
-公開的每日資訊新聞與框架工具推薦網站。內容由 ChatGPT Scheduled Tasks 經 Make 傳入，儲存於 Neon PostgreSQL，再由 Next.js 在伺服器端讀取並呈現。
+公開的每日技術資訊報告網站。內容由 ChatGPT Scheduled Tasks 經 Make 傳入，儲存於 Neon PostgreSQL，再由 Next.js 在伺服器端依資料庫分類動態呈現。
 
 ## Stack
 
@@ -23,13 +23,13 @@ Next.js 16 / React 19 / TypeScript / Tailwind CSS 4 / shadcn/ui / Drizzle ORM / 
 
 | 路徑 | 內容 |
 | --- | --- |
-| `/` | 各分類最新報告與空狀態 |
-| `/news` | 新聞列表，每頁 10 筆，支援 `?page=2` |
-| `/frameworks` | 框架工具列表，每頁 10 筆 |
-| `/reports/YYYY-MM-DD-daily-news` | 新聞完整報告 |
-| `/reports/YYYY-MM-DD-framework-recommendation` | 框架工具完整報告 |
+| `/` | 每個已發布且可見分類的最新報告 |
+| `/category/[slug]` | 動態分類歷史報告，每頁 10 筆 |
+| `/news` | 308 永久導向 `/category/daily-news` |
+| `/frameworks` | 308 永久導向 `/category/framework-recommendation` |
+| `/reports/YYYY-MM-DD-[category-slug]` | 任意合法分類的完整報告 |
 | `/sitemap.xml`、`/robots.txt` | 正式站索引資訊；Preview 禁止索引 |
-| `POST /api/v1/ingest` | 既有 Bearer 驗證寫入端點 |
+| `POST /api/v1/ingest` | Bearer 驗證寫入端點；schema v1 保留既有兩分類，schema v2 支援動態分類 |
 
 ## Project records
 

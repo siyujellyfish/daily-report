@@ -1,5 +1,62 @@
 # Changelog
 
+## 2026-09-21
+
+### Phase 6.5 — canonical isolated acceptance
+
+- Verified the updated GitHub `TEST_DATABASE_URL` points to canonical Neon `phase6-adaptive-isolated` without exposing the secret value. A rerun of the previous Quality job immediately observed the canonical Phase 6 dataset rather than the old Phase 3 fixture counts.
+- Added persistent isolated acceptance fixtures: `security-news`, a long-label published category, one visible-empty category and one hidden-published category. Production received no synthetic fixture.
+- Expanded isolated integration coverage to 9 tests covering ordered published categories, hidden/empty filtering, latest/archive/detail reads, schema-v1 create/retry/409, schema-v2 category create/retry/metadata mismatch/409, unauthorized rejection and payload presentation-control rejection.
+- Made integration ingest fixtures run-scoped from `GITHUB_RUN_ID` so runs cannot delete/collide with each other's temporary rows; ephemeral rows/categories are cleaned after the suite.
+- Added GitHub Actions `concurrency` group `daily-report-canonical-test-db` with `queue: max`, serializing complete Quality runs that share the canonical test DB so temporary visible v2 categories cannot leak into another run's public-category/browser assertions.
+- Expanded Playwright to four published categories with explicit HTTP 308 assertions, canonical/OG/sitemap checks, desktop 3+ card layout, Pixel 7 rail/document-overflow checks, long category labels, active state and physical sticky-header anchor positioning.
+- Phase 6.5 exposed and fixed real mobile overflow: category rail intrinsic sizing is contained; report detail containers are shrinkable; the long return-category action now wraps instead of inheriting `shrink-0 + whitespace-nowrap`.
+- Final Quality run `35553230724` at commit `a8cab16c1903f19d305a7c34063be84183956d37` passed: 25 unit tests, 9 isolated DB integration tests, Playwright 40 passed / 4 viewport-conditional skips, read-error 1/1 and production client-JS budget 1/1.
+- Client-JS measurements remained stable: homepage 504,993 bytes; both tested dynamic category routes 504,993 bytes; dynamic report detail 511,609 bytes, all below the 1 MiB guard.
+- Post-test read-only verification: isolated branch 6 categories / 22 reports / 4 published categories / zero temporary ingest categories / zero temporary v1 rows; Production 2 categories / 25 reports / zero Phase 6 fixture categories.
+- Phase 6 runtime is still not deployed to Production; next step is Phase 6.6 safe rollout and Production acceptance.
+
+### Phase 6.3–6.4 — dynamic categories and adaptive UI
+
+- Replaced fixed public category assumptions with server-side persisted category queries using visible + published filtering and deterministic category ordering.
+- Added canonical `/category/[slug]` archives; `/news` and `/frameworks` now permanently redirect to their category routes while preserving valid pagination.
+- Generalized report slug parsing to validated dynamic category suffixes without changing existing report URLs.
+- Report detail breadcrumb/category links and Production sitemap now use persisted category metadata.
+- Refactored the Header to two rows with a server-fed, horizontally scrollable category rail and removed the mobile hamburger state.
+- Refactored homepage latest cards to be data-driven with responsive 1/2/3+ category layout and generalized editorial copy.
+- Added deterministic application-owned category tones: legacy blue/teal plus violet/amber/rose/cyan for future categories; arbitrary payload styling remains impossible.
+- Centralized sticky Header/TOC/report-anchor offsets with `--sticky-header-offset`.
+- Added Header category-query degradation so DB navigation failure does not mask the existing page error boundary.
+- Added generic category presentation/slug tests and updated Playwright flows for canonical routes, dynamic rail, active-category state and all built-in light/dark contrast tokens.
+- The historical isolated `phase3-testing` CI database received only an additive category table + two legacy seeds so the current GitHub `TEST_DATABASE_URL` remains usable; Production was not changed.
+- Canonical `phase6-adaptive-isolated` read-only verification returns three published categories in expected order, including `security-news`.
+- Final implementation Quality run `35548140378` passed: 25 unit, 4 DB integration, 30 Playwright passed / 4 skipped, read-error 1/1 and JS budget 1/1.
+- Production runtime remains pre-Phase-6; no Phase 6 synthetic Production report/category was created.
+
+## 2026-09-18
+
+### Phase 6.2 — schema-v2 ingestion
+
+- Refactored report validation to a schema-version discriminated Zod contract while preserving the original schema-v1 normalization and fixed legacy report types.
+- Added schema-v2 support for safe dynamic category slugs plus bounded `categoryLabel` and `categoryDescription`; payload-controlled sort/visibility/style metadata remains rejected.
+- Added a fixed schema-v1 SHA-256 regression fixture (`d4b77fe6f70c4d87187485a906c7df70931e389c4f38a252245510c35eb0be5f`) to protect exact-retry compatibility across Phase 6.
+- Implemented v2 category create/reuse and report persistence using the existing Neon HTTP driver with Drizzle `db.batch()`, keeping the three statements in one non-interactive atomic transaction.
+- Existing category metadata remains canonical: repeated ingest never silently overwrites label/description; v2 responses can indicate a metadata mismatch.
+- Preserved existing report idempotency semantics: exact payload retry remains HTTP 200 + `duplicate: true`; same category/date with different payload remains HTTP 409.
+- Added isolated `security-news` category/report fixture only to `phase6-adaptive-isolated`. Canonical metadata survived a conflicting create attempt and the same category/date uniqueness constraint retained exactly one report.
+- Independently verified Production `main` still contains zero `security-news` category/report rows.
+- Final implementation Quality run `35322994905` passed at commit `76240031d5b895002f80c7ba4907ec1ca6813006`.
+- No dependency, alternate DB driver, CMS, Production synthetic content, or Production UPDATE/DELETE was introduced.
+
+### Phase 6.1 — category migration and DB isolation
+
+- Confirmed Neon Production `main` is on the Phase 6.1 schema: `report_categories` exists, `reports.report_type` is varchar with category FK, legacy indexes/uniques remain, and there are no orphan reports.
+- Read-only Production checkpoint: 2 categories, 19 reports, 0 orphan reports.
+- Created fresh Neon branch `phase6-adaptive-isolated` (`br-lingering-boat-b3czfbqx`) from the current migrated `main` HEAD.
+- Immediate Neon schema comparison returned no diff between the new isolated branch and `main`.
+- Phase 6.2+ synthetic categories, fixtures, write probes and integration tests are restricted to `phase6-adaptive-isolated`; the earlier `phase6-testing` branch is no longer the canonical Phase 6 test database.
+- No synthetic Production content, Production UPDATE/DELETE, or repeated Production DDL was used during the isolation setup.
+
 ## 2026-09-11
 
 ### Phase 5 — unattended production acceptance
@@ -175,3 +232,22 @@
 - Rotated the setup/test `INGEST_SECRET` in Vercel and Make without recording the secret value in the repository.
 - Confirmed the pre-redeploy runtime still rejected the rotated Make credential with HTTP 401, proving Vercel Production must be redeployed after the environment variable change.
 - Updated architecture and decision records for the ingestion design.
+
+
+## 2026-09-21 — Phase 6.5 automated verification complete
+
+- Completed isolated Neon verification with four published categories plus empty and hidden category fixtures.
+- Verified legacy v1 ingestion, dynamic v2 category creation/reuse, exact retry, collision handling and canonical category metadata preservation.
+- Completed desktop and Pixel 7 Playwright coverage for adaptive navigation, 3+ category homepage layout, long labels, mobile overflow containment, keyboard focus, sticky-header/TOC anchors, permanent legacy redirects, dynamic metadata/canonical URLs and sitemap output.
+- GitHub Quality run `35553333899` passed at commit `a8cab16c1903f19d305a7c34063be84183956d37`, including typecheck, unit, build, isolated DB integration, Playwright critical paths, read-error and production client-JavaScript budget.
+- Matching Vercel Preview `dpl_FEzvnXDLAEzBCV18CEgTyBgU1rMa` reached READY.
+- Production runtime remains unchanged; Phase 6.6 rollout is the next gate.
+
+
+## 2026-09-21 — Phase 6 isolated Preview routing corrected
+
+- Confirmed the Vercel `phase6/adaptive-categories` Preview was still reading the Production Neon branch, which explained why only the two live categories rendered.
+- Added a Phase-6-verification-only server-side database host override scoped to `VERCEL_ENV=preview` and `VERCEL_GIT_COMMIT_REF=phase6/adaptive-categories`, targeting the non-secret compute host of Neon `phase6-adaptive-isolated`.
+- Production and unrelated Preview branches continue using their existing `DATABASE_URL` unchanged.
+- Vercel deployment `dpl_3FfAYFUqVajnMdsd173yQAwQJNLv` reached READY and rendered the four expected published categories while excluding the empty and hidden fixtures.
+- The temporary host override must be removed before the final Phase 6 squash merge.
