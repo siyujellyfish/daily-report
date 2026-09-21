@@ -179,3 +179,18 @@ Development is organized into the following lifecycle:
 - Validate the enum-to-varchar/FK migration on a temporary Neon branch and prove the old application remains functional before using a schema-first Production rollout.
 - Third-category UI/ingest verification uses isolated Neon/Preview data. Do not create a synthetic Production category/report solely to prove the feature.
 - Detailed implementation and acceptance criteria are maintained in `phase-6-plan.md` and `todo.md`.
+
+
+## 2026-09-18 — Phase 6.2 ingestion implementation
+
+- Keep `POST /api/v1/ingest` as the single authenticated write endpoint; schema versioning happens inside the payload contract rather than by adding a second route.
+- Use Zod `z.discriminatedUnion("schemaVersion", ...)` so schema v1 and v2 have explicit independent contracts.
+- Preserve the schema-v1 field order, trimming behavior, `sources: null/omitted → []` normalization and SHA-256 serialization behavior. A fixed regression fixture protects the pre-Phase-6 normalized hash.
+- Schema v1 remains limited to `daily-news` and `framework-recommendation` so the two live recurring Tasks do not silently change semantics.
+- Schema v2 accepts category slugs matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` with maximum length 80, plus trimmed label up to 120 characters and description up to 500 characters.
+- Do not accept `sort_order`, `is_visible`, arbitrary colors/styles/icons or route metadata from v2 payloads.
+- Treat the first stored category metadata as canonical. Subsequent report ingestion for the same slug may report a metadata mismatch but must not UPDATE the stored label/description.
+- Use the existing Neon HTTP driver and Drizzle `db.batch()` for v2 category create/reuse, canonical metadata read and report insert. The batch uses Neon HTTP's non-interactive transaction primitive, so no WebSocket driver is introduced.
+- Preserve the existing `payload_hash` and `(report_type, report_date)` conflict semantics: exact retry remains HTTP 200 + `duplicate: true`; different same-category/date content remains HTTP 409.
+- Keep all Phase 6 synthetic v2 data on `phase6-adaptive-isolated`. The isolated `security-news` fixture is intentionally absent from Production.
+- No package was added or upgraded for Phase 6.2.
