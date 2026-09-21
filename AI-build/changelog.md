@@ -218,3 +218,13 @@
 - Rotated the setup/test `INGEST_SECRET` in Vercel and Make without recording the secret value in the repository.
 - Confirmed the pre-redeploy runtime still rejected the rotated Make credential with HTTP 401, proving Vercel Production must be redeployed after the environment variable change.
 - Updated architecture and decision records for the ingestion design.
+
+
+## 2026-09-21 — Phase 6.5 automated verification complete
+
+- Completed isolated Neon verification with four published categories plus empty and hidden category fixtures.
+- Verified legacy v1 ingestion, dynamic v2 category creation/reuse, exact retry, collision handling and canonical category metadata preservation.
+- Completed desktop and Pixel 7 Playwright coverage for adaptive navigation, 3+ category homepage layout, long labels, mobile overflow containment, keyboard focus, sticky-header/TOC anchors, permanent legacy redirects, dynamic metadata/canonical URLs and sitemap output.
+- GitHub Quality run `35553333899` passed at commit `a8cab16c1903f19d305a7c34063be84183956d37`, including typecheck, unit, build, isolated DB integration, Playwright critical paths, read-error and production client-JavaScript budget.
+- Matching Vercel Preview `dpl_FEzvnXDLAEzBCV18CEgTyBgU1rMa` reached READY.
+- Production runtime remains unchanged; Phase 6.6 rollout is the next gate.
