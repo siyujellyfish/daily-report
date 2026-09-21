@@ -1011,12 +1011,6 @@ main {
 		transition:none!important
 	}
 }
-.navigation-shell {
-	display:flex;
-	align-items:center;
-	gap:26px;
-	margin-left:auto
-}
 .feature {
 	gap:0;
 	padding:0;
