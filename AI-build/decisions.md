@@ -194,3 +194,20 @@ Development is organized into the following lifecycle:
 - Preserve the existing `payload_hash` and `(report_type, report_date)` conflict semantics: exact retry remains HTTP 200 + `duplicate: true`; different same-category/date content remains HTTP 409.
 - Keep all Phase 6 synthetic v2 data on `phase6-adaptive-isolated`. The isolated `security-news` fixture is intentionally absent from Production.
 - No package was added or upgraded for Phase 6.2.
+
+
+## 2026-09-21 — Phase 6.3/6.4 dynamic read and adaptive UI
+
+- Treat persisted `report_categories` rows as the public category source of truth; public categories must be visible and have at least one report.
+- Order categories by `sort_order ASC NULLS LAST`, then `created_at ASC`, then `slug ASC`.
+- Keep public category projections minimal: slug, label and description from the database; tone, route, icon, eyebrow and issue labels are application-owned presentation values.
+- Keep the existing report URL shape and generalize only the parser to a validated category slug after the fixed date prefix.
+- Make `/category/[slug]` canonical. Keep `/news` and `/frameworks` as permanent redirects rather than duplicated archive pages.
+- Generate category archive metadata and Production sitemap entries from persisted categories; do not list legacy redirect URLs as canonical sitemap entries.
+- Keep category reads server-side. The Client navigation receives only minimal serialized category navigation data and never fetches a browser `/api/categories`.
+- Replace the mobile hamburger with an always-visible horizontally scrollable category rail. Category navigation remains semantic links, not ARIA tabs.
+- Determine active category from the canonical category path or the report-detail category suffix.
+- Preserve blue/teal for the two legacy categories. Future category colors come from a deterministic application-owned palette; payloads remain unable to control visual presentation.
+- Use one `--sticky-header-offset` CSS token for scroll padding, report anchors and TOC positioning after introducing the second Header row.
+- Catch Header category-query failures so the navigation shell can degrade without replacing the intended page-level database error state.
+- Keep the legacy Phase 3 CI database isolated. To support current CI reads, add only the category table and two legacy category rows there; do not use it as the canonical Phase 6 synthetic-data branch and do not alter Production.
