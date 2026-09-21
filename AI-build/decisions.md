@@ -211,3 +211,15 @@ Development is organized into the following lifecycle:
 - Use one `--sticky-header-offset` CSS token for scroll padding, report anchors and TOC positioning after introducing the second Header row.
 - Catch Header category-query failures so the navigation shell can degrade without replacing the intended page-level database error state.
 - Keep the legacy Phase 3 CI database isolated. To support current CI reads, add only the category table and two legacy category rows there; do not use it as the canonical Phase 6 synthetic-data branch and do not alter Production.
+
+
+## 2026-09-21 — Phase 6.5 canonical acceptance
+
+- GitHub `TEST_DATABASE_URL` now points to Neon `phase6-adaptive-isolated`; the Quality integration suite proves that connection by asserting the canonical ordered published-category fixture set before write-path tests.
+- Do not read or print the Repository Secret value to verify it. Re-running the existing Quality workflow after the secret change is sufficient evidence because the old Phase 3 assertions fail against the canonical Phase 6 row counts/category set.
+- Keep persistent acceptance fixtures isolated: four published categories, one visible-empty category and one hidden-published category exist only on `phase6-adaptive-isolated`.
+- Keep integration write fixtures ephemeral and run-scoped. Use `GITHUB_RUN_ID` to derive a unique v2 category slug and v1 report date so concurrent GitHub Actions runs cannot delete or collide with each other's fixtures; cleanup remains mandatory in `afterAll`.
+- Treat long labels as a real responsive input, not a test-only edge case. Category rail max-content width must be contained, and report detail actions must be allowed to shrink/wrap.
+- Preserve local overflow behavior for tables/code/rails; do not mask document overflow with `body { overflow-x: hidden }`.
+- Phase 6.5 acceptance is automated and does not require manual UI sign-off because desktop + Pixel 7, redirects, metadata/sitemap, anchor positioning, accessibility, read-error and client-JS budget are all covered by the final Quality gate.
+- Production remains excluded from synthetic acceptance writes; no Phase 6 fixture category/report is present there.
