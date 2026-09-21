@@ -394,44 +394,44 @@ Detailed design and rollout contract: `phase-6-plan.md`. Phase 6.1 database migr
 
 ### 6.3 Dynamic server read layer and routes
 
-- [ ] Add `getPublishedCategories()`.
-- [ ] Add data-driven latest-report-per-category query for homepage.
-- [ ] Replace fixed type archive query with category-slug query.
-- [ ] Add category presentation mapping without exposing internal ingest metadata.
-- [ ] Add `/category/[slug]` dynamic archive page.
-- [ ] Return 404 for invalid, absent, invisible or unpublished categories.
-- [ ] Change report slug parser from fixed enum regex to date + validated generic category slug.
-- [ ] Keep existing report detail URLs unchanged.
-- [ ] Make report detail breadcrumb/category link use the data-driven category row.
-- [ ] Convert `/news` to permanent redirect → `/category/daily-news`.
-- [ ] Convert `/frameworks` to permanent redirect → `/category/framework-recommendation`.
-- [ ] Update canonical metadata to use dynamic category routes.
-- [ ] Update sitemap to enumerate published categories + reports dynamically.
-- [ ] Keep Preview noindex behavior intact.
+- [x] Add `getPublishedCategories()`.
+- [x] Add data-driven latest-report-per-category query for homepage.
+- [x] Replace fixed type archive query with category-slug query.
+- [x] Add category presentation mapping without exposing internal ingest metadata.
+- [x] Add `/category/[slug]` dynamic archive page.
+- [x] Return 404 for invalid, absent, invisible or unpublished categories.
+- [x] Change report slug parser from fixed enum regex to date + validated generic category slug.
+- [x] Keep existing report detail URLs unchanged.
+- [x] Make report detail breadcrumb/category link use the data-driven category row.
+- [x] Convert `/news` to permanent redirect → `/category/daily-news`.
+- [x] Convert `/frameworks` to permanent redirect → `/category/framework-recommendation`.
+- [x] Update canonical metadata to use dynamic category routes.
+- [x] Update sitemap to enumerate published categories + reports dynamically.
+- [x] Keep Preview noindex behavior intact.
 
 ### 6.4 Adaptive UI/UX
 
-- [ ] Refactor Header into stable first row (brand/home/theme) plus dynamic category rail.
-- [ ] Fetch categories server-side and pass minimal data to the navigation client boundary; do not add `/api/categories`.
-- [ ] Make category rail horizontally overflow-safe on desktop and mobile.
-- [ ] Keep semantic navigation links rather than implementing ARIA tabs for URL navigation.
-- [ ] Remove obsolete mobile hamburger state if category rail makes it unnecessary; update focus/Escape behavior accordingly.
-- [ ] Add active category state for category archive and report detail routes.
-- [ ] Change homepage from fixed two-card rendering to data-driven latest cards.
-- [ ] Change homepage grid to responsive 1 / 2 / 3-column behavior without assuming two categories.
-- [ ] Generalize homepage copy that currently refers to exactly two content types.
-- [ ] Preserve blue identity for `daily-news` and teal for `framework-recommendation`.
-- [ ] Add deterministic safe palette mapping for later categories without accepting CSS/colors/icons from ingest payload.
-- [ ] Replace category-specific `.frameworks` styling assumptions with reusable category tone semantics where needed.
-- [ ] Introduce shared sticky-header offset token for document scroll padding, report headings and TOC positioning.
-- [ ] Ensure category-navigation DB failure can degrade without breaking static error/404 shell rendering.
-- [ ] Verify light/dark contrast for every built-in category tone.
+- [x] Refactor Header into stable first row (brand/home/theme) plus dynamic category rail.
+- [x] Fetch categories server-side and pass minimal data to the navigation client boundary; do not add `/api/categories`.
+- [x] Make category rail horizontally overflow-safe on desktop and mobile.
+- [x] Keep semantic navigation links rather than implementing ARIA tabs for URL navigation.
+- [x] Remove obsolete mobile hamburger state if category rail makes it unnecessary; update focus/Escape behavior accordingly.
+- [x] Add active category state for category archive and report detail routes.
+- [x] Change homepage from fixed two-card rendering to data-driven latest cards.
+- [x] Change homepage grid to responsive 1 / 2 / 3-column behavior without assuming two categories.
+- [x] Generalize homepage copy that currently refers to exactly two content types.
+- [x] Preserve blue identity for `daily-news` and teal for `framework-recommendation`.
+- [x] Add deterministic safe palette mapping for later categories without accepting CSS/colors/icons from ingest payload.
+- [x] Replace category-specific `.frameworks` styling assumptions with reusable category tone semantics where needed.
+- [x] Introduce shared sticky-header offset token for document scroll padding, report headings and TOC positioning.
+- [x] Ensure category-navigation DB failure can degrade without breaking static error/404 shell rendering.
+- [x] Verify light/dark contrast for every built-in category tone.
 
 ### 6.5 Automated verification
 
-- [ ] Add unit coverage for category slug validator and generic report slug round-trip/rejection.
+- [x] Add unit coverage for category slug validator and generic report slug round-trip/rejection.
 - [x] Add unit coverage for v1/v2 ingest validation and v1 payload hash regression.
-- [ ] Add unit coverage for deterministic category tone mapping and category presentation.
+- [x] Add unit coverage for deterministic category tone mapping and category presentation.
 - [ ] Add isolated Neon integration fixtures with at least three published categories plus one empty/invisible category.
 - [ ] Verify migrated legacy rows and existing queries against isolated Neon.
 - [ ] Verify v1 legacy insertion and v2 first-category publication against isolated Neon.
@@ -444,9 +444,9 @@ Detailed design and rollout contract: `phase-6-plan.md`. Phase 6.1 database migr
 - [ ] Verify TOC anchor positions remain visible under the two-row sticky header.
 - [ ] Verify `/news` and `/frameworks` permanent redirects.
 - [ ] Verify dynamic category metadata/canonical and sitemap output.
-- [ ] Confirm public browser navigation still performs no `/api/*` read requests.
-- [ ] Re-run read-error behavior and confirm Header fallback does not mask the intended application error state.
-- [ ] Retain production client JavaScript budget and verify Phase 6 does not materially regress it.
+- [x] Confirm public browser navigation still performs no `/api/*` read requests.
+- [x] Re-run read-error behavior and confirm Header fallback does not mask the intended application error state.
+- [x] Retain production client JavaScript budget and verify Phase 6 does not materially regress it.
 
 ### 6.6 Rollout and Production acceptance
 
