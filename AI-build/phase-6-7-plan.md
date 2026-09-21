@@ -205,3 +205,12 @@ Behavior:
 - controls are hidden on the mobile one-column layout.
 
 This preserves native Scroll Area behavior while adding explicit carousel affordance; no carousel dependency is introduced.
+
+
+## Final delivery cleanup
+
+After user acceptance, the Phase 6.7 delivery removes the temporary Preview database host override before merge.
+
+The canonical isolated Neon branch is retained only as a clean CI database target. Persistent synthetic records are no longer required: the Quality workflow seeds deterministic Phase 6 fixtures before integration/browser checks and removes them with an `always()` cleanup step.
+
+This allows `phase6-adaptive-isolated` to be reset to its Production parent without losing test coverage, and prevents stale synthetic data from accumulating between runs.
