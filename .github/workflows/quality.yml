@@ -9,7 +9,7 @@ on:
 # Queue complete Quality runs so one run cannot observe another run's fixtures.
 concurrency:
   group: daily-report-canonical-test-db
-  queue: max
+  cancel-in-progress: true
 
 permissions:
   contents: read
