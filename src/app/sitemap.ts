@@ -1,15 +1,15 @@
 import type { MetadataRoute } from "next";
 
+import { deferDatabasePrerenderIfUnavailable } from "@/lib/database-prerender";
 import {
 	getCategorySitemapEntries,
 	getReportSitemapEntries,
 } from "@/lib/reports";
 import { IS_PREVIEW, SITE_URL } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	if (IS_PREVIEW) return [];
+	await deferDatabasePrerenderIfUnavailable();
 
 	const [categories, reports] = await Promise.all([
 		getCategorySitemapEntries(),

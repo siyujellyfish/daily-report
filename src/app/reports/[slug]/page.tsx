@@ -9,7 +9,7 @@ import { getReportBySlug } from "@/lib/reports";
 import { pageMetadata } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
-export const dynamic = "force-dynamic";
+export const instant = false;
 
 export async function generateMetadata({ params }: Props) {
 	const report = await getReportBySlug((await params).slug);

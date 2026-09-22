@@ -33,6 +33,7 @@ jobs:
       - run: pnpm build
         env:
           DATABASE_URL: postgresql://invalid:invalid@localhost:5432/invalid
+          SKIP_DATABASE_PRERENDER: "1"
       - name: Seed isolated DB fixtures
         if: env.TEST_DATABASE_URL != ''
         run: pnpm test:fixtures:seed

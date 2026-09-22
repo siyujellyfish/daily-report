@@ -94,7 +94,14 @@ test("homepage desktop report carousel stays on one row and advances with arrow 
 	expect(new Set(initial.tops).size).toBe(1);
 	expect(initial.scrollWidth).toBeGreaterThan(initial.clientWidth);
 
-	await next.click();
+	const cardCount = await page.locator(".featured-grid > .feature").count();
+	for (let index = 0; index < cardCount && await next.isEnabled(); index += 1) {
+		const previousScrollLeft = await viewport.evaluate((element) => element.scrollLeft);
+		await next.click();
+		await expect.poll(async () => viewport.evaluate((element) => element.scrollLeft))
+			.toBeGreaterThan(previousScrollLeft);
+	}
+
 	await expect.poll(async () => viewport.evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
 	await expect(previous).toBeEnabled();
 	await expect(next).toBeDisabled();

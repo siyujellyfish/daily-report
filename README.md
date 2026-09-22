@@ -4,7 +4,7 @@
 
 ## Stack
 
-Next.js 16 / React 19 / TypeScript / Tailwind CSS 4 / shadcn/ui / Drizzle ORM / Neon。
+Next.js 16 / React 19 / TypeScript / Tailwind CSS 4 / shadcn/ui / Drizzle ORM / Neon / Vercel Speed Insights。
 網站部署於 Vercel；不使用 OpenAI API。
 
 ## Local development
@@ -17,7 +17,9 @@ Next.js 16 / React 19 / TypeScript / Tailwind CSS 4 / shadcn/ui / Drizzle ORM / 
 4. 執行 `pnpm typecheck` 與 `pnpm build` 驗證變更。
 
 `SITE_URL` 為選用的正式 canonical origin，預設為目前 Vercel Production 網域。
-公開頁面於請求時讀取資料庫，因此建置不需要連線至 Neon；執行時缺少設定或讀取失敗會顯示錯誤頁，不會以虛構資料替代。
+Vercel Production 建置在 `DATABASE_URL` 可用時會預先產生首頁與 sitemap，公開資料由帶有精準 ingest invalidation 的跨請求 cache 提供。無可用資料庫的本機或 CI 建置可設定 `SKIP_DATABASE_PRERENDER=1`，將 DB 讀取延後到請求時；執行時缺少設定或讀取失敗仍會顯示錯誤頁，不會以虛構資料替代。
+
+既有資料套用 Phase 8 presentation migration 後，可執行 `pnpm db:backfill:presentations -- --apply` 回填 summary、閱讀時間與 headings；此命令需要 `DATABASE_URL`。
 
 ## Routes
 

@@ -4,6 +4,7 @@ import { and, eq, inArray, or } from "drizzle-orm";
 
 import { getDb } from "../../src/db";
 import { reportCategories, reports } from "../../src/db/schema";
+import { analyzeReportMarkdown } from "../../src/lib/report-markdown";
 
 export const LEGACY_FIXTURE_DATE = "2099-01-01";
 
@@ -85,7 +86,7 @@ export async function seedPhase6Fixtures() {
 		},
 	]);
 
-	await db.insert(reports).values([
+	const fixtureReports = [
 		{
 			schemaVersion: 1,
 			reportType: "daily-news",
@@ -162,5 +163,10 @@ export async function seedPhase6Fixtures() {
 			generatedAt: new Date("2026-09-19T00:10:00.000Z"),
 			payloadHash: fixtureHash("phase6-hidden-category"),
 		},
-	]);
+	];
+
+	await db.insert(reports).values(fixtureReports.map((report) => ({
+		...report,
+		...analyzeReportMarkdown(report.contentMarkdown, report.title),
+	})));
 }

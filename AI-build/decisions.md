@@ -243,3 +243,16 @@ Development is organized into the following lifecycle:
 - Quality owns fixture lifecycle: deterministic synthetic rows are seeded before DB/browser acceptance and removed in an `always()` cleanup step.
 - Obsolete Neon test branches may be removed once no active configuration references them.
 - The historical Production setup report titled `P1 End-to-End Test` is test data and should be deleted during this explicitly authorized cleanup; normal Production reports are not modified.
+
+## 2026-09-22 — Phase 8 loading performance
+
+- Treat the completed Vercel `sin1` move as the infrastructure baseline; optimize measured application work before changing the Neon driver, adding Redis or adding indexes.
+- Use Next.js 16 Cache Components and tagged cross-request query caching for public reads. The single `public-reports` tag is invalidated immediately only after a newly created report.
+- Use a 5-minute stale, 1-hour revalidation and 1-day expiry profile so unaffected traffic can reuse results while normal ingest still makes new content visible immediately.
+- Allow Vercel builds with `DATABASE_URL` to prerender the homepage and sitemap. Use explicit `SKIP_DATABASE_PRERENDER=1` only for local/CI builds that intentionally have no reachable database.
+- Preserve the existing runtime error contract: missing/failed database reads remain HTTP 500/application error states rather than fabricated empty content.
+- Persist summary, reading time and headings during ingest, and keep the three new columns nullable for rolling compatibility. Existing nullable rows use a targeted Markdown fallback until backfill is complete.
+- Keep full Markdown/sources only in report-detail queries. Homepage and archive queries return presentation fields only; archive rows and total count share one window query, and homepage latest/category metadata share one ranked query.
+- Add Vercel Speed Insights plus structured cache-fill timings and ingest `Server-Timing`; do not add an external observability vendor for this scope.
+- Validate the exact additive migration and canonical backfill on a Neon temporary branch before explicit promotion to Production `main`. Keep synthetic acceptance writes on `phase6-adaptive-isolated` after aligning its schema.
+- Preserve schema-v1/v2 payload hashing and exactly-once behavior: derived presentation fields are database output, not new hash inputs.

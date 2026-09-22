@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 
 import { getDb } from "@/db";
 import { reportCategories, reports } from "@/db/schema";
+import { revalidatePublicReportsCache } from "@/lib/public-report-cache";
+import { analyzeReportMarkdown } from "@/lib/report-markdown";
 import {
 	getTaipeiReportDate,
 	hashReportPayload,
@@ -11,27 +13,40 @@ import {
 import type { ReportType } from "@/lib/report-types";
 import { reportIngestSchema } from "@/schemas/report";
 
-export const runtime = "nodejs";
-
 export async function POST(request: Request) {
+	const requestStartedAt = process.hrtime.bigint();
+	let databaseStartedAt: bigint | null = null;
+	const duration = (startedAt: bigint) => (
+		Number(process.hrtime.bigint() - startedAt) / 1_000_000
+	).toFixed(2);
+	const respond = (body: unknown, status = 200) => {
+		const timings = [`app;dur=${duration(requestStartedAt)}`];
+		if (databaseStartedAt !== null) {
+			timings.push(`db;dur=${duration(databaseStartedAt)}`);
+		}
+		return NextResponse.json(body, {
+			status,
+			headers: { "Server-Timing": timings.join(", ") },
+		});
+	};
 	const ingestSecret = process.env.INGEST_SECRET;
 
 	if (!ingestSecret) {
-		return NextResponse.json(
+		return respond(
 			{ error: "Ingest endpoint is not configured." },
-			{ status: 503 },
+			503,
 		);
 	}
 
 	if (!isAuthorizedBearer(request.headers.get("authorization"), ingestSecret)) {
-		return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+		return respond({ error: "Unauthorized." }, 401);
 	}
 
 	const contentType = request.headers.get("content-type") ?? "";
 	if (!contentType.toLowerCase().includes("application/json")) {
-		return NextResponse.json(
+		return respond(
 			{ error: "Content-Type must be application/json." },
-			{ status: 415 },
+			415,
 		);
 	}
 
@@ -39,12 +54,12 @@ export async function POST(request: Request) {
 	try {
 		body = await request.json();
 	} catch {
-		return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+		return respond({ error: "Invalid JSON body." }, 400);
 	}
 
 	const parsed = reportIngestSchema.safeParse(body);
 	if (!parsed.success) {
-		return NextResponse.json(
+		return respond(
 			{
 				error: "Invalid report payload.",
 				issues: parsed.error.issues.map((issue) => ({
@@ -52,14 +67,14 @@ export async function POST(request: Request) {
 					message: issue.message,
 				})),
 			},
-			{ status: 400 },
+			400,
 		);
 	}
 
 	if (!process.env.DATABASE_URL) {
-		return NextResponse.json(
+		return respond(
 			{ error: "Database is not configured." },
-			{ status: 503 },
+			503,
 		);
 	}
 
@@ -68,18 +83,19 @@ export async function POST(request: Request) {
 	const reportDate = getTaipeiReportDate(payload.generatedAt);
 
 	try {
+		databaseStartedAt = process.hrtime.bigint();
 		const db = getDb();
-
-		// Phase 6.2 intentionally keeps the legacy read/UI ReportType union until
-		// the data-driven read layer lands in Phase 6.3. The database column is
-		// already varchar(80) and the v2 schema validates dynamic category slugs.
 		const storedReportType = payload.reportType as ReportType;
+		const presentation = analyzeReportMarkdown(payload.contentMarkdown, payload.title);
 		const reportValues = {
 			schemaVersion: payload.schemaVersion,
 			reportType: storedReportType,
 			reportDate,
 			title: payload.title,
 			contentMarkdown: payload.contentMarkdown,
+			summary: presentation.summary,
+			readingMinutes: presentation.readingMinutes,
+			headings: presentation.headings,
 			sources: payload.sources,
 			generatedAt: new Date(payload.generatedAt),
 			payloadHash,
@@ -156,13 +172,21 @@ export async function POST(request: Request) {
 			: {};
 
 		if (created) {
-			return NextResponse.json(
+			try {
+				revalidatePublicReportsCache();
+			} catch (error) {
+				// Persistence already succeeded. A cache-control failure must not turn
+				// the delivery into a retry that can no longer enter the created path.
+				console.error("Failed to revalidate public report caches.", error);
+			}
+
+			return respond(
 				{
 					data: created,
 					duplicate: false,
 					...category,
 				},
-				{ status: 201 },
+				201,
 			);
 		}
 
@@ -177,7 +201,7 @@ export async function POST(request: Request) {
 			.limit(1);
 
 		if (samePayload) {
-			return NextResponse.json({
+			return respond({
 				data: samePayload,
 				duplicate: true,
 				...category,
@@ -196,24 +220,24 @@ export async function POST(request: Request) {
 			.limit(1);
 
 		if (sameReportSlot) {
-			return NextResponse.json(
+			return respond(
 				{
 					error: "A different report already exists for this type and date.",
 					reportId: sameReportSlot.id,
 				},
-				{ status: 409 },
+				409,
 			);
 		}
 
-		return NextResponse.json(
+		return respond(
 			{ error: "Report could not be inserted because of a uniqueness conflict." },
-			{ status: 409 },
+			409,
 		);
 	} catch (error) {
 		console.error("Failed to ingest report.", error);
-		return NextResponse.json(
+		return respond(
 			{ error: "Failed to persist report." },
-			{ status: 500 },
+			500,
 		);
 	}
 }

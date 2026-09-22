@@ -39,7 +39,7 @@ ChatGPT Scheduled Tasks
 - Database access uses `drizzle-orm/neon-http` with `@neondatabase/serverless`.
 - `DATABASE_URL` and `INGEST_SECRET` are runtime secrets and must never be committed.
 - The public website is read-only; only `/api/v1/ingest` writes report data.
-- The ingest endpoint runs on the Node.js runtime because SHA-256 hashing uses Node cryptography primitives.
+- The ingest endpoint uses Next.js's default Node.js runtime because SHA-256 hashing uses Node cryptography primitives; it does not opt into the Edge runtime.
 - Make only transports report data. It does not generate content and does not call the OpenAI API.
 - ChatGPT Scheduled Tasks remain responsible for research and Markdown report generation.
 
@@ -65,6 +65,9 @@ reports
 ├─ title
 ├─ content_markdown
 ├─ sources JSONB
+├─ summary nullable text
+├─ reading_minutes nullable integer
+├─ headings nullable JSONB
 ├─ generated_at
 ├─ received_at
 └─ payload_hash
@@ -95,7 +98,7 @@ Other ingestion constraints:
 - Source URLs must remain structured data rather than ChatGPT UI citation serialization.
 - Business date boundaries use `Asia/Taipei`.
 
-The Production database already has the Phase 6.1 schema, while the Phase 6 application runtime remains undeployed until the later rollout gate.
+Production has run the Phase 6 adaptive-category schema/runtime since 2026-09-21. Phase 8 keeps three new presentation fields nullable during its schema-first rollout so the existing Production runtime can continue writing before the new runtime deploys.
 
 ## Phase 2 — implemented public read architecture
 
@@ -129,14 +132,19 @@ The public read path uses React Server Components and direct server-side databas
 
 Database access for pages is centralized in `src/lib/reports.ts` with an explicit public projection and presentation mapping outside page components.
 
-Implemented query functions:
+Current query functions:
 
 ```text
-getLatestReports()
-getReportsByType(reportType, page)
+getPublishedCategories()
+getPublishedCategory(slug)
+getLatestPublishedReports()
+getReportsByCategory(slug, page)
 getReportBySlug(slug)
+getCategorySitemapEntries()
 getReportSitemapEntries()
 ```
+
+`getLatestReports()` and `getReportsByType()` remain compatibility helpers; canonical public routes use the category-driven functions above.
 
 Responsibilities of the query layer:
 
@@ -145,6 +153,8 @@ Responsibilities of the query layer:
 - keep Asia/Taipei date and slug conversion in one place;
 - support pagination without duplicating SQL/Drizzle logic across routes;
 - expose only public report fields to rendering code.
+- keep full Markdown and sources out of homepage/archive projections;
+- cache public reads across requests and invalidate them after a successful new ingest.
 
 ## Markdown rendering
 
@@ -187,12 +197,12 @@ CI behavior:
 - `pnpm/setup@v2` supplies pnpm 12.3.4 and Node 24.
 - Frozen lockfile, TypeScript, unit tests and `next build` always run.
 - DB integration and browser suites require repository secret `TEST_DATABASE_URL`.
-- Production build uses an intentionally invalid localhost database URL and does not access Production.
+- CI production build uses an intentionally invalid localhost database URL plus `SKIP_DATABASE_PRERENDER=1` and does not access Production.
 - DB integration rejects `TEST_DATABASE_URL === DATABASE_URL`.
 - Public browser reading flow is verified to perform no `/api/*` read requests.
 - Client JavaScript budget is 1 MiB uncompressed per tested cold route; current measured totals are approximately 505–506 KB.
 
-Observed behavior did not justify a Redis/cache layer or query-plan tuning in Phase 3. Those remain evidence-driven future optimizations rather than architecture defaults.
+Observed behavior did not justify a Redis layer or query-plan tuning in Phase 3. Phase 8 later added framework-native tagged caching after Production measurements showed every public response was `no-store`/MISS and list projections transferred unnecessary Markdown; it still adds no external cache infrastructure.
 
 ## Phase 4 — real-content validation boundary
 
@@ -314,7 +324,7 @@ Detailed evidence is recorded in `phase-5-verification.md`.
 
 ## Phase 2 implementation details (2026-09-09)
 
-- Central query layer: `src/lib/reports.ts` (`server-only`), with explicit public fields and request-scoped React cache.
+- Central query layer: `src/lib/reports.ts` (`server-only`), with explicit public fields. Phase 8 supersedes the original request-scoped React cache with Next.js cross-request cache functions.
 - Presentation helpers: `report-date.ts`, `report-types.ts`, `report-markdown.ts`; ingestion reuses the centralized Taipei date helper.
 - Markdown parser and renderer share one AST heading transform; no browser-side Markdown processor or public read API.
 - Client code is limited to navigation/theme and code-copy feedback. Report bodies and database reads remain server-rendered.
@@ -436,7 +446,7 @@ No WebSocket database driver, new dependency, CMS or browser write/read layer wa
 
 The Phase 6.1 enum-to-varchar/FK migration was validated on a temporary Neon branch and then promoted to Neon Production after explicit approval. A fresh `phase6-adaptive-isolated` branch was created from the migrated Production HEAD and is the sole Phase 6.2+ synthetic-write target.
 
-The Phase 6 runtime itself is not yet deployed to Production. Synthetic third-category reports remain restricted to the isolated branch/Preview path; Production acceptance does not create fake content.
+The Phase 6 runtime was later deployed in Phase 6.6. Synthetic acceptance categories remain restricted to the isolated branch/Preview path; Production acceptance does not create fake content.
 
 Detailed implementation, test matrix and acceptance criteria are recorded in `phase-6-plan.md`, `phase-6-1-verification.md`, `phase-6-2-verification.md` and `todo.md`.
 
@@ -590,3 +600,44 @@ clean phase6-adaptive-isolated
 ```
 
 The isolated branch schema is kept identical to Neon Production. This removes long-lived fixture categories/reports while preserving deterministic four-category acceptance during each serialized Quality run.
+
+## Phase 8 — loading-performance architecture
+
+The Vercel application executes in `sin1`, matching the Singapore Neon region. Measurements after that move showed fast SQL execution but `no-store`/MISS public responses and oversized list projections, so P0/P1 optimize the application/cache boundary rather than introducing Redis, indexes or another database driver.
+
+### Public cache and rendering boundary
+
+```text
+Server Component route
+        ↓
+"use cache" query function
+        ├─ tag: public-reports
+        ├─ stale: 5 minutes
+        ├─ revalidate: 1 hour
+        └─ expire: 1 day
+        ↓
+Drizzle Neon HTTP only on cache fill
+```
+
+`POST /api/v1/ingest` invalidates `public-reports` immediately only after a newly committed report. Exact retries and conflicts do not invalidate unchanged output. A cache-invalidation failure is logged separately and does not convert a committed insert into a false ingestion failure.
+
+With a reachable `DATABASE_URL`, Vercel builds may prerender `/` and `/sitemap.xml`; dynamic category/detail routes retain partial-prerender shells. Local/CI no-DB builds set `SKIP_DATABASE_PRERENDER=1` so database access is postponed until request time. Runtime database failures keep the existing HTTP 500/error-boundary behavior rather than returning fabricated or stale fallback content outside the configured cache policy.
+
+### Presentation and query boundary
+
+Ingest derives and persists `summary`, `reading_minutes` and `headings` once using the same Markdown analysis code used by presentation. Existing rows are backfilled, while nullable columns and a targeted missing-row fallback preserve rolling-deployment compatibility.
+
+- Homepage latest reports use one ranked/window query joined to visible category metadata.
+- Category archives use one rows-plus-`COUNT(*) OVER()` query.
+- Homepage/archive projections exclude `content_markdown`, `sources` and `generated_at`.
+- Detail reads retain full Markdown and sources but reuse persisted presentation metadata.
+- Published-category validation and Header navigation reuse the cached ordered category result.
+
+### Observability and rollout
+
+- `@vercel/speed-insights` is mounted once in the root layout.
+- Cache-fill database operations emit structured `server_timing` JSON logs; cache hits do not execute those wrappers.
+- Ingestion responses expose total application and persistence-path durations through `Server-Timing`.
+- The additive migration was prepared and backfilled first on a temporary child of Neon `main`, then promoted after explicit confirmation. Production `main` and the non-reset isolated CI branch both have the same presentation columns with zero missing values; synthetic browser fixtures remain ephemeral.
+
+Detailed scope and evidence are recorded in `phase-8-plan.md` and `phase-8-verification.md`.

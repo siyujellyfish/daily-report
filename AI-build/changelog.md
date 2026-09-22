@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-09-22
+
+### Phase 8 — P0/P1 loading performance implementation
+
+- Created `phase8/loading-performance` from `main` after the Vercel deployment region moved to `sin1`.
+- Recorded reused-connection Production baselines: homepage average TTFB 0.284 s, framework archive 0.493 s and representative detail 0.305 s; responses were `no-store`/MISS while inspected core SQL itself ran in approximately 0.05–0.18 ms.
+- Enabled Next.js Cache Components and added tagged public-query caches with a 5-minute stale, 1-hour revalidation and 1-day expiry profile. Newly created ingests invalidate immediately; exact retries/conflicts do not.
+- Added DB-aware prerender handling: Production/Vercel builds may prerender homepage/sitemap, while CI uses `SKIP_DATABASE_PRERENDER=1` with its intentionally unreachable DB URL.
+- Added nullable `summary`, `reading_minutes` and `headings` presentation fields, canonical ingest derivation, rolling fallback and a reusable backfill command. Schema-v1/v2 hashes remain unchanged.
+- Reduced homepage latest/category metadata to one ranked query and category archives to one rows-plus-count query. Homepage/archive projections no longer select full Markdown, sources or generated timestamp.
+- Measured all 27 temporary-branch rows at 215,706 bytes for Markdown+sources versus 38,608 bytes for stored presentation metadata, an approximately 82.1% reduction.
+- Added `@vercel/speed-insights` 2.0.0, structured cache-fill timing logs and ingest `Server-Timing` response headers.
+- Prepared the exact additive migration on Neon temporary branch `br-bitter-fog-b3n13wom`, backfilled all 27 rows and verified zero missing/invalid presentation values. After explicit approval, promoted that exact migration to Production `main`, backfilled all 27 rows, re-verified zero missing/invalid values and let the migration workflow remove the temporary branch.
+- Applied the same additive schema and canonical backfill to `phase6-adaptive-isolated` without resetting it. All 24 at-rest rows are complete; isolated integration passed 10/10 and fixture cleanup restored 2 categories / 24 reports with zero synthetic rows.
+- Increased integration-only fixture/test/hook timeouts to tolerate observed Neon compute resume/network latency without changing unit or runtime limits.
+- Passed TypeScript, 28 unit tests, no-DB build, temporary-DB build, Production-main prerender build, performance-query smoke and full isolated integration. Main-backed production smoke returned 200 for home/category/detail/sitemap; repeat-request cache checks reduced category total from 9.40 s cold to 27.8 ms and detail from 551 ms to 91 ms without a second DB timing event.
+- Local Playwright could not execute because this environment has no Chromium and its restricted download proxy returned a 0 MiB invalid archive. Two direct HTTP redirect cases passed before browser launch; manual no-DB runtime verification returned HTTP 500. Full Playwright/read-error/client-JS acceptance remains the branch Quality gate, not a locally claimed pass.
+
 ## 2026-09-21
 
 ### Phase 6.5 — canonical isolated acceptance

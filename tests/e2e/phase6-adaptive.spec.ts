@@ -31,12 +31,13 @@ test("legacy archive routes emit HTTP 308 and preserve valid pagination", async 
 	expect(response.status()).toBe(404);
 });
 
-test("published category rail and homepage adapt to four categories", async ({ page }, testInfo) => {
+test("published category rail and homepage adapt to additional categories", async ({ page }, testInfo) => {
 	await page.goto("/");
 
 	const rail = page.getByRole("navigation", { name: "報告分類" });
 	await expect(rail).toBeVisible();
-	await expect(rail.getByRole("link")).toHaveCount(4);
+	const categoryCount = await rail.getByRole("link").count();
+	expect(categoryCount).toBeGreaterThanOrEqual(4);
 	await expect(rail.getByRole("link", { name: "資訊新聞", exact: true })).toBeVisible();
 	await expect(rail.getByRole("link", { name: "框架工具", exact: true })).toBeVisible();
 	await expect(rail.getByRole("link", { name: "資安情報", exact: true })).toBeVisible();
@@ -47,7 +48,7 @@ test("published category rail and homepage adapt to four categories", async ({ p
 	await expect(rail.getByText("隱藏分類驗收")).toHaveCount(0);
 
 	const cards = page.locator(".featured-grid > .feature");
-	await expect(cards).toHaveCount(4);
+	await expect(cards).toHaveCount(categoryCount);
 
 	const securityCard = cards.filter({ hasText: "資安情報" });
 	await expect(securityCard).toHaveClass(/tone-(violet|amber|rose|cyan)/);

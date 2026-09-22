@@ -494,7 +494,7 @@ These are not launch blockers and should not be implemented preemptively:
 - [ ] Tag/topic filtering.
 - [ ] Source-level relational model and analytics.
 - [ ] Admin/CMS tooling, including category rename/reorder UI if a real operating need emerges.
-- [ ] Redis or application caching based on measured traffic.
+- [ ] External Redis/cache infrastructure only if framework-native Phase 8 caching later proves insufficient.
 - [ ] Monitoring/alerting beyond Vercel/Neon/Make built-in observability.
 
 
@@ -525,3 +525,54 @@ These are not launch blockers and should not be implemented preemptively:
 - [x] Remove known Production setup test report `P1 End-to-End Test`; Production and isolated branches now report zero test/fixture rows at rest.
 - [x] Squash-merge Phase 6.7 to `main` as `c613ae4fc66e6e7b7a713cd48cc060324c630134`.
 - [x] Confirm Vercel Production deployment `dpl_6c4p7qHGMHT6ugnPpNjUdtwEgM25` READY, main Quality run `35558081267` successful, and Production data remains real-content-only.
+
+---
+
+## Phase 8 — Loading performance P0/P1
+
+Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verification.md`.
+
+### 8.0 Baseline and constraints
+
+- [x] Re-measure representative Production routes after the Vercel region move to `sin1`.
+- [x] Confirm current public responses are `no-store`/MISS and separate application/network overhead from core SQL execution time.
+- [x] Keep Neon `main` as the application database; do not add Redis, a second driver, speculative indexes or a public read API.
+- [x] Preserve schema-v1/v2 hashes, exactly-once ingestion and the existing runtime DB-error contract.
+
+### 8.1 P0 cache and invalidation
+
+- [x] Enable Next.js Cache Components and remove public `force-dynamic` declarations.
+- [x] Add tagged cross-request caches with explicit stale/revalidate/expire values.
+- [x] Invalidate public report data immediately only after a newly committed report.
+- [x] Keep duplicate/conflict responses from invalidating unchanged data.
+- [x] Keep a cache invalidation failure from turning a committed insert into a false ingest failure.
+- [x] Let DB-connected Production builds prerender homepage/sitemap; explicitly defer DB work in no-DB CI builds.
+
+### 8.2 P1 query and payload reduction
+
+- [x] Add nullable persisted summary, reading time and headings fields for rolling deployment compatibility.
+- [x] Derive presentation fields during ingest without changing payload hashing.
+- [x] Add a canonical transform/backfill command and targeted fallback for rows still missing presentation fields.
+- [x] Exclude full Markdown/sources from homepage and archive projections.
+- [x] Return homepage latest report plus category metadata with one ranked query.
+- [x] Return archive rows plus total count with one window query.
+- [x] Reuse the cached ordered category list for published-category validation and Header navigation.
+
+### 8.3 Observability
+
+- [x] Add the current stable Vercel Speed Insights package through the official root-layout integration.
+- [x] Add structured cache-fill database timings.
+- [x] Add ingest `Server-Timing` response headers.
+
+### 8.4 Database and acceptance
+
+- [x] Prepare the exact additive migration from Neon Production `main` on a temporary branch.
+- [x] Backfill all 27 temporary-branch reports and verify zero missing/invalid presentation values.
+- [x] Verify latest/archive/detail queries and both no-DB and DB-prerender production builds.
+- [x] Obtain explicit approval and promote the already-tested migration to Neon Production `main`.
+- [x] Backfill and verify all 27 Production rows without changing report content/hash/category data.
+- [x] Apply the same additive schema/backfill to all 24 at-rest rows on `phase6-adaptive-isolated` without resetting its history.
+- [x] Pass the full isolated integration suite (10/10) and restore the branch to zero synthetic fixtures.
+- [ ] Pass Playwright critical paths, browser read-error and production client-JS budget in branch Quality; local execution is blocked by unavailable Chromium binary/download.
+- [x] Re-run TypeScript, unit, both production-build modes and repository diff checks after final documentation updates.
+- [x] Commit the completed Phase 8 branch; delivery to `main` remains PR + squash merge only.

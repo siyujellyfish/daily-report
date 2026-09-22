@@ -1,9 +1,11 @@
 import Link from "next/link";
 
+import { deferDatabasePrerenderIfUnavailable } from "@/lib/database-prerender";
 import { getPublishedCategories } from "@/lib/reports";
 import { SiteNavigation } from "./site-navigation";
 
 export async function SiteHeader() {
+	await deferDatabasePrerenderIfUnavailable();
 	let categories: Awaited<ReturnType<typeof getPublishedCategories>> = [];
 	try {
 		categories = await getPublishedCategories();

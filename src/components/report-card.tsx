@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { truncateCategoryLabel } from "@/lib/category-label";
 import { formatReportDate } from "@/lib/report-date";
-import type { PublicCategory, PublicReport } from "@/lib/reports";
+import type { PublicCategory, PublicReportSummary } from "@/lib/reports";
 
 export function ReportCard({
 	category,
 	report,
 }: {
 	category: PublicCategory;
-	report: PublicReport;
+	report: PublicReportSummary;
 }) {
 	return <Card className={`feature category-scope ${category.style}`}>
 		<CardHeader className="feature-top">

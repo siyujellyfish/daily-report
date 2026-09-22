@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { IS_PREVIEW, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
+
+export const instant = false;
 
 export const metadata: Metadata = {
 	metadataBase: SITE_URL,
@@ -19,6 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
 			<SiteHeader />
 			<main id="main-content" className="wrap" tabIndex={-1}>{children}</main>
 			<footer className="site-footer"><div className="wrap footer-inner"><span><strong>Daily Report</strong>每天一點，持續探索。</span><span>AI 整理內容 · 閱讀時請核對原始來源</span></div></footer>
+			<SpeedInsights />
 		</ThemeProvider>
 	</body></html>;
 }

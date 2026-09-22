@@ -10,11 +10,14 @@
 - Phase 3 — Testing & quality：完成。Vitest、隔離 Neon DB integration、Playwright 桌面/手機關鍵流程、accessibility/content quality、空資料/讀取錯誤狀態與 production client-JS budget 均已通過；最終交付透過 PR #8 squash merge。
 - Phase 4 — Scheduled Tasks integration：完成。兩個 one-shot shadow Scheduled Tasks 已使用正式研究規則 unattended 通過 ChatGPT → Make → Vercel → Neon → public website 全鏈路 Production 驗證。
 - Phase 5 — Production hardening & launch：完成。Final `INGEST_SECRET` 已安全同步；兩個正式 recurring Tasks 保留原 daily schedule 並使用 verified delivery contract。2026-09-11 第一輪 original-schedule unattended execution 已成功，Neon 兩種類型各 exactly once，公開頁面驗證通過。PR #11 已以 squash merge 合併至 `main`（`b0efb79d33c4056687fa52a6fd120668cf4f176c`），對應 Vercel Production deployment `dpl_EbtXhGCyb8gsyy6gGn9GHyvEuauR` 已達 `READY`。
-- Phase 6 — Adaptive categories：Production rollout 已完成。PR #13 以 squash merge 進入 `main`（`d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`），Vercel Production `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` 已 READY；Production 維持兩個真實分類且無 synthetic fixture。兩個 schema-v1 原始 2026-09-21 payload 在新 runtime 上 exact retry 成功且保持 exactly-once。post-merge `main` Quality `35554750408` 仍因 canonical test DB serialization queue 排隊，完成後補記最終 gate。
-- Phase 6.7 — UI/UX refinement：使用者已完成驗收。桌面最新報告改為單列輪播 + 左右箭頭、分類顯示限制 5 字 + `…`、分類歷史列表改為整張可點的 compact card。Quality `35557533073` 全數通過；測試資料改為每次 CI seed + always-cleanup，Neon 測試分支平時保持乾淨。Production 與 `phase6-adaptive-isolated` schema 無差異，舊測試資料與過期測試 branch 已清理，等待最終 squash merge 與 Production READY 確認。
+- Phase 6 — Adaptive categories：Production rollout 已完成。PR #13 以 squash merge 進入 `main`（`d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`），Vercel Production `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` 已 READY；Production 維持真實分類且無 synthetic fixture。兩個 schema-v1 原始 2026-09-21 payload 在新 runtime 上 exact retry 成功且保持 exactly-once，post-merge `main` Quality `35554750408` 已通過。
+- Phase 6.7 — UI/UX refinement：完成。PR #14 已 squash merge 為 `c613ae4fc66e6e7b7a713cd48cc060324c630134`，post-merge Quality `35558081267` 成功，Vercel Production `dpl_6c4p7qHGMHT6ugnPpNjUdtwEgM25` READY。桌面最新報告為單列輪播 + 左右箭頭、分類顯示限制 5 字 + `…`、分類歷史列表為整張可點的 compact card；測試資料由 CI seed + always-cleanup 管理，隔離分支平時保持乾淨。
+- Phase 8 — Loading performance：`phase8/loading-performance` P0/P1 實作、DB rollout 與 branch commit 已完成。Neon `main` 27 筆與隔離 CI 分支 24 筆皆完成 additive migration/backfill 且缺漏為 0；TypeScript、28 unit、10 isolated integration、雙模式 build、production route/cache smoke 已通過。完整 Playwright/read-error/JS-budget 因本機 Chromium 下載受限，保留為 branch Quality gate。
 
 ## Documents
 
+- `phase-8-plan.md`：Phase 8 P0/P1 cache、query/payload reduction、observability 與資料庫 rollout 計畫。
+- `phase-8-verification.md`：Phase 8 baseline、臨時 Neon migration/backfill、query/build 與最終 gate 驗證紀錄。
 - `phase-6-6-verification.md`：Phase 6.6 Production rollout、v1 compatibility、Production isolation 與 post-merge gate 紀錄。
 - `phase-6-7-plan.md`：Phase 6.7 UI/UX refinement 的範圍、非目標、討論 gate 與驗收方向。
 - `phase-6-7-verification.md`：Phase 6.7 UI 驗收、Quality、database cleanup 與 migration/schema 對齊紀錄。
@@ -33,7 +36,7 @@
 - `phase-2-design.md`：已核准的網站風格、頁面互動與正式資料呈現規格。
 - `architecture.md`：目前與目標系統架構、資料流、runtime boundary、頁面、資料讀取層與各階段整合邊界。
 - `decisions.md`：已確定的技術與產品決策，以及後續實作約束。
-- `todo.md`：Phase 0–6 完整實作清單與驗收條件，作為主要進度來源。
+- `todo.md`：Phase 0–8 完整實作清單與驗收條件，作為主要進度來源。
 - `changelog.md`：實際完成的初始化、功能、驗證、安全與文件調整紀錄。
 
 ## Working rules
