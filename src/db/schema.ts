@@ -13,6 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import type { ReportType } from "@/lib/report-types";
+import type { ReportHeading } from "@/lib/report-markdown";
 
 export type ReportSource = {
 	title: string;
@@ -54,6 +55,9 @@ export const reports = pgTable(
 		reportDate: date("report_date", { mode: "string" }).notNull(),
 		title: varchar("title", { length: 300 }).notNull(),
 		contentMarkdown: text("content_markdown").notNull(),
+		summary: text("summary"),
+		readingMinutes: integer("reading_minutes"),
+		headings: jsonb("headings").$type<ReportHeading[]>(),
 		sources: jsonb("sources").$type<ReportSource[]>().notNull(),
 		generatedAt: timestamp("generated_at", {
 			withTimezone: true,

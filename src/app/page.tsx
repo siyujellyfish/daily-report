@@ -1,13 +1,15 @@
 import { FeaturedReportsScroll } from "@/components/featured-reports-scroll";
 import { ReportCard } from "@/components/report-card";
+import { deferDatabasePrerenderIfUnavailable } from "@/lib/database-prerender";
 import { formatReportDate } from "@/lib/report-date";
 import { getLatestPublishedReports } from "@/lib/reports";
 import { pageMetadata, SITE_DESCRIPTION } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const instant = false;
 export const metadata = pageMetadata("/", "每日推播", SITE_DESCRIPTION);
 
 export default async function Home() {
+	await deferDatabasePrerenderIfUnavailable();
 	const items = await getLatestPublishedReports();
 	const latestDate = items.map(({ report }) => report.reportDate).sort().at(-1);
 

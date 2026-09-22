@@ -10,7 +10,7 @@ type Props = {
 	searchParams: Promise<{ page?: string | string[] }>;
 };
 
-export const dynamic = "force-dynamic";
+export const instant = false;
 
 export async function generateMetadata({ params, searchParams }: Props) {
 	const [{ slug }, query] = await Promise.all([params, searchParams]);

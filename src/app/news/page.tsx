@@ -4,6 +4,8 @@ import { parseReportPage } from "@/lib/report-date";
 
 type Props = { searchParams: Promise<{ page?: string | string[] }> };
 
+export const instant = false;
+
 export default async function NewsPage({ searchParams }: Props) {
 	const page = parseReportPage((await searchParams).page);
 	if (!page) notFound();
