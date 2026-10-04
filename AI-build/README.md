@@ -13,6 +13,7 @@
 - Phase 6 — Adaptive categories：Production rollout 已完成。PR #13 以 squash merge 進入 `main`（`d2c1711b00ff15fefef2991b177c8bc7b9dbea2a`），Vercel Production `dpl_CcpigyPQ7vsvZz8EkPjie5nZLP7K` 已 READY；Production 維持真實分類且無 synthetic fixture。兩個 schema-v1 原始 2026-09-21 payload 在新 runtime 上 exact retry 成功且保持 exactly-once，post-merge `main` Quality `35554750408` 已通過。
 - Phase 6.7 — UI/UX refinement：完成。PR #14 已 squash merge 為 `c613ae4fc66e6e7b7a713cd48cc060324c630134`，post-merge Quality `35558081267` 成功，Vercel Production `dpl_6c4p7qHGMHT6ugnPpNjUdtwEgM25` READY。桌面最新報告為單列輪播 + 左右箭頭、分類顯示限制 5 字 + `…`、分類歷史列表為整張可點的 compact card；測試資料由 CI seed + always-cleanup 管理，隔離分支平時保持乾淨。
 - Phase 8 — Loading performance：`phase8/loading-performance` P0/P1 實作、DB rollout 與 branch commit 已完成。Neon `main` 27 筆與隔離 CI 分支 24 筆皆完成 additive migration/backfill 且缺漏為 0；TypeScript、28 unit、10 isolated integration、雙模式 build、production route/cache smoke 已通過。完整 Playwright/read-error/JS-budget 因本機 Chromium 下載受限，保留為 branch Quality gate。
+- Operations — App Store 限免週報：2026-10-04 已修正 Scheduled Task 發布容錯。外部歷史分類頁或個別來源失敗不再允許提前終止；改採站內搜尋與逐 App 去重 fallback，無可安全新增項目時仍產生固定雙章節週報並強制嘗試 Make 發布。週日 recurring schedule、Make Scenario、Vercel/Neon 與 credential 均未變更；下一次 unattended run 為最終運行驗證。
 
 ## Documents
 
