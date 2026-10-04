@@ -576,3 +576,17 @@ Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verifi
 - [ ] Pass Playwright critical paths, browser read-error and production client-JS budget in branch Quality; local execution is blocked by unavailable Chromium binary/download.
 - [x] Re-run TypeScript, unit, both production-build modes and repository diff checks after final documentation updates.
 - [x] Commit the completed Phase 8 branch; delivery to `main` remains PR + squash merge only.
+
+
+---
+
+## Operations — App Store weekly publishing reliability
+
+- [x] Confirm the 2026-10-04 weekly Scheduled Task was triggered and isolate the missing publication before Make rather than inside Make/Vercel.
+- [x] Confirm a prior `app-store-limited-free` Make execution succeeded, preserving the existing publication transport.
+- [x] Make historical category-page access non-blocking and add site-search plus per-App deduplication fallbacks.
+- [x] Treat uncertain historical status as a candidate-level exclusion rather than a report-level failure.
+- [x] Require a complete two-section weekly Markdown result even when there are zero safe new Apps or historical data is degraded.
+- [x] Require the final Make publication attempt regardless of zero-result or partial-source state; preserve the one identical-payload retry rule.
+- [x] Preserve the existing weekly schedule, enabled state, report/category contract, Make Scenario, Vercel/Neon state and credentials.
+- [ ] Observe the next unattended Sunday execution and confirm Make returns `success=true` with `receivedType=app-store-limited-free`, then confirm the weekly report is visible publicly.
