@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-10-04
+
+### App Store 限免週報發布容錯修正
+
+- 唯讀診斷確認 `App Store 限免週報` Scheduled Task 在 2026-10-04 約 08:20 Asia/Taipei 已被觸發，但同時間 Make `Daily Report - Publish to Vercel` 沒有任何 `app-store-limited-free` execution；同日上午兩個 daily report execution 均成功，故障點位於 Scheduled Task 研究流程完成前、Make 呼叫之前。
+- 高階歷史紀錄確認 2026-09-27 曾成功發布 `app-store-limited-free`，因此既有 Make → Vercel 發布路徑本身具有效成功案例。
+- 根因邊界收斂為週報 Prompt 把 `/category/app-store-limited-free` 歷史頁讀取放在前置流程，外部頁面不可存取時缺少非阻塞 fallback，可能讓任務在建立最終 payload 前結束。
+- 更新正式 recurring Task Prompt：任何單一網頁、搜尋、App Store 或價格追蹤來源失敗皆不得中止整份週報；分類頁失敗時改用 `site:daily.azubot.xyz` 搜尋還原歷史，再對準備納入的新 App 逐一做名稱級站內去重。
+- 若候選 App 的歷史狀態仍無法可靠判斷，僅排除該候選，不中止報告；若整體歷史資料不足，仍產生固定兩章節 Markdown，必要時以保守空結果發布，避免重複推送。
+- `sources` 僅保留實際成功讀取並使用的來源，允許部分來源失敗、`sources=[]` 或第二章節為空；這些情況皆不得跳過最終發布。
+- 最終化規則改為強制進入 Make 發布步驟；僅在 Make 工具不可用，或相同 payload 的一次 retry 仍失敗時才可回報發布失敗。成功判定仍要求 `success=true` 且 `receivedType=app-store-limited-free`。
+- 正式 Task 仍為 enabled，維持每週日 recurring schedule 與 `flexible_schedule`；Make Scenario、Vercel、Neon、reportType/category metadata 與 credentials 均未修改。
+- 本次只驗證新 Prompt 已成功保存並保留原排程狀態；下一次 unattended weekly execution 仍需作為 post-fix runtime acceptance。
+
 ## 2026-09-22
 
 ### Phase 8 — P0/P1 loading performance implementation
