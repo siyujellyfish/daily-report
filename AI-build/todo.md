@@ -590,3 +590,21 @@ Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verifi
 - [x] Require the final Make publication attempt regardless of zero-result or partial-source state; preserve the one identical-payload retry rule.
 - [x] Preserve the existing weekly schedule, enabled state, report/category contract, Make Scenario, Vercel/Neon state and credentials.
 - [ ] Observe the next unattended Sunday execution and confirm Make returns `success=true` with `receivedType=app-store-limited-free`, then confirm the weekly report is visible publicly.
+
+
+---
+
+## P0 — Automatic daily publication recovery (2026-10-09)
+
+- [x] Inspect main ingestion, schema uniqueness, Make scenario, Neon reports, and active Scheduled Tasks.
+- [x] Create `feat/automatic-report-recovery-p0`.
+- [x] Add read-only daily publication presence API and deterministic recovery decision helpers.
+- [x] Add unit tests for date/type validation, status states, unavailable DB and recovery decisions.
+- [x] Document design, safety, limitations and acceptance in `p0-automatic-recovery.md`.
+- [x] Manually backfill 2026-10-09 framework recommendation; verify exactly one Production row.
+- [ ] Quality TypeScript, unit tests, build, isolated integration, Playwright acceptance.
+- [ ] One-shot shadow recovery Task acceptance without modifying existing Production rows.
+- [ ] Verify Preview endpoint behavior and race/error handling.
+- [ ] Review PR and squash-merge to main only after explicit acceptance.
+- [ ] Verify Production READY and activate 10:00 recovery Task.
+- [ ] Observe first unattended recovery run and update verification record.

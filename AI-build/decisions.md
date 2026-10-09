@@ -256,3 +256,14 @@ Development is organized into the following lifecycle:
 - Add Vercel Speed Insights plus structured cache-fill timings and ingest `Server-Timing`; do not add an external observability vendor for this scope.
 - Validate the exact additive migration and canonical backfill on a Neon temporary branch before explicit promotion to Production `main`. Keep synthetic acceptance writes on `phase6-adaptive-isolated` after aligning its schema.
 - Preserve schema-v1/v2 payload hashing and exactly-once behavior: derived presentation fields are database output, not new hash inputs.
+
+
+## 2026-10-09 — P0 automatic recovery decisions
+
+- Keep primary 08:00 Scheduled Tasks, Make transport, schema-v2 ingest, and Neon uniqueness constraints unchanged.
+- Add a minimal, read-only, no-store publication-presence API scoped to two daily types. Do not expose credentials, report bodies, row IDs or detailed DB errors.
+- Choose a separate 10:00 Asia/Taipei ChatGPT recovery Task for content research because no paid OpenAI API is available and Make remains transport-only.
+- Treat a failed status query as unknown rather than missing. Retry status; recheck immediately before publishing; retry ambiguous Make failures only with identical payload; verify persisted presence after delivery.
+- A concurrent different payload may produce 409; accept the existing report as winning, never overwrite it. DB uniqueness enforces at most one report per type/day, not exactly-once task execution.
+- Preserve current Production data. Do not activate recurring backup until Quality/Preview and one-shot shadow acceptance are complete. No Production DB schema changes.
+- The P0 status endpoint uses no new third-party dependencies. Official route handler, Drizzle select and Vitest mocking documentation were checked on 2026-10-09.
