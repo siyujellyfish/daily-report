@@ -49,3 +49,9 @@
 - 不使用 OpenAI API；報告產生維持由 ChatGPT Scheduled Tasks 執行。
 - Secret 不可提交到 Git；credential-bearing Make 驗證只讀 high-level outcome，不讀取 Authorization header/input。
 - Production 驗證不得以 UPDATE/DELETE 清除或改寫報告，也不得為驗收臨時修改正式 recurring schedule。
+
+
+## P0 / P1 publication recovery (staged)
+
+- P0: read-only status endpoint and independent recovery prompt; PR #19 remains subject to Preview/shadow acceptance before Production activation.
+- P1: research fallback, framework candidate replacement, bounded same-payload retry and ChatGPT Task-result-only incident reporting are staged on `feat/daily-publication-resilience-p1`. No live schedule, Make or Production changes. See `p1-publication-resilience.md`, `p1-recovery-task-prompt.md` and `p1-primary-task-suffixes.md`. P1 requires P0 status API rollout and separate acceptance.
