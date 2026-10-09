@@ -8,7 +8,7 @@ P1 prepares research fallback, candidate replacement, bounded identical-payload 
 
 **This branch is staging only.** Do not alter or enable recurring Tasks, Make, Vercel, Neon, credentials or Production data. P0's read-only publication status API and unattended shadow acceptance must pass before any live P1 rollout. No paid OpenAI API, Discord, new dependencies or DB migration.
 
-`src/lib/publication-retry.ts` is a tested **decision specification**; it is not a running retry worker. Research and delivery are performed by ChatGPT Scheduled Tasks when their prompts are separately activated. Task-result text is not guaranteed push notification (the existing Tasks have notifications disabled).
+`src/lib/publication-retry.ts` and `src/lib/research-fallback.ts` are tested **decision specifications**; it is not a running retry worker. Research and delivery are performed by ChatGPT Scheduled Tasks when their prompts are separately activated. Task-result text is not guaranteed push notification (the existing Tasks have notifications disabled).
 
 ## Research fallback
 
