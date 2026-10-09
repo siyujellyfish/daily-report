@@ -641,3 +641,8 @@ Ingest derives and persists `summary`, `reading_minutes` and `headings` once usi
 - The additive migration was prepared and backfilled first on a temporary child of Neon `main`, then promoted after explicit confirmation. Production `main` and the non-reset isolated CI branch both have the same presentation columns with zero missing values; synthetic browser fixtures remain ephemeral.
 
 Detailed scope and evidence are recorded in `phase-8-plan.md` and `phase-8-verification.md`.
+
+
+## 2026-10-09 — P0 daily publication recovery (pending acceptance)
+
+An independent 10:00 Asia/Taipei ChatGPT Scheduled Task will verify both daily report slots using `GET /api/v1/reports/status`, generate content only when missing, and deliver via the unchanged Make scenario. The read-only status endpoint reports only an existence bit for `daily-news` and `framework-recommendation`, with no-store caching and generic errors. It is intentionally unauthenticated because publication existence is already public and ChatGPT Tasks cannot securely attach the ingestion secret. The authenticated write path remains `POST /api/v1/ingest`; the existing unique constraints remain the final at-most-once persistence guarantee. No new dependencies or DB migration. Detailed workflow and limitations: `p0-automatic-recovery.md`.
