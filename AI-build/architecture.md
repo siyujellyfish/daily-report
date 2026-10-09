@@ -646,3 +646,8 @@ Detailed scope and evidence are recorded in `phase-8-plan.md` and `phase-8-verif
 ## 2026-10-09 — P0 daily publication recovery (pending acceptance)
 
 An independent 10:00 Asia/Taipei ChatGPT Scheduled Task will verify both daily report slots using `GET /api/v1/reports/status`, generate content only when missing, and deliver via the unchanged Make scenario. The read-only status endpoint reports only an existence bit for `daily-news` and `framework-recommendation`, with no-store caching and generic errors. It is intentionally unauthenticated because publication existence is already public and ChatGPT Tasks cannot securely attach the ingestion secret. The authenticated write path remains `POST /api/v1/ingest`; the existing unique constraints remain the final at-most-once persistence guarantee. No new dependencies or DB migration. Detailed workflow and limitations: `p0-automatic-recovery.md`.
+
+
+## 2026-10-09 — P1 staged resilience overlay
+
+P1 adds no runtime service. Prepared ChatGPT primary and P0 backup Task prompts implement source fallback, candidate replacement, publication-status rechecks, identical-payload Make retries and incident reporting in Task results. The P0 status endpoint must be deployed before activation. The pure TypeScript `src/lib/publication-retry.ts` is a regression-tested decision specification, not a deployed retry worker. Existing Make ingest, DB uniqueness, credentials and daily schedules remain unchanged. See `p1-publication-resilience.md`.

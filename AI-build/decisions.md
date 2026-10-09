@@ -267,3 +267,12 @@ Development is organized into the following lifecycle:
 - A concurrent different payload may produce 409; accept the existing report as winning, never overwrite it. DB uniqueness enforces at most one report per type/day, not exactly-once task execution.
 - Preserve current Production data. Do not activate recurring backup until Quality/Preview and one-shot shadow acceptance are complete. No Production DB schema changes.
 - The P0 status endpoint uses no new third-party dependencies. Official route handler, Drizzle select and Vitest mocking documentation were checked on 2026-10-09.
+
+
+## 2026-10-09 — P1 resilience decisions (staged)
+
+- P1 branches from P0 and does not activate recurring Tasks until P0 endpoint and shadow acceptance are verified.
+- Research fallbacks preserve evidence quality; inaccessible sources do not prove no updates. Candidate selection remains inside ChatGPT Tasks.
+- Transport ambiguity requires a fresh status check before any retry, with at most two retries of identical payload. Terminal errors and 409 never trigger overwrite.
+- Only ChatGPT Task result text is used for incident reporting; no guaranteed push alert or Discord integration.
+- `src/lib/publication-retry.ts` is a tested policy reference, not a live worker. No package, API key, DB migration or Make configuration change.
