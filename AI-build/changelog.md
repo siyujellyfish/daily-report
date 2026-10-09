@@ -367,3 +367,11 @@
 - Added `p0-automatic-recovery.md` covering daily 10:00 independent ChatGPT fallback, status rechecks, same-payload retries, 409 race resolution, error handling and acceptance gates. Backup schedule is not activated before verification.
 - Manually published 2026-10-09 `framework-recommendation` about Google's newly open-sourced ML Drift using Make execution `278433c1c9de4d16adeb0580f6f7e11a`. Make returned `success=true` with correct receivedType; a subsequent Neon Production query found exactly one report for that type/date.
 - Branch testing and Preview acceptance remain pending; do not describe as deployed or fully automated until those gates pass.
+
+
+## 2026-10-09 — P1 daily publication resilience staged
+
+- Branched from P0 into `feat/daily-publication-resilience-p1`; main, live Tasks, Make, Vercel and Neon unchanged.
+- Added pure TypeScript Make response classification and bounded same-payload retry decision, with unit tests for 409, 4xx, 5xx, timeout, unknown status and verification failures.
+- Prepared independent recovery prompt and primary Task suffixes with per-source research fallback, sequential framework candidate replacement and explicit Task-result-only incident reporting.
+- No new dependencies, schema changes, secrets or active automation. CI and unattended acceptance pending.
