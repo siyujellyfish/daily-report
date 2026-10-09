@@ -358,3 +358,12 @@
 - Confirmed only Neon `main` and `phase6-adaptive-isolated` branches remain; obsolete test branches are removed.
 - Confirmed Production and isolated branch contain no synthetic/test/fixture/POC/end-to-end report titles at rest.
 - Confirmed the repository's current migration remains `drizzle/phase6_1_adaptive_categories.sql`; no Phase 6.7 schema migration is required.
+
+
+## 2026-10-09 — P0 automatic recovery implementation branch
+
+- Read-only incident check found 2026-10-09 `daily-news` present, `framework-recommendation` missing and no matching Make execution; 2026-10-08 framework report had required a manual backfill. Upstream failure location remains unproven.
+- Created `feat/automatic-report-recovery-p0`. Added a narrow no-store publication status endpoint and recovery-decision/date validation helpers with unit tests; no new packages, database migration or changes to Make's credential-bearing HTTP module.
+- Added `p0-automatic-recovery.md` covering daily 10:00 independent ChatGPT fallback, status rechecks, same-payload retries, 409 race resolution, error handling and acceptance gates. Backup schedule is not activated before verification.
+- Manually published 2026-10-09 `framework-recommendation` about Google's newly open-sourced ML Drift using Make execution `278433c1c9de4d16adeb0580f6f7e11a`. Make returned `success=true` with correct receivedType; a subsequent Neon Production query found exactly one report for that type/date.
+- Branch testing and Preview acceptance remain pending; do not describe as deployed or fully automated until those gates pass.
