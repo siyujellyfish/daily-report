@@ -608,3 +608,16 @@ Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verifi
 - [ ] Review PR and squash-merge to main only after explicit acceptance.
 - [ ] Verify Production READY and activate 10:00 recovery Task.
 - [ ] Observe first unattended recovery run and update verification record.
+
+
+---
+
+## P1 — Daily publication resilience (2026-10-09; staged)
+
+- [x] Branch from P0 without changing main or live schedules.
+- [x] Define research fallback, candidate replacement and fail-closed behavior.
+- [x] Add typed Make delivery classification, bounded same-payload retry policy and unit tests.
+- [x] Stage complete recovery prompt, primary Task suffixes and Task-result-only incident reporting.
+- [ ] CI and safe one-shot acceptance.
+- [ ] P0 Production status API acceptance and explicit rollout authorization.
+- [ ] Squash merge only after approval; no recurring Task activation yet.
