@@ -393,3 +393,8 @@
 - P0/P1 Preview API 已實測 200 published=true / false、400 invalid date/type 與 Cache-Control: no-store；報告 detail route 均返回 HTTP 200。
 - 前次 CI：P0 38 unit / 10 integration、P1 51 unit / 10 integration；Playwright 40 pass / 5 skip / 1 retry-flaky。最新整合分支 CI 已於 run 38693234320 通過（51 unit、10 isolated integration、41 Playwright passed、5 conditional skips、沒有 flaky、read-error 與 JS budget 皆通過），Vercel Preview dpl_8EZRDxEjmzkqNcnFZa6UhrtHxpSN READY。無人值守補推與 Make race acceptance 尚待完成。
 - 此分支僅用於重新跑測試，不啟用正式 10:00 備援、不修改 Make 或正式 DB，也不宣稱 P1 參考決策模組是已上線 Worker。
+
+## 2026-10-15 — P0/P1 上線授權
+
+- 使用者明確要求合併 PR #22 並啟用每日 10:00 備援 Task；以 CI / Preview / Production API 上線 smoke 作為啟用前的必要條件。
+- 先前缺少的無人值守 missing-path 與真實 Make 409/race 驗收仍列為**已知未驗證風險**，上線後以第一次正式執行觀察，不能將排程 enabled 等同成功補推。

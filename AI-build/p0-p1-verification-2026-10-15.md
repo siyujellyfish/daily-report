@@ -38,3 +38,10 @@
 - 不呼叫或讀取 Make 的 credential-bearing HTTP input/header。
 - 不變更任何既有 ChatGPT Scheduled Task 排程、不啟用 10:00 備援。
 - 沒有新增依賴、schema migration 或付費 OpenAI API。
+
+## 2026-10-15 — 明確核准上線（風險接受）
+
+- 使用者於 2026-10-15 明確要求 P0/P1 合併至 main 並啟用 10:00 備援排程。本次將原訂「無人值守 one-shot 先於上線」改為「已通過 CI / Preview / Production API 後帶保護措施啟用，首次正式 10:00 排程進行真實驗收」。這是上線決策，**不是宣稱 one-shot 或真實 Make race / 409 測試已通過**。
+- 上線次序：PR #22 squash merge → Vercel Production READY → 正式狀態 API 已發布／未發布／非法參數 + no-store smoke → 建立並啟用每日 10:00 Asia/Taipei（exact）的 ChatGPT 備援 Task，原 08:00 Tasks 不變。
+- fail-closed：狀態 API 非合法 HTTP 200 或資訊不符，僅回報 status-unknown，禁止推送；published=true 跳過，缺報告時必須重查狀態再調用 Make；永久錯誤不重試，暫時性錯誤僅同 payload 有界重試；不得覆寫 Production；當日日期必須符合 Asia/Taipei。
+- 風險：ChatGPT Scheduled Task 執行與 Make 競態／網路錯誤尚缺正式無人值守驗收；P1 的 TS 決策模組仍非背景執行器。首次 10:00 結果需追蹤並確認 Neon 每日兩類各一筆，若失敗回報且進行後續修正，不可誤標已完整驗收。

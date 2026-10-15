@@ -645,3 +645,12 @@ Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verifi
 - [x] Latest-main integrated CI (run 38693234320: 51 unit / 10 isolated DB integration / 41 Playwright passed, 5 conditional skips, no flaky) and Vercel Preview READY.
 - [ ] Safe unattended one-shot missing-path publication and Make failure/race acceptance.
 - [ ] After all gates: squash merge and separately approve 10:00 recovery Task activation.
+
+## P0/P1 正式上線決議（2026-10-15）
+
+- [x] 使用者明確核准合併與啟用原定 10:00 Asia/Taipei 備援。
+- [x] 預備上線：最新 main 整合版 CI、Preview API 與資料完整性驗證通過。
+- [ ] PR #22 Squash Merge + Production READY。
+- [ ] Production status API 已刊／未刊與 no-store HTTP 驗證。
+- [ ] 建立並啟用 10:00 ChatGPT P0/P1 備援 Task，保持原本 08:00 排程。
+- [ ] 首次無人值守 missing-path 和真實 race / retry 驗收（未被本次核准自動視為通過）。
