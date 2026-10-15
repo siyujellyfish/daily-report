@@ -15,6 +15,8 @@
 - Phase 8 — Loading performance：`phase8/loading-performance` P0/P1 實作、DB rollout 與 branch commit 已完成。Neon `main` 27 筆與隔離 CI 分支 24 筆皆完成 additive migration/backfill 且缺漏為 0；TypeScript、28 unit、10 isolated integration、雙模式 build、production route/cache smoke 已通過。完整 Playwright/read-error/JS-budget 因本機 Chromium 下載受限，保留為 branch Quality gate。
 - Operations — App Store 限免週報：2026-10-04 已修正 Scheduled Task 發布容錯。外部歷史分類頁或個別來源失敗不再允許提前終止；改採站內搜尋與逐 App 去重 fallback，無可安全新增項目時仍產生固定雙章節週報並強制嘗試 Make 發布。週日 recurring schedule、Make Scenario、Vercel/Neon 與 credential 均未變更；下一次 unattended run 為最終運行驗證。
 
+- Operations — framework recommendation recovery（2026-10-15）：補刊 10/12（vLLM 0.31.0）、10/13（Nuxt 4.6）與 10/15（Eclipse Theia AI 1.76）；三日 Neon exactly-once，10/15 由 Make 正式發布；強化原框架 recurring Task Prompt 的來源 fallback、強制 Make 呼叫與成功回傳驗證，原排程保持啟用。正式網站 HTTP 及下一輪 unattended 驗收仍待完成，P0/P1 備援尚未啟用。
+
 ## Documents
 
 - `phase-8-plan.md`：Phase 8 P0/P1 cache、query/payload reduction、observability 與資料庫 rollout 計畫。
