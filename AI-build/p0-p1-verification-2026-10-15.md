@@ -45,3 +45,14 @@
 - 上線次序：PR #22 squash merge → Vercel Production READY → 正式狀態 API 已發布／未發布／非法參數 + no-store smoke → 建立並啟用每日 10:00 Asia/Taipei（exact）的 ChatGPT 備援 Task，原 08:00 Tasks 不變。
 - fail-closed：狀態 API 非合法 HTTP 200 或資訊不符，僅回報 status-unknown，禁止推送；published=true 跳過，缺報告時必須重查狀態再調用 Make；永久錯誤不重試，暫時性錯誤僅同 payload 有界重試；不得覆寫 Production；當日日期必須符合 Asia/Taipei。
 - 風險：ChatGPT Scheduled Task 執行與 Make 競態／網路錯誤尚缺正式無人值守驗收；P1 的 TS 決策模組仍非背景執行器。首次 10:00 結果需追蹤並確認 Neon 每日兩類各一筆，若失敗回報且進行後續修正，不可誤標已完整驗收。
+
+
+## 正式啟用結果（2026-10-15）
+
+- 先前「未合併／不啟用」描述為驗收前歷史狀態，不代表目前狀態。使用者已明確授權以守護條件上線，仍保留真實 E2E 未驗證風險。
+- PR #22 squash merged，`main` commit `ebe824e6e06d3ca3c3d6c28a3e6229f7a1e4eba2`；合併後 Quality run `38694929042` SUCCESS。
+- Vercel 正式 deployment `dpl_5LFpNrsEVdigFpXR9C5VPw3t53Kd` READY，區域 sin1；正式域名 `daily.azubot.xyz` 狀態 API 實測 HTTP 200（兩類 10/15 published=true；10/16 未發布 false）、非法類型 HTTP 400，皆 `Cache-Control: private, no-store, max-age=0`。
+- 每日 10:00 Asia/Taipei 的 `每日推播備援（P0／P1）` Task 已建立 enabled=true、exact_schedule，第一次預定執行 2026-10-16 10:00。原有兩項每日 08:00 任務皆維持 enabled，未修改原排程。
+- 只在 status API 明確確認缺漏後啟動 Make；status unknown 不寫，409 不覆寫；同 payload 失敗最多額外重試兩次。P1 TypeScript retry policy 不是常駐 Worker，實際執行行為由 ChatGPT Task 決定。
+- 舊 PR #19 與 #20 已關閉而未重複合併。
+- **尚待正式觀察**：首次 10/16 unattended 備援與真實 missing-path／409／模糊回傳／重試；不能聲稱已通過該測試。備援 Task 通知功能目前關閉，ChatGPT Task 結果不等於保證發送異常推播。
