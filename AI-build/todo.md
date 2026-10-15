@@ -604,3 +604,44 @@ Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verifi
 - [x] Require the final Make publication attempt regardless of zero-result or partial-source state; preserve the one identical-payload retry rule.
 - [x] Preserve the existing weekly schedule, enabled state, report/category contract, Make Scenario, Vercel/Neon state and credentials.
 - [ ] Observe the next unattended Sunday execution and confirm Make returns `success=true` with `receivedType=app-store-limited-free`, then confirm the weekly report is visible publicly.
+
+
+---
+
+## P0 — Automatic daily publication recovery (2026-10-09)
+
+- [x] Inspect main ingestion, schema uniqueness, Make scenario, Neon reports, and active Scheduled Tasks.
+- [x] Create `feat/automatic-report-recovery-p0`.
+- [x] Add read-only daily publication presence API and deterministic recovery decision helpers.
+- [x] Add unit tests for date/type validation, status states, unavailable DB and recovery decisions.
+- [x] Document design, safety, limitations and acceptance in `p0-automatic-recovery.md`.
+- [x] Manually backfill 2026-10-09 framework recommendation; verify exactly one Production row.
+- [ ] Quality TypeScript, unit tests, build, isolated integration, Playwright acceptance.
+- [ ] One-shot shadow recovery Task acceptance without modifying existing Production rows.
+- [ ] Verify Preview endpoint behavior and race/error handling.
+- [ ] Review PR and squash-merge to main only after explicit acceptance.
+- [ ] Verify Production READY and activate 10:00 recovery Task.
+- [ ] Observe first unattended recovery run and update verification record.
+
+
+---
+
+## P1 — Daily publication resilience (2026-10-09; staged)
+
+- [x] Branch from P0 without changing main or live schedules.
+- [x] Define research fallback, candidate replacement and fail-closed behavior.
+- [x] Add typed Make delivery classification, bounded same-payload retry policy and unit tests.
+- [x] Stage complete recovery prompt, primary Task suffixes and Task-result-only incident reporting.
+- [ ] CI and safe one-shot acceptance.
+- [ ] P0 Production status API acceptance and explicit rollout authorization.
+- [ ] Squash merge only after approval; no recurring Task activation yet.
+
+## P0/P1 current-main validation — 2026-10-15
+
+- [x] Preview status endpoint HTTP: present=true, missing=false, invalid type/date=400, no-store.
+- [x] Verify Preview report details return HTTP 200 and no Production report rows modified.
+- [x] Review prior P0/P1 CI: P0 38 unit, P1 51 unit, both 10 isolated integration, browser 40 pass / 5 skip / 1 flaky retry.
+- [x] Compose P0/P1 changes from current main while retaining PR #21 corrections.
+- [ ] Latest-main integrated CI and Preview deploy.
+- [ ] Safe unattended one-shot missing-path publication and Make failure/race acceptance.
+- [ ] After all gates: squash merge and separately approve 10:00 recovery Task activation.
