@@ -647,3 +647,13 @@ Detailed scope and evidence are recorded in `phase-8-plan.md` and `phase-8-verif
 The existing `每日突破性工具推薦` Task's prompt now requires fallback research when a single source or archive becomes unavailable, guaranteed handoff to the existing Make publication scenario after producing credible content, and explicit verification of `success=true` plus `receivedType=framework-recommendation`. Recoverable Make transport failures may be retried once with an identical payload; non-retryable errors are surfaced without unbounded retries. No second task/schedule was added, and this does not implement the separately staged P0/P1 backup worker.
 
 Normal ingest uses `generatedAt` to derive the Taipei report business date. Operational history recovery for 2026-10-12/13 therefore used an explicit, idempotent Neon Production INSERT with a historical `report_date` and genuine 2026-10-15 `generated_at`, not a falsified Make event. Full evidence and pending HTTP/next-cycle acceptance are recorded in `framework-recovery-2026-10-15.md`.
+
+
+## 2026-10-09 — P0 daily publication recovery (pending acceptance)
+
+An independent 10:00 Asia/Taipei ChatGPT Scheduled Task will verify both daily report slots using `GET /api/v1/reports/status`, generate content only when missing, and deliver via the unchanged Make scenario. The read-only status endpoint reports only an existence bit for `daily-news` and `framework-recommendation`, with no-store caching and generic errors. It is intentionally unauthenticated because publication existence is already public and ChatGPT Tasks cannot securely attach the ingestion secret. The authenticated write path remains `POST /api/v1/ingest`; the existing unique constraints remain the final at-most-once persistence guarantee. No new dependencies or DB migration. Detailed workflow and limitations: `p0-automatic-recovery.md`.
+
+
+## 2026-10-09 — P1 staged resilience overlay
+
+P1 adds no runtime service. Prepared ChatGPT primary and P0 backup Task prompts implement source fallback, candidate replacement, publication-status rechecks, identical-payload Make retries and incident reporting in Task results. The P0 status endpoint must be deployed before activation. The pure TypeScript `src/lib/publication-retry.ts` is a regression-tested decision specification, not a deployed retry worker. Existing Make ingest, DB uniqueness, credentials and daily schedules remain unchanged. See `p1-publication-resilience.md`.
