@@ -1,5 +1,19 @@
 # TODO
 
+## Operations — 2026-10-15 framework publication recovery
+
+- [x] Read-only 調查 10/12、10/13、10/15 的 Make execution 與 Production Neon 漏刊狀態。
+- [x] 補刊 2026-10-12 vLLM 0.31.0，保留真實 10/15 生成時間與獨立目標刊期。
+- [x] 補刊 2026-10-13 Nuxt 4.6，保留真實 10/15 生成時間與獨立目標刊期。
+- [x] 使用 Make 正式情境成功發布 2026-10-15 Eclipse Theia AI 1.76。
+- [x] Neon exactly-once、來源數量、presentation metadata 與無既有資料覆寫驗證。
+- [x] 更新原每日框架 Scheduled Task 容錯／發布回傳驗證，保留原正式排程。
+- [ ] 等可解析網站 DNS 的環境驗證 10/12、10/13、10/15 三個公開報告 HTTP 200。
+- [ ] 驗收 2026-10-16 原每日排程是否能正常 Make → Neon 自動發布。
+- [ ] P0/P1 自動備援仍待 Draft PR #19/#20 rollout gates 與正式啟用確認；本次未啟用額外排程。
+
+See `framework-recovery-2026-10-15.md`.
+
 This file is the primary implementation plan and progress source for Daily Report.
 
 ## Phase 0 — Initialization
