@@ -391,5 +391,5 @@
 
 - 從已合併 PR #21 的 main 建立驗證分支，完整保留 2026-10-12/13/15 推播補刊歷史與 P0/P1 staged 說明。
 - P0/P1 Preview API 已實測 200 published=true / false、400 invalid date/type 與 Cache-Control: no-store；報告 detail route 均返回 HTTP 200。
-- 前次 CI：P0 38 unit / 10 integration、P1 51 unit / 10 integration；Playwright 40 pass / 5 skip / 1 retry-flaky。最新整合分支 CI、無人值守補推與 Make race acceptance 尚待完成。
+- 前次 CI：P0 38 unit / 10 integration、P1 51 unit / 10 integration；Playwright 40 pass / 5 skip / 1 retry-flaky。最新整合分支 CI 已於 run 38693234320 通過（51 unit、10 isolated integration、41 Playwright passed、5 conditional skips、沒有 flaky、read-error 與 JS budget 皆通過），Vercel Preview dpl_8EZRDxEjmzkqNcnFZa6UhrtHxpSN READY。無人值守補推與 Make race acceptance 尚待完成。
 - 此分支僅用於重新跑測試，不啟用正式 10:00 備援、不修改 Make 或正式 DB，也不宣稱 P1 參考決策模組是已上線 Worker。
