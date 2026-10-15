@@ -642,6 +642,6 @@ Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verifi
 - [x] Verify Preview report details return HTTP 200 and no Production report rows modified.
 - [x] Review prior P0/P1 CI: P0 38 unit, P1 51 unit, both 10 isolated integration, browser 40 pass / 5 skip / 1 flaky retry.
 - [x] Compose P0/P1 changes from current main while retaining PR #21 corrections.
-- [ ] Latest-main integrated CI and Preview deploy.
+- [x] Latest-main integrated CI (run 38693234320: 51 unit / 10 isolated DB integration / 41 Playwright passed, 5 conditional skips, no flaky) and Vercel Preview READY.
 - [ ] Safe unattended one-shot missing-path publication and Make failure/race acceptance.
 - [ ] After all gates: squash merge and separately approve 10:00 recovery Task activation.
