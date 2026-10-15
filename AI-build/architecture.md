@@ -641,3 +641,9 @@ Ingest derives and persists `summary`, `reading_minutes` and `headings` once usi
 - The additive migration was prepared and backfilled first on a temporary child of Neon `main`, then promoted after explicit confirmation. Production `main` and the non-reset isolated CI branch both have the same presentation columns with zero missing values; synthetic browser fixtures remain ephemeral.
 
 Detailed scope and evidence are recorded in `phase-8-plan.md` and `phase-8-verification.md`.
+
+## 2026-10-15 — live framework Task publication safeguards
+
+The existing `每日突破性工具推薦` Task's prompt now requires fallback research when a single source or archive becomes unavailable, guaranteed handoff to the existing Make publication scenario after producing credible content, and explicit verification of `success=true` plus `receivedType=framework-recommendation`. Recoverable Make transport failures may be retried once with an identical payload; non-retryable errors are surfaced without unbounded retries. No second task/schedule was added, and this does not implement the separately staged P0/P1 backup worker.
+
+Normal ingest uses `generatedAt` to derive the Taipei report business date. Operational history recovery for 2026-10-12/13 therefore used an explicit, idempotent Neon Production INSERT with a historical `report_date` and genuine 2026-10-15 `generated_at`, not a falsified Make event. Full evidence and pending HTTP/next-cycle acceptance are recorded in `framework-recovery-2026-10-15.md`.
