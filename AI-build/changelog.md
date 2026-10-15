@@ -369,3 +369,32 @@
 - Confirmed only Neon `main` and `phase6-adaptive-isolated` branches remain; obsolete test branches are removed.
 - Confirmed Production and isolated branch contain no synthetic/test/fixture/POC/end-to-end report titles at rest.
 - Confirmed the repository's current migration remains `drizzle/phase6_1_adaptive_categories.sql`; no Phase 6.7 schema migration is required.
+
+
+## 2026-10-09 — P0 automatic recovery implementation branch
+
+- Read-only incident check found 2026-10-09 `daily-news` present, `framework-recommendation` missing and no matching Make execution; 2026-10-08 framework report had required a manual backfill. Upstream failure location remains unproven.
+- Created `feat/automatic-report-recovery-p0`. Added a narrow no-store publication status endpoint and recovery-decision/date validation helpers with unit tests; no new packages, database migration or changes to Make's credential-bearing HTTP module.
+- Added `p0-automatic-recovery.md` covering daily 10:00 independent ChatGPT fallback, status rechecks, same-payload retries, 409 race resolution, error handling and acceptance gates. Backup schedule is not activated before verification.
+- Manually published 2026-10-09 `framework-recommendation` about Google's newly open-sourced ML Drift using Make execution `278433c1c9de4d16adeb0580f6f7e11a`. Make returned `success=true` with correct receivedType; a subsequent Neon Production query found exactly one report for that type/date.
+- Branch testing and Preview acceptance remain pending; do not describe as deployed or fully automated until those gates pass.
+
+
+## 2026-10-09 — P1 daily publication resilience staged
+
+- Branched from P0 into `feat/daily-publication-resilience-p1`; main, live Tasks, Make, Vercel and Neon unchanged.
+- Added pure TypeScript Make response classification and bounded same-payload retry decision, with unit tests for 409, 4xx, 5xx, timeout, unknown status and verification failures.
+- Prepared independent recovery prompt and primary Task suffixes with per-source research fallback, sequential framework candidate replacement and explicit Task-result-only incident reporting.
+- No new dependencies, schema changes, secrets or active automation. CI and unattended acceptance pending.
+
+## 2026-10-15 — latest-main P0/P1 isolated verification
+
+- 從已合併 PR #21 的 main 建立驗證分支，完整保留 2026-10-12/13/15 推播補刊歷史與 P0/P1 staged 說明。
+- P0/P1 Preview API 已實測 200 published=true / false、400 invalid date/type 與 Cache-Control: no-store；報告 detail route 均返回 HTTP 200。
+- 前次 CI：P0 38 unit / 10 integration、P1 51 unit / 10 integration；Playwright 40 pass / 5 skip / 1 retry-flaky。最新整合分支 CI 已於 run 38693234320 通過（51 unit、10 isolated integration、41 Playwright passed、5 conditional skips、沒有 flaky、read-error 與 JS budget 皆通過），Vercel Preview dpl_8EZRDxEjmzkqNcnFZa6UhrtHxpSN READY。無人值守補推與 Make race acceptance 尚待完成。
+- 此分支僅用於重新跑測試，不啟用正式 10:00 備援、不修改 Make 或正式 DB，也不宣稱 P1 參考決策模組是已上線 Worker。
+
+## 2026-10-15 — P0/P1 上線授權
+
+- 使用者明確要求合併 PR #22 並啟用每日 10:00 備援 Task；以 CI / Preview / Production API 上線 smoke 作為啟用前的必要條件。
+- 先前缺少的無人值守 missing-path 與真實 Make 409/race 驗收仍列為**已知未驗證風險**，上線後以第一次正式執行觀察，不能將排程 enabled 等同成功補推。
