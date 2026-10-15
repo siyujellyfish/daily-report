@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-10-15
+
+### 框架推薦三日補刊與發布容錯
+
+- 確認 10/12、10/13、10/15 的 framework 推播缺漏位於 Make 呼叫之前；同日 daily-news 與 10/14 framework 均正常，尚無確切單點根因證據。
+- 10/12 vLLM 0.31.0、10/13 Nuxt 4.6 使用不覆寫既有資料的安全歷史補刊；保留真實 10/15 generated_at 並明確標示原目標刊期。
+- 10/15 Eclipse Theia AI 1.76 由正式 Make 發布成功，執行 ID `f15eeb787266433399e9e617e8ae7118`。
+- Neon Production read-only 驗證三個日期各恰好一筆，皆包含 sources 與 presentation metadata；未修改既有報告、schema、credentials、Make Scenario。
+- 原每日框架 recurring Task 僅加強研究 fallback、強制 Make 發布與 success/type 驗證、同 payload 限次重試；保留每天 08:00 原排程。
+- 詳細補刊、安全邊界及未完成 HTTP / 下一次 unattended 驗收：`framework-recovery-2026-10-15.md`。
+
 ## 2026-10-04
 
 ### App Store 限免週報發布容錯修正
