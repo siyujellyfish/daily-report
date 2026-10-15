@@ -398,3 +398,12 @@
 
 - 使用者明確要求合併 PR #22 並啟用每日 10:00 備援 Task；以 CI / Preview / Production API 上線 smoke 作為啟用前的必要條件。
 - 先前缺少的無人值守 missing-path 與真實 Make 409/race 驗收仍列為**已知未驗證風險**，上線後以第一次正式執行觀察，不能將排程 enabled 等同成功補推。
+
+
+## 2026-10-15 — P0/P1 正式 Squash Merge 與 10:00 備援啟用
+
+- 使用者批准在尚無 unattended missing-path 與 Make 409/race 真實驗收證據下，進行受保護的上線；相關未完成項目仍保留，不虛報通過。
+- 整合 PR #22 已透過 squash 合併 `main`（`ebe824e6e06d3ca3c3d6c28a3e6229f7a1e4eba2`）；舊 Draft PR #19、#20 關閉，避免重複合併。合併後 GitHub Quality run `38694929042` SUCCESS。
+- Vercel Production 部署 `dpl_5LFpNrsEVdigFpXR9C5VPw3t53Kd` READY，区域 sin1，正式狀態 API 實測：已發布 true、未發布 false、非法分類 400、所有回應 no-store。
+- 新增並啟用 `每日推播備援（P0／P1）`，exact_schedule，每天 10:00 Asia/Taipei，首輪 2026-10-16 10:00；原兩項 08:00 任務未變更。備援採用 fail-closed、發布前／發布後查詢、同 payload 有界重試、資料庫唯一鍵去重與 ChatGPT Task 結果異常回報。
+- 無新增 Make Scenario、付費 API、Discord 警告、schema migration 或 Production 測試資料。首次無人值守執行與真實競態仍為待驗收，屆時以 Make 和 Neon 證據確認。

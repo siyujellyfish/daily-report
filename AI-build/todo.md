@@ -654,3 +654,17 @@ Detailed scope: `phase-8-plan.md`. Evidence and remaining gates: `phase-8-verifi
 - [ ] Production status API 已刊／未刊與 no-store HTTP 驗證。
 - [ ] 建立並啟用 10:00 ChatGPT P0/P1 備援 Task，保持原本 08:00 排程。
 - [ ] 首次無人值守 missing-path 和真實 race / retry 驗收（未被本次核准自動視為通過）。
+
+
+## 正式上線實績 — 2026-10-15（以此段為最新進度；先前階段清單保留歷史）
+
+- [x] PR #22（整合 P0/P1）以 squash 合併最新 main：`ebe824e6e06d3ca3c3d6c28a3e6229f7a1e4eba2`。
+- [x] GitHub 合併後 Quality CI `38694929042`：SUCCESS。
+- [x] Vercel 正式部署 `dpl_5LFpNrsEVdigFpXR9C5VPw3t53Kd`：READY；sin1；正式網域 `daily.azubot.xyz`。
+- [x] 正式狀態 API：當日 `daily-news`、`framework-recommendation` 回應 published=true；次日缺漏回應 false；非法分類 400；皆有 `private, no-store, max-age=0`。
+- [x] 啟用 ChatGPT 排程 `每日推播備援（P0／P1）`：每天台北時間 10:00，exact_schedule，首輪 2026-10-16 10:00，enabled=true；08:00 原排程均維持 enabled。
+- [x] 舊 PR #19、#20 關閉（未重複合併，實作已整合於 #22）。
+- [ ] 驗證 2026-10-16 首次備援任務的執行結果與兩類報告 published 狀態，觀測是否曾實際補推。
+- [ ] 在安全隔離情境驗證真正的 Make 409／結果不明／同 payload 重試與缺漏補推端到端；目前僅單元與 Preview API 及真實發布通道既有成功證據。
+
+注意：排程已啟用不代表真實 missing-path／race 已通過；狀態不明時採 fail-closed 禁止發送，僅使用 ChatGPT Task 結果報錯，非保證收到推播通知。
